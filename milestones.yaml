@@ -47,21 +47,21 @@ milestones:
     dependencies: [M003]
     tests: [make unit]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M004): add cocotb smoke test)"
+    commit: 886b613
     notes: Drive and observe the smoke design through cocotb.
   - id: M005
     title: Integrate pytest
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M004]
     tests: [make test]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M005): integrate pytest)"
     notes: Make pytest the Python verification orchestrator.
   - id: M006
     title: Add top-level test runner
     subsystem: verification
-    status: pending
+    status: active
     dependencies: [M005]
     tests: [make test, make regression]
     references: [VERIFICATION.md]

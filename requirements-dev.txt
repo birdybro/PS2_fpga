@@ -1,3 +1,4 @@
 # The cocotb 2.1 development line adds Python 3.14 support. Pin the exact
 # upstream revision until a compatible stable release is available.
 cocotb @ git+https://github.com/cocotb/cocotb.git@b58c5e73fb7997ad288dd99fc8069bf18e8be587
+pytest==9.1.1

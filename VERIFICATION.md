@@ -32,3 +32,11 @@ synchronous reset, enabled write, and disabled hold behavior. The upstream
 cocotb revision is pinned because the host uses Python 3.14 and no compatible
 stable release is currently published. JUnit-style simulator results are kept
 under ignored `build/results/`.
+
+## Pytest orchestration
+
+Pytest is the outer test orchestrator. A Python runner test builds Verilator,
+launches cocotb, and independently checks the cocotb XML result for exactly one
+executed test with no failures or skips. Cocotb remains the in-simulator test
+manager. `make test` emits a separate pytest JUnit report, while `make unit`
+selects the directed unit layer only.

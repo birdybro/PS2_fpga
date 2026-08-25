@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = ["--strict-config", "--strict-markers", "-ra"]
+markers = [
+    "unit: directed tests of one isolated RTL component",
+]

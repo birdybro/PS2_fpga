@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M004 — add cocotb smoke test
-- Next milestone: M005 — integrate pytest
+- Last completed milestone: M005 — integrate pytest
+- Next milestone: M006 — add top-level test runner
 - Current subsystem: repository infrastructure
-- Current regression status: cocotb unit test (1 pass, 0 fail, 0 skip), build, regression, and bootstrap lint pass
+- Current regression status: pytest and cocotb each report 1 pass, 0 failures, 0 skips; build, regression, and bootstrap lint pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M004 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M005 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

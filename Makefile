@@ -38,16 +38,18 @@ $(SMOKE_MDIR)/Vregister_en__ALL.a: $(SMOKE_RTL)
 lint: structure ## Run the currently available static repository checks.
 	@git diff HEAD --check -- .
 
-test: structure build unit ## Run the routine test gate currently available.
+test: structure build venv ## Run the routine pytest gate.
+	@mkdir -p $(BUILD_DIR)/results
+	RANDOM_SEED="$(RANDOM_SEED)" PS2_BUILD_ROOT="$(abspath $(BUILD_DIR))" \
+		$(VENV_PYTHON) -m pytest \
+		--junitxml="$(abspath $(BUILD_DIR))/results/pytest.xml"
 	@echo "routine tests: PASS"
 
 unit: venv ## Run directed unit tests.
 	@mkdir -p $(BUILD_DIR)/results
-	$(MAKE) -C tests/unit/register_en \
-		PATH="$(abspath $(VENV))/bin:$$PATH" \
-		RANDOM_SEED="$(RANDOM_SEED)" \
-		SIM_BUILD="$(abspath $(BUILD_DIR))/cocotb/register_en" \
-		COCOTB_RESULTS_FILE="$(abspath $(BUILD_DIR))/results/register_en.xml"
+	RANDOM_SEED="$(RANDOM_SEED)" PS2_BUILD_ROOT="$(abspath $(BUILD_DIR))" \
+		$(VENV_PYTHON) -m pytest tests/unit/test_register_en_runner.py \
+		--junitxml="$(abspath $(BUILD_DIR))/results/pytest-unit.xml"
 
 differential: ## Run differential tests (introduced with reference models).
 	@echo "differential tests are not implemented yet" >&2
