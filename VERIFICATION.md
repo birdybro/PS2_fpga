@@ -122,3 +122,11 @@ that contract, requires implicit nets to be disabled in RTL, rejects source-leve
 skip and expected-failure mechanisms, and cross-checks every implementation
 `TODO-ACCURACY` marker against `KNOWN_ISSUES.md`. Directed tests prove each
 failure mode remains fatal.
+
+## Simulation clock
+
+The simulation-only `sim_clock` model starts low and generates an equal-duty
+clock at an explicit time-valued period. Its directed cocotb test measures the
+initial rising edge, four complete periods, and the following falling edge at
+1 ps precision. Strict lint covers simulation SystemVerilog separately with
+Verilator timing enabled.

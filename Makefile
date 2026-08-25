@@ -10,6 +10,7 @@ VENV ?= .venv
 SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
 RTL_SOURCES := $(shell find rtl -type f -name '*.sv' -print | sort)
+SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.requirements-dev.stamp
 TEST_RUNNER := $(VENV_PYTHON) scripts/run_tests.py
@@ -41,6 +42,7 @@ $(SMOKE_MDIR)/Vregister_en__ALL.a: $(SMOKE_RTL)
 lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	@git diff HEAD --check -- .
 	$(VERILATOR) --lint-only -Wall $(VERILATOR_FLAGS) $(RTL_SOURCES)
+	$(VERILATOR) --lint-only -Wall --timing $(VERILATOR_FLAGS) $(SIM_SOURCES)
 	$(VENV_PYTHON) -m ruff check scripts tests reference
 	$(VENV_PYTHON) -m ruff format --check scripts tests reference
 	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml references.yaml .github/workflows/ci.yml

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M014 — expand Phase 1 simulation-platform roadmap
-- Next milestone: M015 — add simulation clock driver
+- Last completed milestone: M015 — add simulation clock driver
+- Next milestone: M016 — add simulation reset sequencer
 - Current subsystem: simulation clock and reset infrastructure
-- Current regression status: 20 tests pass with no skips; strict lint and Phase 1 roadmap validation pass
+- Current regression status: 21 tests pass with no skips; simulation timing lint and full regression pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
-- Known timing inaccuracies: no timing model exists
+- Known timing inaccuracies: no PS2 architectural timing model exists
 - External blockers: none
-- Most recent pushed commit: M014 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M015 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

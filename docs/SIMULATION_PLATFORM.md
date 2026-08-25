@@ -3,6 +3,12 @@
 Phase 1 builds a deterministic execution environment around synthesizable
 interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 
+## Implemented infrastructure
+
+- M015 provides `sim_clock`, a simulation-only clock source with a 10 ns default
+  period, low initial level, 1 ps precision, and a fatal parameter check for
+  periods that cannot be divided into equal half cycles.
+
 ## Planned boundaries
 
 - Synthesizable transaction and RAM logic lives under `rtl/memory/`.

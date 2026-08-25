@@ -155,21 +155,21 @@ milestones:
     dependencies: [M013]
     tests: [phase roadmap validator, phase roadmap directed tests]
     references: [MILESTONES.md, docs/SIMULATION_PLATFORM.md, ARCHITECTURE.md]
-    commit: "self (milestone(M014): expand simulation platform roadmap)"
+    commit: d650d9d
     notes: Enumerate 28 granular simulation platform implementation milestones.
   - id: M015
     title: Add simulation clock driver
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M014]
-    tests: [clock period and edge-count directed test]
+    tests: [clock initial-level period duty-cycle and edge-count directed test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M015): add deterministic simulation clock)"
     notes: Provide deterministic simulation-only clock generation.
   - id: M016
     title: Add simulation reset sequencer
     subsystem: simulation
-    status: pending
+    status: active
     dependencies: [M015]
     tests: [reset duration and release-edge directed test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
