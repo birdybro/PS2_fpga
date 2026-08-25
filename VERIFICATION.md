@@ -235,6 +235,17 @@ assembly, clean error status, and repeated operation. Decoder backpressure is
 held for three cycles after each response to prove that instruction validity
 and data remain stable until explicit consumption.
 
+## R5900 sequential NOP image
+
+The first composed-core execution test holds fetch while writing four all-zero
+instructions into behavioral RAM, then enables execution at `0x00000020` under
+a 96-cycle simulator limit. It requires the compressed state sequence
+fetch-request, fetch-response, decode, execute, and writeback once per word;
+counts exactly four request and response handshakes; and compares retirement
+PCs and instruction words exactly. NOP must never emit reserved-instruction or
+GPR-writeback events. After the fourth retirement, removing run permission must
+hold the core at `0x00000030` with no outstanding transaction or timeout.
+
 ## R5900 instruction-field extraction
 
 The combinational field extractor exposes the standard overlapping 32-bit MIPS

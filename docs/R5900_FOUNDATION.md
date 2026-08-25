@@ -133,6 +133,16 @@ little-endian words from behavioral RAM with configured two-cycle latency,
 holds each buffered word under backpressure, and proves that the disabled
 external memory-master inputs cannot alter the transaction stream.
 
+M080 adds the first complete functional core composition. The existing
+five-state controller now gates fetch, captures one response word for decode,
+latches the admitted operation for execute, captures execute outputs, and
+publishes retirement during writeback. PC advances only when execute completes;
+GPR commits occur from the following writeback state. A synthesis-compatible
+run input prevents only new fetches so simulation can initialize RAM and stop
+cleanly between instructions. Four loaded NOP words traverse the complete
+state loop, retire at consecutive PCs, perform no register writes, and stop at
+the first address beyond the bounded image.
+
 The next combinational boundary exposes instruction bits 31 through 26 as the
 primary opcode; the three five-bit register indices; the five-bit shift amount;
 the six-bit function; and the overlapping 16-bit immediate and 26-bit target.
@@ -375,9 +385,9 @@ directed, randomized-differential, and exception coverage separately. All 22
 foundation entries are complete; they began pending because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and
-summary-state consistency. The first integration now gates fetch from the
-behavioral RAM. The next two milestones execute a sequential NOP image and then
-a generated EE ELF arithmetic stream from its published entry point.
+summary-state consistency. Fetch-to-RAM integration and sequential NOP-image
+execution are now complete. The next milestone executes a generated EE ELF
+arithmetic stream from its published entry point.
 
 ## Deferred behavior
 

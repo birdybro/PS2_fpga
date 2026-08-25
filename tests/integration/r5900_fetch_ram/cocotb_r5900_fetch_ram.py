@@ -18,6 +18,8 @@ def drive_initial_inputs(dut) -> None:
     dut.mem_req_wdata_i.value = int.from_bytes(bytes([0xCC] * 16), "little")
     dut.mem_req_wstrb_i.value = 0xF
     dut.mem_rsp_ready_i.value = 0
+    dut.ee_run_i.value = 0
+    dut.ee_start_pc_i.value = 0
     dut.ram_backdoor_write_i.value = 0
     dut.ram_backdoor_addr_i.value = 0
     dut.ram_backdoor_wdata_i.value = 0

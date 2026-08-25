@@ -35,6 +35,13 @@ into one synthesizable, single-fetch path. A registered request-acceptance
 handoff prevents target readiness from feeding combinationally back through
 response readiness, while start readiness excludes every pending request,
 accepted request, expected response, or unconsumed instruction.
+`rtl/ee/r5900/r5900_core.sv` is the first complete functional composition of
+the PC, five-state controller, fetch path, decode/dispatch, scalar execute,
+central writeback, and GPR file. It captures the fetched word before decode,
+latches execute results before the writeback state, advances PC only after
+completed execution, and emits retirement only from writeback. Its `run_i`
+input gates only the start of a new fetch, allowing the simulation loader to
+initialize RAM before execution; an eventual hardware top can tie it active.
 `rtl/ee/r5900/r5900_instruction_fields.sv` is a timing-free combinational view
 of the 32-bit instruction word. It exposes the overlapping MIPS opcode,
 register, shift, function, immediate, and target fields plus explicit 32-bit
@@ -107,6 +114,12 @@ tests while proving real instruction reads against the existing RAM and
 protocol checker. Those ports are simulation harness boundaries, not PS2
 architectural pins; later CPU integration will connect control and execution
 without changing the RAM contract.
+
+`R5900_CORE_ENABLE` selects the composed multi-cycle core as a third,
+mutually-exclusive owner. The simulation-only EE run/start controls and packed
+state/event outputs support deterministic program loading and observation; they
+are not console pins. The first core image test executes four sequential NOPs
+and then removes run permission before the next fetch.
 
 The RAM byte backdoor is likewise exposed only for loaders and verification.
 It cannot appear on the eventual synthesizable `rtl/ps2_top.sv` boundary.

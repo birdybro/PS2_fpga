@@ -15,6 +15,8 @@ def drive_reset_epoch_activity(dut) -> None:
     dut.mem_req_wdata_i.value = 0
     dut.mem_req_wstrb_i.value = 0
     dut.mem_rsp_ready_i.value = 1
+    dut.ee_run_i.value = 1
+    dut.ee_start_pc_i.value = 0xBFC0_0000
     dut.ee_fetch_start_i.value = 1
     dut.ee_fetch_pc_i.value = 0
     dut.ee_instruction_ready_i.value = 1
@@ -39,6 +41,7 @@ def drive_inactive_controls(dut) -> None:
     dut.pass_i.value = 0
     dut.fail_i.value = 0
     dut.arch_event_valid_i.value = 0
+    dut.ee_run_i.value = 0
     dut.ee_fetch_start_i.value = 0
 
 
@@ -57,6 +60,18 @@ def assert_reset_state(dut) -> None:
     assert int(dut.ee_instruction_valid_o.value) == 0
     assert int(dut.ee_instruction_o.value) == 0
     assert int(dut.ee_fetch_error_o.value) == 0
+    assert int(dut.ee_control_state_o.value) == 0
+    assert int(dut.ee_pc_o.value) == 0
+    assert int(dut.ee_retirement_valid_o.value) == 0
+    assert int(dut.ee_retirement_pc_o.value) == 0
+    assert int(dut.ee_retirement_instruction_o.value) == 0
+    assert int(dut.ee_reserved_valid_o.value) == 0
+    assert int(dut.ee_reserved_pc_o.value) == 0
+    assert int(dut.ee_reserved_instruction_o.value) == 0
+    assert int(dut.ee_writeback_valid_o.value) == 0
+    assert int(dut.ee_writeback_destination_o.value) == 0
+    assert int(dut.ee_writeback_value_o.value) == 0
+    assert int(dut.ee_gprs_o.value) == 0
     assert int(dut.timeout_o.value) == 0
     assert int(dut.cycle_count_o.value) == 0
     assert int(dut.pass_event_o.value) == 0
@@ -78,6 +93,18 @@ def assert_idle_active_state(dut) -> None:
     assert int(dut.ee_instruction_valid_o.value) == 0
     assert int(dut.ee_instruction_o.value) == 0
     assert int(dut.ee_fetch_error_o.value) == 0
+    assert int(dut.ee_control_state_o.value) == 0
+    assert int(dut.ee_pc_o.value) == 0
+    assert int(dut.ee_retirement_valid_o.value) == 0
+    assert int(dut.ee_retirement_pc_o.value) == 0
+    assert int(dut.ee_retirement_instruction_o.value) == 0
+    assert int(dut.ee_reserved_valid_o.value) == 0
+    assert int(dut.ee_reserved_pc_o.value) == 0
+    assert int(dut.ee_reserved_instruction_o.value) == 0
+    assert int(dut.ee_writeback_valid_o.value) == 0
+    assert int(dut.ee_writeback_destination_o.value) == 0
+    assert int(dut.ee_writeback_value_o.value) == 0
+    assert int(dut.ee_gprs_o.value) == 0
     assert int(dut.timeout_o.value) == 0
     assert int(dut.cycle_count_o.value) == 0
     assert int(dut.pass_event_o.value) == 0

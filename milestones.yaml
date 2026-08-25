@@ -1051,21 +1051,30 @@ milestones:
       - docs/SIMULATION_PLATFORM.md
       - ARCHITECTURE.md
       - VERIFICATION.md
-    commit: "self (milestone(M079): integrate R5900 fetch with simulation RAM)"
+    commit: c9d4d94
     notes: Select the composed fetch path as the simulation RAM initiator without removing the external loader harness.
   - id: M080
     title: Execute a sequential R5900 NOP image
     subsystem: integration
-    status: active
+    status: complete
     dependencies: [M079]
-    tests: [loaded NOP stream PC retirement and timeout-bound execution test]
-    references: [docs/R5900_FOUNDATION.md, VERIFICATION.md]
-    commit: null
-    notes: Prove fetch decode execute writeback sequencing across multiple instructions.
+    tests:
+      - held-core RAM image loading and start-PC reset test
+      - four-word request response and retirement count test
+      - repeated five-state functional sequence test
+      - consecutive NOP PC instruction and no-writeback test
+      - post-image fetch hold and 96-cycle timeout-bound test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - docs/SIMULATION_PLATFORM.md
+      - ARCHITECTURE.md
+      - VERIFICATION.md
+    commit: "self (milestone(M080): execute sequential R5900 NOP image)"
+    notes: Compose the functional core and retire four loaded NOPs in exact PC order.
   - id: M081
     title: Execute an R5900 arithmetic EE ELF
     subsystem: integration
-    status: pending
+    status: active
     dependencies: [M080]
     tests: [EE ELF entry arithmetic GPR and architectural trace integration test]
     references: [docs/R5900_FOUNDATION.md, VERIFICATION.md]

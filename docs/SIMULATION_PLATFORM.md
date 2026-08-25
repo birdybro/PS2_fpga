@@ -268,6 +268,16 @@ Reset behavior, little-endian data, one-outstanding accounting, response
 latency, output buffering, downstream backpressure, and a second fetch are all
 verified without adding a hardware-visible loader mechanism.
 
+M080 adds `R5900_CORE_ENABLE`, mutually exclusive with fetch-only mode. The
+selected functional core owns the same checked memory interface and exposes
+simulation observation of PC, control state, retirement, reserved-instruction,
+writeback, and GPR state. `ee_run_i=0` prevents a new instruction fetch while
+the RAM backdoor loads an image; `ee_start_pc_i` supplies the existing PC
+module's functional start address. The first execution run loads four NOPs,
+enables the core, validates every multi-cycle state and bus handshake, disables
+new fetches after the fourth retirement, and remains below the configured
+timeout. These harness controls and packed observations are not PS2 pins.
+
 ## Phase 1 exit
 
 Phase 1 exits with two green integration tests: one places a raw binary into RAM

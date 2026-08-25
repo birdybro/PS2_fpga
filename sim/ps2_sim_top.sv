@@ -14,7 +14,8 @@ module ps2_sim_top #(
     parameter bit MEMORY_TRACE_ENABLE = 1'b0,
     parameter bit ARCH_TRACE_ENABLE = 1'b0,
     parameter bit WAVE_ENABLE = 1'b0,
-    parameter bit R5900_FETCH_ENABLE = 1'b0
+    parameter bit R5900_FETCH_ENABLE = 1'b0,
+    parameter bit R5900_CORE_ENABLE = 1'b0
 ) (
     output logic         clk_o,
     output logic         rst_no,
@@ -46,6 +47,8 @@ module ps2_sim_top #(
     output logic         timeout_o,
     output logic [31:0]  cycle_count_o,
     output logic         mem_outstanding_o,
+    input  logic         ee_run_i,
+    input  logic [31:0]  ee_start_pc_i,
     input  logic         ee_fetch_start_i,
     input  logic [31:0]  ee_fetch_pc_i,
     input  logic         ee_instruction_ready_i,
@@ -57,6 +60,18 @@ module ps2_sim_top #(
     output logic         ee_instruction_valid_o,
     output logic [31:0]  ee_instruction_o,
     output logic         ee_fetch_error_o,
+    output logic [2:0]   ee_control_state_o,
+    output logic [31:0]  ee_pc_o,
+    output logic         ee_retirement_valid_o,
+    output logic [31:0]  ee_retirement_pc_o,
+    output logic [31:0]  ee_retirement_instruction_o,
+    output logic         ee_reserved_valid_o,
+    output logic [31:0]  ee_reserved_pc_o,
+    output logic [31:0]  ee_reserved_instruction_o,
+    output logic         ee_writeback_valid_o,
+    output logic [4:0]   ee_writeback_destination_o,
+    output logic [127:0] ee_writeback_value_o,
+    output logic [4095:0] ee_gprs_o,
     input  logic         arch_event_valid_i,
     input  logic [7:0]   arch_event_source_i,
     input  logic [7:0]   arch_event_kind_i,
@@ -69,6 +84,12 @@ module ps2_sim_top #(
     timeunit 1ns;
     timeprecision 1ps;
 
+    initial begin
+        if (R5900_FETCH_ENABLE && R5900_CORE_ENABLE) begin
+            $fatal(1, "ps2_sim_top fetch-only and core modes are mutually exclusive");
+        end
+    end
+
     memory_bus_if #(
         .ADDR_WIDTH(32),
         .DATA_WIDTH(128)
@@ -80,7 +101,42 @@ module ps2_sim_top #(
     assign mem_rsp_error_o = memory_bus.rsp_error;
 
     generate
-        if (R5900_FETCH_ENABLE) begin : g_r5900_fetch
+        if (R5900_CORE_ENABLE) begin : g_r5900_core
+            r5900_types_pkg::r5900_retirement_t           core_retirement;
+            r5900_types_pkg::r5900_reserved_instruction_t core_reserved_instruction;
+            r5900_types_pkg::r5900_writeback_t            core_writeback;
+
+            r5900_core u_core (
+                .clk_i(clk_o),
+                .rst_ni(rst_no),
+                .run_i(ee_run_i),
+                .start_pc_i(ee_start_pc_i),
+                .bus(memory_bus),
+                .state_o(ee_control_state_o),
+                .pc_o(ee_pc_o),
+                .fetch_start_ready_o(ee_fetch_start_ready_o),
+                .fetch_request_accepted_o(ee_fetch_request_accepted_o),
+                .fetch_response_accepted_o(ee_fetch_response_accepted_o),
+                .fetch_response_expected_o(ee_fetch_response_expected_o),
+                .fetch_instruction_valid_o(ee_instruction_valid_o),
+                .fetch_instruction_o(ee_instruction_o),
+                .fetch_error_o(ee_fetch_error_o),
+                .retirement_o(core_retirement),
+                .reserved_instruction_o(core_reserved_instruction),
+                .writeback_o(core_writeback),
+                .gprs_o(ee_gprs_o)
+            );
+
+            assign ee_retirement_valid_o = core_retirement.valid;
+            assign ee_retirement_pc_o = core_retirement.pc;
+            assign ee_retirement_instruction_o = core_retirement.instruction;
+            assign ee_reserved_valid_o = core_reserved_instruction.valid;
+            assign ee_reserved_pc_o = core_reserved_instruction.pc;
+            assign ee_reserved_instruction_o = core_reserved_instruction.instruction;
+            assign ee_writeback_valid_o = core_writeback.valid;
+            assign ee_writeback_destination_o = core_writeback.destination;
+            assign ee_writeback_value_o = core_writeback.value;
+        end else if (R5900_FETCH_ENABLE) begin : g_r5900_fetch
             r5900_fetch_path u_fetch_path (
                 .clk_i(clk_o),
                 .rst_ni(rst_no),
@@ -96,6 +152,18 @@ module ps2_sim_top #(
                 .instruction_o(ee_instruction_o),
                 .fetch_error_o(ee_fetch_error_o)
             );
+            assign ee_control_state_o = 3'd0;
+            assign ee_pc_o = 32'd0;
+            assign ee_retirement_valid_o = 1'b0;
+            assign ee_retirement_pc_o = 32'd0;
+            assign ee_retirement_instruction_o = 32'd0;
+            assign ee_reserved_valid_o = 1'b0;
+            assign ee_reserved_pc_o = 32'd0;
+            assign ee_reserved_instruction_o = 32'd0;
+            assign ee_writeback_valid_o = 1'b0;
+            assign ee_writeback_destination_o = 5'd0;
+            assign ee_writeback_value_o = 128'd0;
+            assign ee_gprs_o = 4096'd0;
         end else begin : g_external_memory_master
             assign memory_bus.req_valid = mem_req_valid_i;
             assign memory_bus.req_write = mem_req_write_i;
@@ -111,6 +179,18 @@ module ps2_sim_top #(
             assign ee_instruction_valid_o = 1'b0;
             assign ee_instruction_o = 32'd0;
             assign ee_fetch_error_o = 1'b0;
+            assign ee_control_state_o = 3'd0;
+            assign ee_pc_o = 32'd0;
+            assign ee_retirement_valid_o = 1'b0;
+            assign ee_retirement_pc_o = 32'd0;
+            assign ee_retirement_instruction_o = 32'd0;
+            assign ee_reserved_valid_o = 1'b0;
+            assign ee_reserved_pc_o = 32'd0;
+            assign ee_reserved_instruction_o = 32'd0;
+            assign ee_writeback_valid_o = 1'b0;
+            assign ee_writeback_destination_o = 5'd0;
+            assign ee_writeback_value_o = 128'd0;
+            assign ee_gprs_o = 4096'd0;
         end
     endgenerate
 

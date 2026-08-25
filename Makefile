@@ -123,13 +123,11 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 		$(R5900_PC) $(R5900_GPR_STORAGE) $(R5900_GPR_FILE) $(R5900_DECODE) \
 		$(R5900_DECODE_DISPATCH) $(R5900_WRITEBACK) $(R5900_EXECUTE) $(R5900_SHIFT_IMMEDIATE_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
-		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv rtl/memory/memory_bus_if.sv \
-		rtl/memory/memory_bus_protocol_checker.sv $(R5900_FETCH_REQUEST) \
-		$(R5900_FETCH_RESPONSE) $(R5900_FETCH_PATH) $(SIM_SOURCES)
+		$(VERILATOR_FLAGS) $(RTL_SOURCES) $(SIM_SOURCES)
 	$(VERILATOR) --lint-only -Wall --assert --timing -GR5900_FETCH_ENABLE=1 \
-		--top-module ps2_sim_top $(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
-		rtl/memory/memory_bus_if.sv rtl/memory/memory_bus_protocol_checker.sv \
-		$(R5900_FETCH_REQUEST) $(R5900_FETCH_RESPONSE) $(R5900_FETCH_PATH) $(SIM_SOURCES)
+		--top-module ps2_sim_top $(VERILATOR_FLAGS) $(RTL_SOURCES) $(SIM_SOURCES)
+	$(VERILATOR) --lint-only -Wall --assert --timing -GR5900_CORE_ENABLE=1 \
+		--top-module ps2_sim_top $(VERILATOR_FLAGS) $(RTL_SOURCES) $(SIM_SOURCES)
 	@for top in $(SIM_LINT_TOPS); do \
 		$(VERILATOR) --lint-only -Wall --timing --top-module $$top \
 			$(VERILATOR_FLAGS) $(SIM_SOURCES); \
