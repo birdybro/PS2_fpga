@@ -1,0 +1,34 @@
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# HDL build and simulation outputs
+build/
+obj_dir/
+sim_build/
+artifacts/
+*.vcd
+*.fst
+*.lxt
+*.wav
+
+# Coverage and test outputs
+.coverage
+coverage.xml
+htmlcov/
+junit.xml
+
+# User-supplied copyrighted media and firmware
+*.iso
+*.chd
+bios/
+firmware/
+
+# Editor and operating-system state
+.DS_Store
+*.swp
+*.swo
+*~

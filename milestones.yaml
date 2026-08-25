@@ -11,21 +11,21 @@ milestones:
     references:
       - LICENSE
       - repository git history
-    commit: "self (milestone(M000): audit repository baseline)"
+    commit: 02cf981
     notes: Bootstrap persistent state while documenting the pristine baseline.
   - id: M001
     title: Establish project directory structure
     subsystem: infrastructure
-    status: active
+    status: complete
     dependencies: [M000]
     tests: [structure manifest check]
     references: [ARCHITECTURE.md]
-    commit: null
+    commit: "self (milestone(M001): establish project structure)"
     notes: Create tracked subsystem boundaries without build artifacts.
   - id: M002
     title: Establish build configuration
     subsystem: infrastructure
-    status: pending
+    status: active
     dependencies: [M001]
     tests: [make help]
     references: [VERIFICATION.md]

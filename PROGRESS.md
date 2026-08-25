@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M000 — inspect repository and preserve existing state
-- Next milestone: M001 — establish project directory structure
+- Last completed milestone: M001 — establish project directory structure
+- Next milestone: M002 — establish build configuration
 - Current subsystem: repository infrastructure
-- Current regression status: M000 bootstrap audit passed; no executable regression suite exists yet
+- Current regression status: M001 structure check and prior bootstrap audit passed; no HDL regression exists yet
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M000 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M001 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
