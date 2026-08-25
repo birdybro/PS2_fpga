@@ -103,8 +103,16 @@ over the common memory interface. Address, direction, size, payload, and strobes
 remain stable until the target accepts the request. A second start may replace
 an accepted request in the same cycle, but cannot overwrite a request stalled
 by backpressure. Assertions make unaligned starts and stalled replacement fatal.
-The response path is intentionally absent until M052, so this block makes no
-claim about response latency, error handling, or instruction availability.
+This request block remains independent from response latency, error handling,
+and instruction availability; the separate receiver owns those concerns.
+
+The separate fetch-response block now arms on request acceptance and can accept
+a target response in that cycle or after arbitrary latency. A one-entry register
+captures response bits 31 through 0 as the instruction together with bus error
+status, then holds both while the downstream decoder applies backpressure. The
+complete response payload must be known. Unsolicited responses and a new request
+while either a response or unconsumed instruction occupies the receiver are
+fatal. Request, response, and control composition remains deferred to M079.
 
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing

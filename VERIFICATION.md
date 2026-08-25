@@ -210,6 +210,18 @@ start and replacement of a stalled request terminate simulation with distinct
 diagnostic markers. Strict standalone lint uses the request-only memory-bus
 modport; response capture remains independently gated by M052.
 
+## R5900 instruction-fetch responses
+
+The one-entry response receiver arms only after an accepted fetch request,
+accepts either a delayed or same-cycle response, validates the complete 128-bit
+bus payload, and stores its low 32 bits with independent error status. Three
+legal cocotb cases cover delayed handshake, low-word boundary patterns with
+unrelated upper bits, downstream stalls and consumption, error preservation,
+zero-wait response, and reset cancellation. Two assertion-enabled negative
+runs prove that unsolicited responses and overlapping accepted fetch requests
+are fatal. The response-only bus modport and standalone wrapper keep this gate
+independent from later fetch/control composition.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

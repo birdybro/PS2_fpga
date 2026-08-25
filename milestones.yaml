@@ -601,21 +601,27 @@ milestones:
       - single acceptance and reset cancellation test
       - fatal unaligned-start and stalled-replacement assertion tests
     references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]
-    commit: "self (milestone(M051): issue R5900 instruction fetch requests)"
+    commit: bf0cbe3
     notes: Drive aligned little-endian word reads through the existing memory interface.
   - id: M052
     title: Capture R5900 instruction fetch responses
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M051]
-    tests: [response backpressure capture error and instruction-register tests]
+    tests:
+      - delayed response arming and exact handshake test
+      - lower-word instruction capture and full-payload boundary tests
+      - downstream backpressure hold and consume test
+      - independent response-error capture test
+      - same-cycle request-response and reset cancellation test
+      - fatal unsolicited-response and overlapping-request assertion tests
     references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]
-    commit: null
+    commit: "self (milestone(M052): capture R5900 instruction fetch responses)"
     notes: Latch one instruction response before decode without overlapping requests.
   - id: M053
     title: Extract R5900 instruction fields
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M052]
     tests: [opcode register shift function immediate and target field tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

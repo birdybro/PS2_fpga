@@ -26,6 +26,10 @@ sequencer. It expresses no pipeline, latency, issue-width, or hazard timing.
 emits one acceptance event; response consumption remains a separate boundary.
 The shared memory interface exposes request-initiator and response-consumer
 modports so those paths can be verified independently before composition.
+`rtl/ee/r5900/r5900_fetch_response.sv` arms from that request acceptance,
+buffers the low 32 response bits plus error status, and retains them through
+downstream backpressure. The one-entry receiver permits a same-cycle response
+but rejects unsolicited responses and overlapping fetches.
 
 ## Repository boundaries
 
