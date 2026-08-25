@@ -8,8 +8,16 @@ and the milestone is committed and pushed when remote access permits.
 Allowed states are `pending`, `active`, `blocked`, and `complete`. The
 machine-readable source of truth is [milestones.yaml](milestones.yaml).
 
-Phase 0 establishes repository and verification infrastructure. Later phases
-will be expanded into similarly granular milestones before implementation.
+Phase 0 establishes repository and verification infrastructure. Phase 1 is
+expanded into 28 implementation milestones covering clock/reset, the memory
+transaction contract, each RAM width and direction, loaders, simulator control,
+observability, top-level composition, and two integration gates. Phase 2 has a
+dedicated roadmap-expansion boundary before R5900 implementation begins.
+
+The design contract and exit criteria for Phase 1 are documented in
+`docs/SIMULATION_PLATFORM.md`. `scripts/check_roadmap.py` makes the enumerated
+order, title, subsystem ownership, and one-step dependencies a tested contract.
+Later major subsystems will be expanded the same way before implementation.
 
 ## Machine-readable schema
 

@@ -146,14 +146,275 @@ milestones:
     dependencies: [M012]
     tests: [convention validator, convention enforcement directed tests]
     references: [docs/CONVENTIONS.md, CONTRIBUTING.md, VERIFICATION.md]
-    commit: "self (milestone(M013): enforce coding and verification conventions)"
+    commit: 282fdd1
     notes: Make RTL, model, test-integrity, and accuracy review expectations explicit.
   - id: M014
     title: Expand Phase 1 simulation-platform roadmap
     subsystem: planning
-    status: active
+    status: complete
     dependencies: [M013]
-    tests: [phase roadmap validation]
-    references: [MILESTONES.md, ARCHITECTURE.md]
+    tests: [phase roadmap validator, phase roadmap directed tests]
+    references: [MILESTONES.md, docs/SIMULATION_PLATFORM.md, ARCHITECTURE.md]
+    commit: "self (milestone(M014): expand simulation platform roadmap)"
+    notes: Enumerate 28 granular simulation platform implementation milestones.
+  - id: M015
+    title: Add simulation clock driver
+    subsystem: simulation
+    status: active
+    dependencies: [M014]
+    tests: [clock period and edge-count directed test]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
     commit: null
-    notes: Enumerate granular simulation platform milestones before implementation.
+    notes: Provide deterministic simulation-only clock generation.
+  - id: M016
+    title: Add simulation reset sequencer
+    subsystem: simulation
+    status: pending
+    dependencies: [M015]
+    tests: [reset duration and release-edge directed test]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Drive deterministic active-low reset independently from architectural RTL.
+  - id: M017
+    title: Define internal memory transaction interface
+    subsystem: memory
+    status: pending
+    dependencies: [M016]
+    tests: [interface elaboration and handshake smoke test]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Define one explicit request and response ready-valid contract.
+  - id: M018
+    title: Assert memory transaction protocol invariants
+    subsystem: memory
+    status: pending
+    dependencies: [M017]
+    tests: [protocol assertion positive and negative tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Assert payload stability, supported sizes, and response causality.
+  - id: M019
+    title: Add behavioral byte-addressed system RAM
+    subsystem: memory
+    status: pending
+    dependencies: [M018]
+    tests: [RAM bounds and reset-independent storage tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Introduce little-endian behavioral storage without RDRAM timing claims.
+  - id: M020
+    title: Implement aligned 32-bit RAM reads
+    subsystem: memory
+    status: pending
+    dependencies: [M019]
+    tests: [directed 32-bit RAM read tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Read one aligned little-endian 32-bit word per accepted request.
+  - id: M021
+    title: Implement aligned 32-bit RAM writes
+    subsystem: memory
+    status: pending
+    dependencies: [M020]
+    tests: [directed 32-bit RAM write and readback tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Write complete aligned 32-bit words before adding partial lanes.
+  - id: M022
+    title: Implement RAM write byte enables
+    subsystem: memory
+    status: pending
+    dependencies: [M021]
+    tests: [all 32-bit byte-enable pattern tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Preserve disabled lanes for every 32-bit byte-enable combination.
+  - id: M023
+    title: Implement aligned 64-bit RAM reads
+    subsystem: memory
+    status: pending
+    dependencies: [M022]
+    tests: [directed 64-bit RAM read and endian tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Extend reads to aligned doublewords without changing 32-bit behavior.
+  - id: M024
+    title: Implement aligned 64-bit RAM writes
+    subsystem: memory
+    status: pending
+    dependencies: [M023]
+    tests: [directed 64-bit RAM write and lane tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Extend byte-enabled writes to aligned 64-bit transfers.
+  - id: M025
+    title: Implement aligned 128-bit RAM reads
+    subsystem: memory
+    status: pending
+    dependencies: [M024]
+    tests: [directed 128-bit RAM read and endian tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Add aligned quadword reads required by the EE data path.
+  - id: M026
+    title: Implement aligned 128-bit RAM writes
+    subsystem: memory
+    status: pending
+    dependencies: [M025]
+    tests: [directed 128-bit RAM write and lane tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Add byte-enabled aligned quadword writes and preserve narrower transfers.
+  - id: M027
+    title: Add configurable RAM response latency
+    subsystem: memory
+    status: pending
+    dependencies: [M026]
+    tests: [zero and multi-cycle response latency tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Exercise backpressure without claiming physical RDRAM timing.
+  - id: M028
+    title: Add raw binary image loader
+    subsystem: loader
+    status: pending
+    dependencies: [M027]
+    tests: [binary load bounds and byte-exact tests]
+    references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
+    commit: null
+    notes: Load an explicit external binary at a caller-selected byte address.
+  - id: M029
+    title: Parse ELF32 identification and header
+    subsystem: loader
+    status: pending
+    dependencies: [M028]
+    tests: [valid and malformed ELF32 header tests]
+    references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
+    commit: null
+    notes: Parse header fields without mutating simulated memory.
+  - id: M030
+    title: Validate EE ELF machine and endianness
+    subsystem: loader
+    status: pending
+    dependencies: [M029]
+    tests: [ELF target and endian rejection tests]
+    references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
+    commit: null
+    notes: Accept only the explicitly supported EE test executable format.
+  - id: M031
+    title: Load ELF PT_LOAD segments
+    subsystem: loader
+    status: pending
+    dependencies: [M030]
+    tests: [multi-segment ELF load and bounds tests]
+    references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
+    commit: null
+    notes: Copy file-backed loadable segments to their validated memory addresses.
+  - id: M032
+    title: Apply ELF zero-fill segments
+    subsystem: loader
+    status: pending
+    dependencies: [M031]
+    tests: [ELF BSS zero-fill and malformed-size tests]
+    references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
+    commit: null
+    notes: Zero the memory-only tail when segment memory size exceeds file size.
+  - id: M033
+    title: Publish ELF entry point
+    subsystem: loader
+    status: pending
+    dependencies: [M032]
+    tests: [ELF entry-point propagation test]
+    references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
+    commit: null
+    notes: Expose the validated EE start address to the future CPU harness.
+  - id: M034
+    title: Add simulation cycle timeout
+    subsystem: simulation
+    status: pending
+    dependencies: [M033]
+    tests: [timeout boundary and disabled-timeout tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Terminate hung tests deterministically at a configured cycle limit.
+  - id: M035
+    title: Add simulation PASS termination
+    subsystem: simulation
+    status: pending
+    dependencies: [M034]
+    tests: [PASS status and one-shot termination tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Provide a simulation-only deterministic successful completion channel.
+  - id: M036
+    title: Add simulation FAIL termination
+    subsystem: simulation
+    status: pending
+    dependencies: [M035]
+    tests: [FAIL code and priority tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Report program failure distinctly from timeout and infrastructure errors.
+  - id: M037
+    title: Add memory transaction trace
+    subsystem: debug
+    status: pending
+    dependencies: [M036]
+    tests: [trace disabled and deterministic record tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Record accepted requests and responses only when explicitly enabled.
+  - id: M038
+    title: Add architectural trace sink
+    subsystem: debug
+    status: pending
+    dependencies: [M037]
+    tests: [trace sink disabled and schema tests]
+    references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Define a switchable trace record format before CPU execution exists.
+  - id: M039
+    title: Integrate simulation waveform controls
+    subsystem: debug
+    status: pending
+    dependencies: [M038]
+    tests: [platform waveform opt-in and silence tests]
+    references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
+    commit: null
+    notes: Reuse ignored waveform outputs for the composed platform.
+  - id: M040
+    title: Assemble simulation platform top
+    subsystem: simulation
+    status: pending
+    dependencies: [M039]
+    tests: [platform elaboration and reset integration tests]
+    references: [docs/SIMULATION_PLATFORM.md, ARCHITECTURE.md]
+    commit: null
+    notes: Compose clock, reset, memory, termination, tracing, and waveform controls.
+  - id: M041
+    title: Add raw binary platform integration test
+    subsystem: integration
+    status: pending
+    dependencies: [M040]
+    tests: [binary loader through RAM transaction readback]
+    references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
+    commit: null
+    notes: Prove byte-exact external binary placement through the composed platform.
+  - id: M042
+    title: Add ELF loader and RAM integration test
+    subsystem: integration
+    status: pending
+    dependencies: [M041]
+    tests: [ELF segments zero-fill and entry-point integration test]
+    references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
+    commit: null
+    notes: Complete Phase 1 with a deterministic EE ELF memory image and start address.
+  - id: M043
+    title: Expand Phase 2 R5900 foundation roadmap
+    subsystem: planning
+    status: pending
+    dependencies: [M042]
+    tests: [R5900 foundation roadmap validation]
+    references: [REFERENCES.md, ARCHITECTURE.md, docs/CONVENTIONS.md]
+    commit: null
+    notes: Enumerate CPU state, fetch, decode, writeback, and instruction milestones.
