@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: MIT
+
+`default_nettype none
+
+module r5900_decode (
+    input  r5900_types_pkg::r5900_instruction_t instruction_i,
+    output logic                                  legal_o,
+    output r5900_types_pkg::r5900_operation_t     operation_o
+);
+
+    timeunit 1ns;
+    timeprecision 1ps;
+
+    import r5900_types_pkg::*;
+
+    always_comb begin
+        legal_o = 1'b0;
+        operation_o = R5900_OPERATION_NONE;
+
+        if (instruction_i == 32'd0) begin
+            legal_o = 1'b1;
+            operation_o = R5900_OPERATION_NOP;
+        end
+    end
+
+endmodule
+
+`default_nettype wire

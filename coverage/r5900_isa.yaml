@@ -9,14 +9,14 @@ instructions:
     category: alias
     encoding: exact word 0x00000000; SLL r0, r0, 0
     milestone: M057
-    decoded: false
+    decoded: true
     implemented: false
     directed_test: pending
     random_differential_test: pending
     exception_tests: pending
-    status: pending
+    status: partial
     references: [mips-iv-instruction-set, binutils-r5900-review]
-    notes: Track the architecturally inert zero-word encoding separately from general SLL.
+    notes: Exact zero-word decode is admitted; inert execution remains owned by M057.
   - mnemonic: SLL
     category: 32-bit shift immediate
     encoding: SPECIAL opcode 0x00, function 0x00

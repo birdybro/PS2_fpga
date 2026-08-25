@@ -9,13 +9,14 @@ executing CPU. This is not a claim of CPU compatibility.
 
 Instruction fetch request and response paths are independently implemented but
 not yet composed with control or RAM. Bus errors are retained as functional
-fetch status. Instruction fields are extracted, but no opcode is yet admitted
-as legal or executed; architectural exception handling remains unimplemented.
+fetch status. Instruction fields are extracted and exact zero-word NOP is
+admitted, but no instruction is executed. Illegal words do not yet emit the
+M055 diagnostic or enter an architectural exception; COP0 remains unimplemented.
 
-All 22 entries in the initial R5900 ISA coverage matrix are pending. The matrix
-records planned encodings and ownership, not corroborated implementation
-semantics; each row must pass its instruction milestone before becoming
-complete.
+NOP is partial and the other 21 entries in the initial R5900 ISA coverage
+matrix remain pending. The matrix records planned encodings and ownership, not
+corroborated implementation semantics; each row must pass its instruction
+milestone before becoming complete.
 
 No consulted public R5900 source defines the post-reset values of GPR 1 through
 31. The physical storage therefore has no reset input and tests initialize every

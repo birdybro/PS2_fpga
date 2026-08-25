@@ -34,6 +34,10 @@ but rejects unsolicited responses and overlapping fetches.
 of the 32-bit instruction word. It exposes the overlapping MIPS opcode,
 register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
+`rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its initial
+five-bit operation enum admits only exact word zero as NOP and maps every other
+word to no operation with legality deasserted. Instruction execution remains a
+separate milestone.
 
 ## Repository boundaries
 

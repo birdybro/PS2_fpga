@@ -32,6 +32,11 @@ package r5900_types_pkg;
         R5900_WRITEBACK      = 3'd4
     } r5900_control_state_t;
 
+    typedef enum logic [4:0] {
+        R5900_OPERATION_NONE = 5'd0,
+        R5900_OPERATION_NOP  = 5'd1
+    } r5900_operation_t;
+
     typedef struct packed {
         r5900_gpr_file_t gprs;
         r5900_pc_t       pc;

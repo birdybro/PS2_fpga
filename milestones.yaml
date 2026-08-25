@@ -629,21 +629,26 @@ milestones:
       - immediate sign-extension and zero-extension boundary tests
       - deterministic 1024-word randomized field extraction test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M053): extract R5900 instruction fields)"
+    commit: 5d8ef3e
     notes: Decode only bit fields and sign or zero extension helpers in this milestone.
   - id: M054
     title: Add R5900 decode legality skeleton
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M053]
-    tests: [recognized NOP and unrecognized primary and SPECIAL encoding tests]
+    tests:
+      - exact zero-word NOP admission test
+      - all 63 non-SPECIAL primary-opcode rejection test
+      - all 63 nonzero SPECIAL function-code rejection test
+      - zero-function nonzero-operand field rejection test
+      - deterministic 2048-word randomized admission test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
+    commit: "self (milestone(M054): add R5900 decode legality skeleton)"
     notes: Make decode admission explicit before instruction semantics are added.
   - id: M055
     title: Report R5900 reserved instructions
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M054]
     tests: [reserved-instruction event PC opcode and no-writeback tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

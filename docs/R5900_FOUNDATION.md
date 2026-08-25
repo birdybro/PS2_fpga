@@ -122,6 +122,14 @@ is format extraction only: no output identifies a legal R5900 instruction, and
 the machine-readable ISA coverage therefore remains pending until instruction
 admission and semantics pass their own milestones.
 
+Decode admission is now explicit and closed by default. The initial five-bit
+operation enum contains only no-operation and NOP, and the decoder selects NOP
+only for exact word zero. Every other primary and SPECIAL encoding remains
+illegal even if a later milestone plans it. This makes instruction support grow
+only through independently verified admissions. NOP is therefore `decoded` and
+`partial` in the coverage matrix, but remains unimplemented until M057 proves
+its architectural state transition.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

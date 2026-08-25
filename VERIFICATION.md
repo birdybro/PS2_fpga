@@ -234,6 +234,17 @@ random words against independently expressed Python masks and arithmetic sign
 extension. Coverage rows remain undecoded because field extraction alone does
 not establish that any R5900 encoding is legal.
 
+## R5900 decode admission skeleton
+
+The initial combinational decoder admits exact word `0x00000000` as NOP and
+reports every other word as no operation and illegal; this is admission, not
+execution. Directed cocotb tests exhaust all 63 non-SPECIAL primary opcodes,
+all 63 nonzero SPECIAL function codes, and nonzero register or shift fields
+with zero function. A randomized-layer test independently applies the
+word-equals-zero rule to eleven boundary encodings and 2,048 seeded arbitrary
+words. The coverage matrix now marks NOP decode as partial while implementation
+and semantic tests remain pending under M057.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,
