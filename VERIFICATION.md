@@ -79,3 +79,11 @@ enable tracing.
 reset priority, disabled holds, and unsigned 32-bit boundary values. The model
 uses an independently formulated tick function and masks values to its declared
 width.
+
+## Integration smoke layer
+
+`make integration` builds a test-only two-stage hierarchy from two common
+register instances. Its cocotb test checks reset fanout, nonblocking one-cycle
+propagation, and upstream hold behavior. The pytest wrapper also verifies the
+cocotb XML result and confirms that the requested deterministic seed reached
+the simulator.

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M009A — add differential-layer smoke test
-- Next milestone: M009B — add integration-layer smoke test
+- Last completed milestone: M009B — add integration-layer smoke test
+- Next milestone: M010 — add GitHub Actions CI
 - Current subsystem: verification infrastructure
-- Current regression status: differential RTL/model test passes; full regression and strict lint pass with no skips
+- Current regression status: unit, differential, randomized, and integration layers pass; full regression and strict lint pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M009A milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M009B milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
