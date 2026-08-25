@@ -10,6 +10,7 @@ OPERATION_SRL = 3
 OPERATION_SRA = 4
 OPERATION_SLLV = 5
 OPERATION_SRLV = 6
+OPERATION_SRAV = 7
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -99,6 +100,21 @@ async def test_r5900_decode_recognizes_canonical_srlv_encodings(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_canonical_srav_encodings(dut) -> None:
+    """Admit all SRAV register fields while its reserved shift field stays zero."""
+    for rs, rt, rd in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rs << 21) | (rt << 16) | (rd << 11) | 7
+        await check_decode(dut, word, True, OPERATION_SRAV)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep all 63 non-SPECIAL primary opcode spaces closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
@@ -110,10 +126,11 @@ async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
 @cocotb.test()
 async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(dut) -> None:
     """Reject every unsupported function and nonzero reserved SLL rs field."""
-    for function in (*range(1, 2), *range(5, 6), *range(7, 64)):
+    for function in (*range(1, 2), *range(5, 6), *range(8, 64)):
         await check_decode(dut, function, False, OPERATION_NONE)
 
     for value in (1, 1 << 4, 0x1F):
         await check_decode(dut, value << 21, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 4, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 6, False, OPERATION_NONE)
+        await check_decode(dut, (value << 6) | 7, False, OPERATION_NONE)

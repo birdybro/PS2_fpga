@@ -131,12 +131,12 @@ the machine-readable ISA coverage therefore remains pending until instruction
 admission and semantics pass their own milestones.
 
 Decode admission is explicit and closed by default. The five-bit operation enum
-contains no-operation, NOP, SLL, SRL, SRA, SLLV, and SRLV. Exact word zero selects the canonical
+contains no-operation, NOP, and all six 32-bit shift operations. Exact word zero selects the canonical
 NOP alias; other SPECIAL function-zero words select SLL, while SPECIAL
 function-two words select SRL, and function-three words select SRA. Those
 immediate shifts require reserved `rs` to be zero. Function-four words select
-SLLV, while function-six words select SRLV; both require reserved `sa` to be
-zero. Every
+SLLV, function-six words select SRLV, and function-seven words select SRAV; all
+require reserved `sa` to be zero. Every
 other primary and SPECIAL encoding remains illegal even if a later milestone
 plans it. This makes instruction support grow only through independently
 verified admissions.
@@ -206,6 +206,15 @@ result. Tests separate these two stages while covering counts 0, 1, 30, and 31,
 raw values 32, 33, and all ones, both alias directions, reserved `sa`, and exact
 events. Nine boundary plus 512 randomized cases make SRLV the sixth complete
 ISA coverage entry.
+
+Canonical SRAV combines the masked variable count with signed-word arithmetic
+shift behavior. The RTL reuses an explicitly signed source word, while the
+Python model converts the masked unsigned word to a negative integer when bit
+31 is set. Counts 0, 1, 30, and 31 cover both source signs; raw values 32, 33,
+and all ones prove count masking. Alias, destination-zero, reserved-field, PC,
+and event checks complete the directed layer. Nine boundary plus 512 randomized
+cases make SRAV the seventh complete ISA coverage entry and complete the initial
+32-bit shift family.
 
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing

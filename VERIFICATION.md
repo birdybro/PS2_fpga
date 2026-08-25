@@ -356,6 +356,20 @@ deterministic differential/randomized test executes nine boundary plus 512
 seeded instructions sequentially and compares PC, complete GPR state, operand
 selection, writeback, and retirement after every instruction.
 
+## R5900 SRAV
+
+Canonical SPECIAL function-seven words with reserved `sa` equal to zero now
+execute as 32-bit SRAV. Five directed cocotb cases cover positive and negative
+sources; effective counts 0, 1, 30, and 31; raw count values 32, 33, and all
+ones; arithmetic sign fill; ignored high count and source bits; preserved
+destination bits 127:64; both destination alias directions; GPR-zero
+suppression; SRLV/SRAV separation; reserved-field rejection; PC wrap; and exact
+events. The RTL shifts an explicitly signed word, while Python converts the
+masked word to a signed integer before shifting. A deterministic
+differential/randomized test executes nine boundary plus 512 seeded instructions
+and compares PC, complete GPR state, operand selection, writeback, and retirement
+after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

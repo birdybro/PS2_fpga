@@ -16,6 +16,7 @@ SRL_FUNCTION = 2
 SRA_FUNCTION = 3
 SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
+SRAV_FUNCTION = 7
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -106,6 +107,14 @@ def encode_srlv(destination: int, source: int, shift_register: int) -> int:
     return (rs << 21) | (rt << 16) | (rd << 11) | SRLV_FUNCTION
 
 
+def encode_srav(destination: int, source: int, shift_register: int) -> int:
+    """Encode canonical SPECIAL SRAV with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    rs = _require_gpr_index(shift_register)
+    return (rs << 21) | (rt << 16) | (rd << 11) | SRAV_FUNCTION
+
+
 def _merge_scalar_word(old_destination: int, word: int) -> int:
     """Sign-extend one word through the scalar lane and preserve the upper lane."""
     normalized_word = word & WORD_MASK
@@ -113,6 +122,12 @@ def _merge_scalar_word(old_destination: int, word: int) -> int:
     if normalized_word & (1 << (WORD_WIDTH - 1)):
         scalar_result |= SCALAR_MASK ^ WORD_MASK
     return (old_destination & (GPR_MASK ^ SCALAR_MASK)) | scalar_result
+
+
+def _as_signed_word(value: int) -> int:
+    """Interpret an already width-masked word as a signed Python integer."""
+    word = value & WORD_MASK
+    return word - (1 << WORD_WIDTH) if word & (1 << (WORD_WIDTH - 1)) else word
 
 
 @dataclass(frozen=True, slots=True)
@@ -163,65 +178,54 @@ class R5900State:
             return self
         return replace(self, pc=normalized)
 
+    def _step_immediate_shift(self, word: int, function: int) -> R5900State:
+        """Apply one admitted constant word shift without advancing PC."""
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        shift_amount = (word >> 6) & 0x1F
+        source_word = self.read_gpr(rt) & WORD_MASK
+        if function == SLL_FUNCTION:
+            shifted_word = source_word << shift_amount
+        elif function == SRL_FUNCTION:
+            shifted_word = source_word >> shift_amount
+        else:
+            shifted_word = _as_signed_word(source_word) >> shift_amount
+        result = _merge_scalar_word(self.read_gpr(rd), shifted_word)
+        return self.write_gpr(rd, result)
+
+    def _step_variable_shift(self, word: int, function: int) -> R5900State:
+        """Apply one admitted register-count word shift without advancing PC."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        shift_amount = self.read_gpr(rs) & 0x1F
+        source_word = self.read_gpr(rt) & WORD_MASK
+        if function == SLLV_FUNCTION:
+            shifted_word = source_word << shift_amount
+        elif function == SRLV_FUNCTION:
+            shifted_word = source_word >> shift_amount
+        else:
+            shifted_word = _as_signed_word(source_word) >> shift_amount
+        result = _merge_scalar_word(self.read_gpr(rd), shifted_word)
+        return self.write_gpr(rd, result)
+
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
         if word == NOP_INSTRUCTION:
-            return self.write_pc(self.pc + 4)
-
-        opcode = word >> 26
-        reserved_rs = (word >> 21) & 0x1F
-        function = word & 0x3F
-        if opcode == SPECIAL_OPCODE and reserved_rs == 0 and function == SLL_FUNCTION:
-            rt = (word >> 16) & 0x1F
-            rd = (word >> 11) & 0x1F
-            shift_amount = (word >> 6) & 0x1F
-            old_destination = self.read_gpr(rd)
-            shifted_word = (self.read_gpr(rt) & WORD_MASK) << shift_amount
-            result = _merge_scalar_word(old_destination, shifted_word)
-            return self.write_gpr(rd, result).write_pc(self.pc + 4)
-
-        if opcode == SPECIAL_OPCODE and reserved_rs == 0 and function == SRL_FUNCTION:
-            rt = (word >> 16) & 0x1F
-            rd = (word >> 11) & 0x1F
-            shift_amount = (word >> 6) & 0x1F
-            old_destination = self.read_gpr(rd)
-            shifted_word = (self.read_gpr(rt) & WORD_MASK) >> shift_amount
-            result = _merge_scalar_word(old_destination, shifted_word)
-            return self.write_gpr(rd, result).write_pc(self.pc + 4)
-
-        if opcode == SPECIAL_OPCODE and reserved_rs == 0 and function == SRA_FUNCTION:
-            rt = (word >> 16) & 0x1F
-            rd = (word >> 11) & 0x1F
-            shift_amount = (word >> 6) & 0x1F
-            old_destination = self.read_gpr(rd)
-            source_word = self.read_gpr(rt) & WORD_MASK
-            if source_word & (1 << (WORD_WIDTH - 1)):
-                source_word -= 1 << WORD_WIDTH
-            shifted_word = source_word >> shift_amount
-            result = _merge_scalar_word(old_destination, shifted_word)
-            return self.write_gpr(rd, result).write_pc(self.pc + 4)
-
-        reserved_shift = (word >> 6) & 0x1F
-        if opcode == SPECIAL_OPCODE and reserved_shift == 0 and function == SLLV_FUNCTION:
-            rs = (word >> 21) & 0x1F
-            rt = (word >> 16) & 0x1F
-            rd = (word >> 11) & 0x1F
-            shift_amount = self.read_gpr(rs) & 0x1F
-            old_destination = self.read_gpr(rd)
-            shifted_word = (self.read_gpr(rt) & WORD_MASK) << shift_amount
-            result = _merge_scalar_word(old_destination, shifted_word)
-            return self.write_gpr(rd, result).write_pc(self.pc + 4)
-
-        if opcode == SPECIAL_OPCODE and reserved_shift == 0 and function == SRLV_FUNCTION:
-            rs = (word >> 21) & 0x1F
-            rt = (word >> 16) & 0x1F
-            rd = (word >> 11) & 0x1F
-            shift_amount = self.read_gpr(rs) & 0x1F
-            old_destination = self.read_gpr(rd)
-            shifted_word = (self.read_gpr(rt) & WORD_MASK) >> shift_amount
-            result = _merge_scalar_word(old_destination, shifted_word)
-            return self.write_gpr(rd, result).write_pc(self.pc + 4)
-
-        msg = f"unsupported R5900 instruction: 0x{word:08x}"
-        raise UnsupportedInstructionError(msg)
+            updated = self
+        else:
+            opcode = word >> 26
+            reserved_rs = (word >> 21) & 0x1F
+            reserved_shift = (word >> 6) & 0x1F
+            function = word & 0x3F
+            immediate = opcode == SPECIAL_OPCODE and reserved_rs == 0
+            variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
+            if immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
+                updated = self._step_immediate_shift(word, function)
+            elif variable and function in (SLLV_FUNCTION, SRLV_FUNCTION, SRAV_FUNCTION):
+                updated = self._step_variable_shift(word, function)
+            else:
+                msg = f"unsupported R5900 instruction: 0x{word:08x}"
+                raise UnsupportedInstructionError(msg)
+        return updated.write_pc(self.pc + 4)

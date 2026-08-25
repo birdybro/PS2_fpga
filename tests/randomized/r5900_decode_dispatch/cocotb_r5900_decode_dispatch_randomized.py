@@ -11,25 +11,23 @@ SRL_FUNCTION = 2
 SRA_FUNCTION = 3
 SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
+SRAV_FUNCTION = 7
+IMMEDIATE_OPERATIONS = {0: 2, SRL_FUNCTION: 3, SRA_FUNCTION: 4}
+VARIABLE_OPERATIONS = {SLLV_FUNCTION: 5, SRLV_FUNCTION: 6, SRAV_FUNCTION: 7}
 
 
 def decoded_operation(word: int) -> int:
     """Model admitted constant and variable shifts independently from the RTL."""
-    if word == 0:
-        return 1
-    opcode = word >> 26
-    reserved_rs = (word >> 21) & 0x1F
-    reserved_shift = (word >> 6) & 0x1F
-    function = word & 0x3F
-    if opcode == 0 and reserved_rs == 0 and function == 0:
-        return 2
-    if opcode == 0 and reserved_rs == 0 and function == SRL_FUNCTION:
-        return 3
-    if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION:
-        return 4
-    if opcode == 0 and reserved_shift == 0 and function == SLLV_FUNCTION:
-        return 5
-    return 6 if opcode == 0 and reserved_shift == 0 and function == SRLV_FUNCTION else 0
+    operation = 1 if word == 0 else 0
+    if word != 0 and word >> 26 == 0:
+        reserved_rs = (word >> 21) & 0x1F
+        reserved_shift = (word >> 6) & 0x1F
+        function = word & 0x3F
+        if reserved_rs == 0:
+            operation = IMMEDIATE_OPERATIONS.get(function, 0)
+        if operation == 0 and reserved_shift == 0:
+            operation = VARIABLE_OPERATIONS.get(function, 0)
+    return operation
 
 
 @cocotb.test()
@@ -52,6 +50,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 40, 0x0000_0006),
         (True, 44, 0x023F_F806),
         (True, 48, 0x0000_0046),
+        (True, 52, 0x0000_0007),
+        (True, 56, 0x023F_F807),
+        (True, 60, 0x0000_0047),
         (True, 4, 1),
         (True, 0x0010_0000, 0x3405_1234),
         (True, 0xFFFF_FFFC, 0xFFFF_FFFF),

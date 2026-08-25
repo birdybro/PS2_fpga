@@ -787,21 +787,33 @@ milestones:
       - docs/R5900_FOUNDATION.md
       - coverage/r5900_isa.yaml
       - REFERENCES.md
-    commit: "self (milestone(M062): implement R5900 SRLV)"
+    commit: a19a0b2
     notes: Zero-fill the runtime word shift before applying the shared scalar destination merge.
   - id: M063
     title: Implement R5900 SRAV
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M062]
-    tests: [directed SRAV signed masked counts, randomized SRAV differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Combine explicit signed shift behavior with variable-count masking.
+    tests:
+      - canonical encoding and reserved sa rejection tests
+      - effective zero one thirty and thirty-one signed boundary tests
+      - count values thirty-two thirty-three and all-ones masking tests
+      - positive and negative source sign-fill tests
+      - source and count high-bit independence tests
+      - destination upper-lane preservation and alias tests
+      - GPR-zero suppression and exact event tests
+      - independent Python model validation tests
+      - deterministic 521-case sequential randomized differential test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - coverage/r5900_isa.yaml
+      - REFERENCES.md
+    commit: "self (milestone(M063): implement R5900 SRAV)"
+    notes: Interpret rt low word as signed after masking the runtime count to rs bits 4:0.
   - id: M064
     title: Implement R5900 LUI
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M063]
     tests: [directed LUI immediate boundaries, randomized LUI differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
