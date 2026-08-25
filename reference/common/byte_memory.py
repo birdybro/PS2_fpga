@@ -3,6 +3,8 @@
 WORD_BYTES = 4
 BYTE_WIDTH = 8
 MAX_BYTE_VALUE = (1 << BYTE_WIDTH) - 1
+MAX_WORD_VALUE = (1 << (WORD_BYTES * BYTE_WIDTH)) - 1
+MAX_WORD_STROBE = (1 << WORD_BYTES) - 1
 
 
 class ByteMemoryModel:
@@ -37,6 +39,10 @@ class ByteMemoryModel:
 
     def write32(self, address: int, value: int) -> None:
         """Write one aligned little-endian 32-bit word."""
+        self.write32_masked(address, value, MAX_WORD_STROBE)
+
+    def write32_masked(self, address: int, value: int, strobe: int) -> None:
+        """Update enabled byte lanes of one aligned little-endian word."""
         if address % WORD_BYTES != 0:
             msg = f"unaligned 32-bit address: {address}"
             raise ValueError(msg)
@@ -44,8 +50,13 @@ class ByteMemoryModel:
         if address < 0 or end > len(self.data):
             msg = f"32-bit address out of range: {address}"
             raise ValueError(msg)
-        max_word_value = (1 << (WORD_BYTES * BYTE_WIDTH)) - 1
-        if not 0 <= value <= max_word_value:
+        if not 0 <= value <= MAX_WORD_VALUE:
             msg = f"32-bit value out of range: {value}"
             raise ValueError(msg)
-        self.data[address:end] = value.to_bytes(WORD_BYTES, byteorder="little", signed=False)
+        if not 0 <= strobe <= MAX_WORD_STROBE:
+            msg = f"32-bit byte strobe out of range: {strobe}"
+            raise ValueError(msg)
+        write_bytes = value.to_bytes(WORD_BYTES, byteorder="little", signed=False)
+        for lane, byte_value in enumerate(write_bytes):
+            if strobe & (1 << lane):
+                self.data[address + lane] = byte_value

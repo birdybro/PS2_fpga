@@ -93,16 +93,17 @@ async def aligned_read32_is_little_endian_bounded_and_backpressured(dut) -> None
         assert await request_read32(dut, address, stall_cycles=2 if index == 0 else 0) == expected
 
     invalid_requests = (
-        (0, 1, 2),
-        (0, 0, 1),
-        (2, 0, 2),
-        (RAM_SIZE, 0, 2),
+        (0, 0, 1, 0),
+        (2, 0, 2, 0),
+        (RAM_SIZE, 0, 2, 0),
+        (0, 1, 2, 0x0010),
     )
-    for address, write, size in invalid_requests:
+    for address, write, size, strobe in invalid_requests:
         dut.req_valid_i.value = 1
         dut.req_addr_i.value = address
         dut.req_write_i.value = write
         dut.req_size_i.value = size
+        dut.req_wstrb_i.value = strobe
         await Timer(1, unit="ns")
         assert int(dut.req_ready_o.value) == 0
         await cycle(dut)

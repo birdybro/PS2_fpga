@@ -50,3 +50,27 @@ def test_byte_memory_model_rejects_invalid_write32(address: int, value: int) -> 
     model = ByteMemoryModel(8)
     with pytest.raises(ValueError):
         model.write32(address, value)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_applies_every_write32_strobe() -> None:
+    """Preserve disabled byte lanes for all sixteen strobe patterns."""
+    baseline = bytes((0x11, 0x22, 0x33, 0x44))
+    replacement = bytes((0xA1, 0xB2, 0xC3, 0xD4))
+    value = int.from_bytes(replacement, byteorder="little", signed=False)
+    for strobe in range(16):
+        model = ByteMemoryModel(4)
+        model.data[:] = baseline
+        model.write32_masked(0, value, strobe)
+        expected = bytes(
+            replacement[lane] if strobe & (1 << lane) else baseline[lane] for lane in range(4)
+        )
+        assert model.data == expected
+
+
+@pytest.mark.unit
+def test_byte_memory_model_rejects_upper_write32_strobes() -> None:
+    """Keep the 32-bit model strobe domain to exactly four byte lanes."""
+    model = ByteMemoryModel(4)
+    with pytest.raises(ValueError, match="strobe"):
+        model.write32_masked(0, 0, 0x10)

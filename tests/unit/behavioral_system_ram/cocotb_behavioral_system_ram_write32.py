@@ -93,7 +93,7 @@ async def request_read32(dut, address: int) -> int:
 
 @cocotb.test()
 async def aligned_write32_is_little_endian_full_word_and_backpressured(dut) -> None:
-    """Write boundary words and reject requests reserved for later milestones."""
+    """Write boundary words and reject malformed or unsupported requests."""
     cocotb.start_soon(Clock(dut.clk_i, 10, unit="ns").start())
     drive_idle(dut)
     dut.rst_ni.value = 0
@@ -110,7 +110,7 @@ async def aligned_write32_is_little_endian_full_word_and_backpressured(dut) -> N
         assert await request_read32(dut, address) == value
 
     invalid_requests = (
-        (0, 2, 0x0007),
+        (0, 2, 0x0010),
         (0, 1, FULL_WORD_STROBE),
         (2, 2, FULL_WORD_STROBE),
         (RAM_SIZE, 2, FULL_WORD_STROBE),

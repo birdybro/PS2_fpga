@@ -29,6 +29,9 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
   `16'h000f`. The low four write-data lanes update little-endian storage and the
   registered completion response carries zero data. Partial strobes remain
   unaccepted for M022.
+- M022 accepts every lower-four-lane byte-enable pattern for aligned 32-bit
+  writes, including a zero-strobe no-op. Disabled bytes remain unchanged and
+  any strobe above lane three keeps the request unaccepted.
 
 ## Planned boundaries
 

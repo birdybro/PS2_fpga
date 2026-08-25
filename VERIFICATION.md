@@ -184,3 +184,12 @@ out-of-range addresses. The Python model decomposes words with `int.to_bytes`
 and validates address and value domains. Differential simulation writes every
 aligned word through the RTL bus, then reads and compares the complete RAM image
 against the independent model.
+
+## Behavioral RAM 32-bit byte enables
+
+The directed test resets a four-byte baseline before each of all 16 strobe
+patterns, performs one bus write, and inspects every byte lane. It also covers
+first/final word lane boundaries and rejects any upper strobe bit. The Python
+model validates the same complete strobe domain using independent bytearray
+updates. Differential simulation applies all masks repeatedly across the RAM
+and compares every resulting word, including zero-strobe preservation.
