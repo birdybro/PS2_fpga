@@ -191,21 +191,21 @@ milestones:
     dependencies: [M017]
     tests: [legal protocol transition test, seven fatal protocol violation tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M018): assert memory transaction invariants)"
+    commit: c3ac332
     notes: Assert payload stability, supported sizes, and response causality.
   - id: M019
     title: Add behavioral byte-addressed system RAM
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M018]
-    tests: [RAM bounds and reset-independent storage tests]
+    tests: [byte boundary bounds alias rejection and reset retention test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M019): add byte-addressed behavioral RAM)"
     notes: Introduce little-endian behavioral storage without RDRAM timing claims.
   - id: M020
     title: Implement aligned 32-bit RAM reads
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M019]
     tests: [directed 32-bit RAM read tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

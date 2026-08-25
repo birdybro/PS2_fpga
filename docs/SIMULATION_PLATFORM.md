@@ -17,10 +17,18 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M018 provides `memory_bus_protocol_checker`. It asserts valid size encodings,
   stable stalled payloads and valid signals, response causality, and at most one
   outstanding request while allowing zero-latency and same-cycle replacement.
+- M019 provides `behavioral_system_ram`, a simulation-only byte array with
+  explicit bounds reporting and a byte backdoor reserved for loaders and tests.
+  Stored bytes survive reset; writes are suppressed while reset is asserted.
+  Power-up byte contents are unspecified until a loader or test initializes them.
 
 ## Planned boundaries
 
-- Synthesizable transaction and RAM logic lives under `rtl/memory/`.
+- Synthesizable transaction definitions and protocol checking live under
+  `rtl/memory/`.
+- The initial simulation-first RAM lives under `sim/models/`; a future
+  synthesizable replacement will preserve the architectural transaction
+  boundary rather than expose its loader backdoor.
 - Clocking, reset sequencing, file loaders, termination control, and trace sinks
   are simulation-only and live under `sim/`.
 - Loader parsing is independently unit-tested before it writes simulated RAM.
@@ -64,6 +72,10 @@ to the lowest address. The roadmap adds 32-, 64-, and 128-bit aligned accesses
 one direction at a time, then response latency. Alignment errors and CPU-visible
 exceptions are later architectural milestones; early RAM tests reject malformed
 testbench transactions rather than inventing CPU behavior.
+
+The simulation-only byte backdoor reports whether its address is in range,
+returns zero for an out-of-range read, and ignores an out-of-range write. It is
+not an architectural port and will not appear on `ps2_top`.
 
 ## Loader contract
 

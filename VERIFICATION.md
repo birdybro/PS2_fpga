@@ -155,3 +155,12 @@ traffic test covers stalls, encodings for 1 through 16 bytes, zero-latency
 completion, and simultaneous response/new-request replacement. Seven negative
 simulations each inject one violation, require a fatal simulator exit, and
 check the unique assertion marker in the captured log.
+
+## Behavioral system RAM storage
+
+The simulation-first RAM test writes distinct patterns to the first, second,
+penultimate, and final bytes of a 256-byte instance. It proves byte-exact
+readback, explicit out-of-range reporting, zero-valued out-of-range reads,
+rejected writes without address truncation aliases, persistence across reset,
+and suppression of writes while reset is active. No bus transfer behavior is
+implemented or claimed in this storage milestone.
