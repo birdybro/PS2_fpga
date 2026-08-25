@@ -3,7 +3,8 @@
 `default_nettype none
 
 module behavioral_system_ram_bus_top #(
-    parameter int unsigned SIZE_BYTES = 256
+    parameter int unsigned SIZE_BYTES = 256,
+    parameter int unsigned RESPONSE_LATENCY_CYCLES = 0
 ) (
     input  logic         clk_i,
     input  logic         rst_ni,
@@ -48,7 +49,8 @@ module behavioral_system_ram_bus_top #(
     behavioral_system_ram #(
         .ADDR_WIDTH(32),
         .DATA_WIDTH(128),
-        .SIZE_BYTES(SIZE_BYTES)
+        .SIZE_BYTES(SIZE_BYTES),
+        .RESPONSE_LATENCY_CYCLES(RESPONSE_LATENCY_CYCLES)
     ) u_ram (
         .clk_i,
         .rst_ni,

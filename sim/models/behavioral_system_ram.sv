@@ -6,7 +6,8 @@ module behavioral_system_ram #(
     parameter int unsigned ADDR_WIDTH = 32,
     parameter int unsigned DATA_WIDTH = 128,
     parameter int unsigned SIZE_BYTES = 1024,
-    parameter int unsigned INDEX_WIDTH = $clog2(SIZE_BYTES)
+    parameter int unsigned INDEX_WIDTH = $clog2(SIZE_BYTES),
+    parameter int unsigned RESPONSE_LATENCY_CYCLES = 0
 ) (
     input  logic                  clk_i,
     input  logic                  rst_ni,
@@ -25,6 +26,8 @@ module behavioral_system_ram #(
     logic                  rsp_valid_q;
     logic [DATA_WIDTH-1:0] rsp_rdata_q;
     logic                  rsp_error_q;
+    logic                  response_pending_q;
+    int unsigned           response_delay_q;
 
     logic read32_request;
     logic read64_request;
@@ -113,7 +116,7 @@ module behavioral_system_ram #(
         || write32_request
         || write64_request
         || write128_request;
-    assign response_slot_available = !rsp_valid_q || bus.rsp_ready;
+    assign response_slot_available = !response_pending_q && (!rsp_valid_q || bus.rsp_ready);
     assign bus.req_ready = rst_ni && response_slot_available && supported_request;
     assign request_fire = bus.req_valid && bus.req_ready;
 
@@ -134,6 +137,8 @@ module behavioral_system_ram #(
             rsp_valid_q <= 1'b0;
             rsp_rdata_q <= '0;
             rsp_error_q <= 1'b0;
+            response_pending_q <= 1'b0;
+            response_delay_q <= 0;
         end else begin
             if (bus.req_valid && bus.req_write) begin
                 assert (!$isunknown(bus.req_wdata))
@@ -143,6 +148,8 @@ module behavioral_system_ram #(
             end
             assert (!(backdoor_write_i && request_fire && bus.req_write))
             else $fatal(1, "RAM_WRITE_CONFLICT: backdoor and bus writes must not coincide");
+            assert (!(response_pending_q && rsp_valid_q))
+            else $fatal(1, "RAM_RESPONSE_STATE: pending and valid must be mutually exclusive");
 
             if (backdoor_write_i && backdoor_in_bounds_o) begin
                 storage[backdoor_addr_i[INDEX_WIDTH-1:0]] <= backdoor_wdata_i;
@@ -152,8 +159,24 @@ module behavioral_system_ram #(
                 rsp_valid_q <= 1'b0;
             end
 
+            if (response_pending_q) begin
+                if (response_delay_q == 1) begin
+                    response_pending_q <= 1'b0;
+                    response_delay_q <= 0;
+                    rsp_valid_q <= 1'b1;
+                end else begin
+                    response_delay_q <= response_delay_q - 1;
+                end
+            end
+
             if (request_fire) begin
-                rsp_valid_q <= 1'b1;
+                if (RESPONSE_LATENCY_CYCLES == 0) begin
+                    rsp_valid_q <= 1'b1;
+                end else begin
+                    rsp_valid_q <= 1'b0;
+                    response_pending_q <= 1'b1;
+                    response_delay_q <= RESPONSE_LATENCY_CYCLES;
+                end
                 rsp_error_q <= 1'b0;
                 if (bus.req_write) begin
                     if (bus.req_wstrb[0]) begin

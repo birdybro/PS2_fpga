@@ -284,21 +284,24 @@ milestones:
       - exhaustive all-65536-strobes Python RTL differential test
       - byte-memory write128 value address and exhaustive strobe tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M026): implement aligned 128-bit RAM writes)"
+    commit: cd98648
     notes: Add byte-enabled aligned quadword writes and preserve narrower transfers.
   - id: M027
     title: Add configurable RAM response latency
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M026]
-    tests: [zero and multi-cycle response latency tests]
+    tests:
+      - exact response timing at zero one and three inserted cycles
+      - captured-read write-side-effect backpressure and reset tests
+      - complete zero-latency backward-compatibility regression
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M027): add configurable RAM response latency)"
     notes: Exercise backpressure without claiming physical RDRAM timing.
   - id: M028
     title: Add raw binary image loader
     subsystem: loader
-    status: pending
+    status: active
     dependencies: [M027]
     tests: [binary load bounds and byte-exact tests]
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]

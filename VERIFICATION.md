@@ -232,3 +232,13 @@ value, and strobe domains and exhaustively checks all 65,536 masks against byte
 selection. Differential simulation uses same-cycle response consumption to
 efficiently issue every 16-bit strobe pattern through the RTL, then compares the
 complete RAM image through 128-bit reads.
+
+## Behavioral RAM configurable response latency
+
+One directed cocotb scenario is rebuilt at zero, one, and three inserted wait
+cycles. It verifies the exact first `rsp_valid` edge for reads and writes,
+request blocking while a response is pending, response stability under
+backpressure, acceptance-time read-data capture despite a later backdoor change,
+write side effects at acceptance, and reset cancellation of a pending response.
+The complete existing RAM suite runs at the default zero setting to guard
+backward compatibility.

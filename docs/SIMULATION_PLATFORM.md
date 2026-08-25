@@ -44,6 +44,11 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M026 completes aligned 128-bit writes. Every one of the 16 byte-enable lanes
   independently controls its little-endian storage byte, including the valid
   zero-strobe no-op, while narrower transfers remain supported.
+- M027 parameterizes inserted response wait cycles. The default zero preserves
+  existing behavior; a positive value captures read data and applies writes at
+  acceptance, blocks new requests while pending, and asserts the completion
+  after exactly the configured number of rising edges. This is a verification
+  control, not an RDRAM timing claim.
 
 ## Planned boundaries
 

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M026 — implement aligned 128-bit RAM writes
-- Next milestone: M027 — add configurable RAM response latency
-- Current subsystem: behavioral system memory
-- Current regression status: 83 tests pass with no skips; all 65,536 aligned 128-bit write strobes match the byte-memory model
+- Last completed milestone: M027 — add configurable RAM response latency
+- Next milestone: M028 — add raw binary image loader
+- Current subsystem: simulation loaders
+- Current regression status: 86 tests pass with no skips; zero and multi-cycle RAM response timing passes
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
-- Known timing inaccuracies: no PS2 architectural timing model exists
+- Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M026 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M027 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
