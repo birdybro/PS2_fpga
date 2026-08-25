@@ -24,3 +24,11 @@ their implementation milestone completes.
 model archive under ignored `build/`. Warnings are errors. The tiny common
 module gives later cocotb and lint milestones a synthesis-oriented DUT without
 claiming that any PS2 architectural behavior is implemented.
+
+## Cocotb smoke test
+
+`make unit` creates an ignored `.venv`, runs cocotb with Verilator, and checks
+synchronous reset, enabled write, and disabled hold behavior. The upstream
+cocotb revision is pinned because the host uses Python 3.14 and no compatible
+stable release is currently published. JUnit-style simulator results are kept
+under ignored `build/results/`.

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M003 — add Verilator compilation smoke test
-- Next milestone: M004 — add cocotb smoke test
+- Last completed milestone: M004 — add cocotb smoke test
+- Next milestone: M005 — integrate pytest
 - Current subsystem: repository infrastructure
-- Current regression status: Verilator build, `make test`, `make regression`, and bootstrap `make lint` pass
+- Current regression status: cocotb unit test (1 pass, 0 fail, 0 skip), build, regression, and bootstrap lint pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M003 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M004 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

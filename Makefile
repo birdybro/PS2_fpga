@@ -5,14 +5,24 @@ VERILATOR ?= verilator
 VERILATOR_FLAGS ?=
 BUILD_DIR ?= build
 RANDOM_SEED ?= 1
+VENV ?= .venv
 
 SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
+VENV_PYTHON := $(VENV)/bin/python
+VENV_STAMP := $(VENV)/.requirements-dev.stamp
 
-.PHONY: help structure build lint test unit differential randomized integration regression software waves clean
+.PHONY: help venv structure build lint test unit differential randomized integration regression software waves clean
 
 help: ## Show available development commands.
 	@awk 'BEGIN {FS = ":.*## "; printf "PS2_fpga development commands:\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-14s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+venv: $(VENV_STAMP) ## Create the pinned local Python verification environment.
+
+$(VENV_STAMP): requirements-dev.txt
+	$(PYTHON) -m venv $(VENV)
+	$(VENV_PYTHON) -m pip install --requirement requirements-dev.txt
+	@touch $(VENV_STAMP)
 
 structure: ## Verify required repository subsystem boundaries.
 	@$(PYTHON) scripts/check_structure.py
@@ -28,12 +38,16 @@ $(SMOKE_MDIR)/Vregister_en__ALL.a: $(SMOKE_RTL)
 lint: structure ## Run the currently available static repository checks.
 	@git diff HEAD --check -- .
 
-test: structure build ## Run the routine test gate currently available.
-	@echo "bootstrap tests: PASS"
+test: structure build unit ## Run the routine test gate currently available.
+	@echo "routine tests: PASS"
 
-unit: ## Run directed unit tests (introduced by M004).
-	@echo "unit tests are not available until milestone M004" >&2
-	@exit 2
+unit: venv ## Run directed unit tests.
+	@mkdir -p $(BUILD_DIR)/results
+	$(MAKE) -C tests/unit/register_en \
+		PATH="$(abspath $(VENV))/bin:$$PATH" \
+		RANDOM_SEED="$(RANDOM_SEED)" \
+		SIM_BUILD="$(abspath $(BUILD_DIR))/cocotb/register_en" \
+		COCOTB_RESULTS_FILE="$(abspath $(BUILD_DIR))/results/register_en.xml"
 
 differential: ## Run differential tests (introduced with reference models).
 	@echo "differential tests are not implemented yet" >&2

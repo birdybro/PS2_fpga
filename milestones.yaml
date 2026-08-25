@@ -38,21 +38,21 @@ milestones:
     dependencies: [M002]
     tests: [make build]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M003): add Verilator compilation smoke test)"
+    commit: 60e460c
     notes: Compile the smallest synthesizable SystemVerilog design.
   - id: M004
     title: Add cocotb smoke test
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M003]
     tests: [make unit]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M004): add cocotb smoke test)"
     notes: Drive and observe the smoke design through cocotb.
   - id: M005
     title: Integrate pytest
     subsystem: verification
-    status: pending
+    status: active
     dependencies: [M004]
     tests: [make test]
     references: [VERIFICATION.md]
