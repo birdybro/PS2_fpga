@@ -136,6 +136,19 @@ and preserve all 128 bits of GPR zero. Thirty directed cases cover both width
 boundaries, malformed snapshots, invalid types and indices, copy isolation,
 every writable register, overflow normalization, and zero-register suppression.
 
+## R5900 RTL state type contracts
+
+The synthesizable package fixes GPR values at 128 bits, the packed 32-register
+file at 4096 bits, GPR selectors at five bits, and PC/instruction values at 32
+bits. Packed architectural-state, writeback, and reserved-instruction records
+feed a debug interface with producer and monitor modports. Compile-time `$bits`
+checks and two cocotb cases carry maximum-width asymmetric values through both
+modports and lock GPR index zero to the low packed 128-bit lane. This verifies
+types and observation only; no sequential storage behavior exists in M046.
+
+RTL packages are ordered before other design units in the shared source list so
+all top-level lint builds resolve imported types deterministically.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

@@ -519,21 +519,25 @@ milestones:
       - register-zero suppression test
       - malformed snapshot index and type rejection tests
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M045): define Python R5900 architectural state)"
+    commit: aed7410
     notes: Establish immutable timing-free state transitions independent of RTL control structure.
   - id: M046
     title: Define RTL R5900 architectural state types
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M045]
-    tests: [R5900 package and debug-state interface compilation tests]
+    tests:
+      - package compile-time width assertions
+      - debug producer and monitor modport compilation test
+      - maximum-width packed field propagation test
+      - GPR zero and GPR 31 packed-lane mapping test
     references: [docs/R5900_FOUNDATION.md, docs/CONVENTIONS.md]
-    commit: null
-    notes: Define explicit widths and visible state contracts without storage behavior.
+    commit: "self (milestone(M046): define RTL R5900 architectural state types)"
+    notes: Define explicit widths and packed observation contracts without storage behavior.
   - id: M047
     title: Implement 128-bit R5900 GPR storage
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M046]
     tests: [all-register directed read write hold and reset tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

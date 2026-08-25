@@ -10,6 +10,8 @@ execution core connected to behavioral memory. Pipeline and timing accuracy
 are later, explicitly tracked work. `docs/R5900_FOUNDATION.md` defines the
 initial state, control, evidence, verification, and deferral boundaries. The
 timing-free immutable reference state begins in `reference/ee/r5900.py`.
+`rtl/ee/r5900/r5900_types_pkg.sv` defines the corresponding synthesizable
+widths and packed observation records without implementing state storage.
 
 ## Repository boundaries
 

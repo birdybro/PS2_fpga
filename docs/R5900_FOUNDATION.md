@@ -39,10 +39,14 @@ PC rejects out-of-range loader input rather than silently truncating it.
 
 The functional RTL will separately expose the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
-writeback event as those milestones arrive. Those timing and diagnostic fields
-do not belong in the reference model's architectural snapshot. HI/LO-family
-state, COP0, exception entry, branches and delay slots, data-memory operations,
-FPU, and MMI state are added only by later granular roadmaps.
+writeback event as those milestones arrive. Its type package already fixes a
+4096-bit packed GPR file, a 32-bit PC, a five-bit destination, and packed
+writeback and reserved-instruction records. The debug interface exposes these
+types through producer and monitor views, but does not implement storage. Those
+timing and diagnostic fields do not belong in the reference model's
+architectural snapshot. HI/LO-family state, COP0, exception entry, branches and
+delay slots, data-memory operations, FPU, and MMI state are added only by later
+granular roadmaps.
 
 The simulation loader's published ELF entry point supplies the initial PC for
 early software tests. This is a harness start-address mechanism, not a claim

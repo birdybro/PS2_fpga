@@ -9,12 +9,17 @@ VENV ?= .venv
 
 SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
-RTL_SOURCES := $(shell find rtl -type f -name '*.sv' -print | sort)
+RTL_PACKAGE_SOURCES := $(shell find rtl -type f -name '*_pkg.sv' -print | sort)
+RTL_NONPACKAGE_SOURCES := $(shell find rtl -type f -name '*.sv' ! -name '*_pkg.sv' -print | sort)
+RTL_SOURCES := $(RTL_PACKAGE_SOURCES) $(RTL_NONPACKAGE_SOURCES)
 MEMORY_BUS_PROTOCOL_LINT_TOP := tests/unit/memory_bus_protocol/memory_bus_protocol_top.sv
 BEHAVIORAL_RAM_LINT_TOP := tests/unit/behavioral_system_ram/behavioral_system_ram_bus_top.sv
 MEMORY_TRACE_LINT_TOP := tests/unit/memory_transaction_trace/memory_transaction_trace_top.sv
 ARCH_TRACE_LINT_TOP := tests/unit/architectural_trace_sink/architectural_trace_sink_top.sv
 WAVEFORM_LINT_TOP := tests/unit/sim_waveform_control/sim_waveform_control_top.sv
+R5900_TYPES_LINT_TOP := tests/unit/r5900_types/r5900_types_top.sv
+R5900_TYPES_LINT_DRIVER := tests/unit/r5900_types/r5900_debug_driver.sv
+R5900_TYPES_LINT_PROBE := tests/unit/r5900_types/r5900_debug_probe.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
@@ -60,6 +65,10 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 		$(VERILATOR_FLAGS) sim/debug/architectural_trace_sink.sv $(ARCH_TRACE_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --timing --top-module sim_waveform_control_top \
 		$(VERILATOR_FLAGS) sim/debug/sim_waveform_control.sv $(WAVEFORM_LINT_TOP)
+	$(VERILATOR) --lint-only -Wall --top-module r5900_types_top \
+		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
+		rtl/ee/r5900/r5900_debug_if.sv $(R5900_TYPES_LINT_DRIVER) \
+		$(R5900_TYPES_LINT_PROBE) $(R5900_TYPES_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
 		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
 		rtl/memory/memory_bus_protocol_checker.sv $(SIM_SOURCES)
