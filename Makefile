@@ -13,6 +13,7 @@ RTL_SOURCES := $(shell rg --files rtl -g '*.sv' | sort)
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.requirements-dev.stamp
 TEST_RUNNER := $(VENV_PYTHON) scripts/run_tests.py
+WAVE_FILE := $(BUILD_DIR)/waves/register_en/dump.vcd
 
 .PHONY: help venv structure build lint test unit differential randomized integration regression software waves clean
 
@@ -67,9 +68,13 @@ software: ## Build legal project test software when a cross-toolchain is configu
 	@echo "software builds are not implemented yet" >&2
 	@exit 2
 
-waves: ## Run a trace-enabled test (introduced by M009).
-	@echo "waveform generation is not available until milestone M009" >&2
-	@exit 2
+waves: venv ## Run a directed test and generate a Verilator VCD trace.
+	@rm -f -- $(WAVE_FILE)
+	PS2_WAVES=1 $(TEST_RUNNER) unit \
+		--seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
+	@test -s $(WAVE_FILE)
+	@grep -q '$$enddefinitions $$end' $(WAVE_FILE)
+	@echo "waveform: $(WAVE_FILE)"
 
 clean: ## Remove ignored local build outputs.
 	@rm -rf -- build obj_dir sim_build

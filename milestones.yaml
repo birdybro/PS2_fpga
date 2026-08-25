@@ -83,21 +83,21 @@ milestones:
     dependencies: [M007]
     tests: [make randomized]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M008): add deterministic randomized tests)"
+    commit: 1fe4a29
     notes: Make seeds explicit and reproducible.
   - id: M009
     title: Add waveform generation
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M008]
     tests: [make waves]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M009): add waveform generation)"
     notes: Generate ignored waveforms only on request.
   - id: M010
     title: Add GitHub Actions CI
     subsystem: infrastructure
-    status: pending
+    status: active
     dependencies: [M009]
     tests: [workflow syntax check, local CI command]
     references: [VERIFICATION.md]

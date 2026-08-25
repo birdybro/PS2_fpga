@@ -63,3 +63,11 @@ reproduces cocotb's derived per-test seed. Assertions include the effective
 cocotb seed and iteration. If a randomized, routine, or regression invocation
 fails, the runner appends its outer seed to ignored
 `build/results/failing-seeds.log` so a later run cannot erase the reproducer.
+
+## Waveforms
+
+`make waves` rebuilds the directed register test with Verilator tracing enabled,
+runs it at the selected deterministic seed, and validates both a nonempty VCD
+and its end-of-definitions marker. The ignored trace is written to
+`build/waves/register_en/dump.vcd`. Normal test and regression targets do not
+enable tracing.
