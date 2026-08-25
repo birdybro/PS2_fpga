@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M010 — add GitHub Actions CI
-- Next milestone: M011 — add progress-state validation infrastructure
+- Last completed milestone: M011 — add progress-state validation infrastructure
+- Next milestone: M012 — establish references and provenance infrastructure
 - Current subsystem: repository infrastructure
-- Current regression status: local CI mirror passes all 7 required build/verification commands with no skips
+- Current regression status: 9 tests pass with no skips; milestone/resume schema and strict lint pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M010 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M011 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

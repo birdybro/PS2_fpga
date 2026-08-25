@@ -96,3 +96,11 @@ differential, randomized, integration, and full regression as separate fatal
 steps. Actions are pinned to commit hashes and repository permissions are
 read-only. `make ci` runs the same checks serially on a local machine, while
 `scripts/check_ci_workflow.py` validates the workflow contract itself.
+
+## Persistent-state validation
+
+`make lint` validates `milestones.yaml` schema, IDs, statuses, dependency order,
+commit references, and exactly one active milestone. It also cross-checks the
+last complete, next active, and most recently pushed resume pointers in
+`PROGRESS.md`. Directed unit tests prove stale progress and incomplete active
+dependencies are rejected.

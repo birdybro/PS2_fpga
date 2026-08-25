@@ -119,21 +119,21 @@ milestones:
     dependencies: [M009B]
     tests: [workflow syntax check, local CI command]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M010): add GitHub Actions CI)"
+    commit: 656c538
     notes: Run all required verification layers in CI.
   - id: M011
     title: Add progress-state validation infrastructure
     subsystem: infrastructure
-    status: active
+    status: complete
     dependencies: [M010]
     tests: [milestone schema validation]
     references: [MILESTONES.md]
-    commit: null
+    commit: "self (milestone(M011): validate persistent milestone state)"
     notes: Validate transitions, dependencies, fields, and resume metadata.
   - id: M012
     title: Establish references and provenance infrastructure
     subsystem: documentation
-    status: pending
+    status: active
     dependencies: [M011]
     tests: [reference metadata validation]
     references: [REFERENCES.md]

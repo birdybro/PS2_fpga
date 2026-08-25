@@ -46,6 +46,7 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml .github/workflows/ci.yml
 	$(VENV_PYTHON) scripts/check_tracked_files.py
 	$(VENV_PYTHON) scripts/check_ci_workflow.py
+	$(VENV_PYTHON) scripts/check_milestones.py
 
 test: structure build venv ## Run the routine pytest gate.
 	$(TEST_RUNNER) test --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
