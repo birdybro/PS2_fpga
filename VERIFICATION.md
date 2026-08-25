@@ -148,6 +148,15 @@ limit remains disabled across eight active edges. The fatal case requires
 simulator failure at cycle three and checks the stable `SIM_TIMEOUT` message;
 the test fails if simulation continues beyond the boundary.
 
+## Simulation PASS termination
+
+One cocotb case suppresses simulator exit and verifies reset-time PASS is
+ignored, the first active request produces a one-cycle event and sticky status,
+held and later requests do not retrigger, and reset re-arms exactly one new
+event. A separate standalone Verilator binary exercises the default `$finish`
+path, requires process status zero, and checks that exactly one `SIM_PASS`
+marker appears while all fallback fatal messages remain absent.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit

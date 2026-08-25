@@ -99,15 +99,18 @@ acceptance remains the separate M030 policy using PS2/MIPS-specific evidence.
 <!-- ref:cocotb-development-docs -->
 ### Cocotb development documentation
 
-The official development documentation records Python 3.14 support. The exact
-compatible revision is pinned in `requirements-dev.txt` and installed only in
-the ignored `.venv`.
+The official development documentation records Python 3.14 support, and its
+published regression-manager source defines active-test simulator shutdown as
+an unrecoverable result. The exact compatible revision is pinned in
+`requirements-dev.txt` and installed only in the ignored `.venv`.
 
 <!-- ref:verilator-install-docs -->
-### Verilator installation and container documentation
+### Verilator user guide
 
-Official documentation for the release containers used to pin CI to Verilator
-5.050.
+Official documentation for release containers, supported system tasks, and the
+standalone binary workflow. CI is pinned to Verilator 5.050, and M035 uses the
+documented binary flow to validate successful `$finish` behavior independently
+of an active cocotb test.
 
 <!-- ref:setup-python-docs -->
 ### GitHub setup-python documentation

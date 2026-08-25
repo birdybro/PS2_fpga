@@ -380,21 +380,23 @@ milestones:
       - sticky count and synchronous reset-clear tests
       - default fatal termination and diagnostic-marker test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M034): add simulation cycle timeout)"
+    commit: 614d377
     notes: Terminate hung tests deterministically at a configured cycle limit.
   - id: M035
     title: Add simulation PASS termination
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M034]
-    tests: [PASS status and one-shot termination tests]
+    tests:
+      - reset event sticky one-shot suppression and re-arm cocotb test
+      - default standalone zero-exit and single SIM_PASS marker test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M035): add simulation PASS termination)"
     notes: Provide a simulation-only deterministic successful completion channel.
   - id: M036
     title: Add simulation FAIL termination
     subsystem: simulation
-    status: pending
+    status: active
     dependencies: [M035]
     tests: [FAIL code and priority tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

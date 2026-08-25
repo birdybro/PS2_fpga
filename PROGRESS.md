@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M034 — add simulation cycle timeout
-- Next milestone: M035 — add simulation PASS termination
+- Last completed milestone: M035 — add simulation PASS termination
+- Next milestone: M036 — add simulation FAIL termination
 - Current subsystem: simulation control
-- Current regression status: 176 tests pass with no skips; cycle watchdog has exact reset active-edge disabled and fatal behavior
+- Current regression status: 178 tests pass with no skips; PASS is reset-aware one-shot and exits standalone simulation successfully
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M034 milestone commit (this commit)
+- Most recent pushed commit: M035 milestone commit (this commit)
 
 ## Resume note
 

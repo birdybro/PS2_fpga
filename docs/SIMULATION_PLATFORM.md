@@ -176,6 +176,15 @@ configuration is fatal by default with a stable `SIM_TIMEOUT` diagnostic. A
 separate fatal-suppression parameter exists only so isolated verification can
 observe the boundary outputs; it is not an architectural control.
 
+M035 adds reset-aware PASS termination. The first sampled PASS request in a
+reset epoch emits a one-cycle event, latches completed status, prints exactly
+one `SIM_PASS` marker, and calls `$finish` by default for successful simulator
+exit. Held or repeated requests cannot retrigger until synchronous reset clears
+the state. Isolated cocotb verification suppresses `$finish` to observe those
+outputs because cocotb correctly classifies an HDL shutdown during an active
+test as premature; the real default completion path is therefore also exercised
+as a standalone Verilator binary and must return status zero.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and

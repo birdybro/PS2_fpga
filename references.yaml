@@ -125,23 +125,23 @@ references:
     url: https://docs.cocotb.org/en/development/master-notes.html
     source_class: tool-documentation
     role: verification
-    subsystems: [verification]
+    subsystems: [verification, simulation]
     license: BSD-3-Clause
-    source_code_consulted: false
+    source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [Python 3.14 support notes]
-    notes: The exact compatible source revision is pinned as an untracked dependency.
+    consulted_sections: [Python 3.14 support notes, simulator shutdown handling]
+    notes: Pinned source and docs establish support and active-test shutdown semantics.
   - id: verilator-install-docs
-    title: Verilator installation and container documentation
-    url: https://verilator.org/guide/latest/install.html
+    title: Verilator user guide
+    url: https://verilator.org/guide/latest/
     source_class: tool-documentation
     role: verification
-    subsystems: [build, verification, ci]
+    subsystems: [build, verification, ci, simulation]
     license: LGPL-3.0-or-later OR Artistic-2.0
     source_code_consulted: false
     redistribution: link-only
-    consulted_sections: [official release containers]
-    notes: CI uses the official Verilator v5.050 container.
+    consulted_sections: [official release containers, supported system tasks, binary execution]
+    notes: CI pins v5.050; standalone binary guidance establishes successful $finish testing.
   - id: setup-python-docs
     title: GitHub setup-python documentation
     url: https://github.com/actions/setup-python
