@@ -6,7 +6,10 @@ from pathlib import Path
 import pytest
 import yaml
 
-from scripts.check_roadmap import validate_phase1_roadmap
+from scripts.check_roadmap import (
+    validate_phase1_roadmap,
+    validate_phase2_foundation_roadmap,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -41,3 +44,30 @@ def test_phase1_roadmap_rejects_bundled_dependency_order() -> None:
 
     errors = validate_phase1_roadmap(state)
     assert errors == ["M026 must depend only on M025"]
+
+
+@pytest.mark.unit
+def test_repository_phase2_r5900_foundation_roadmap_is_complete() -> None:
+    """Keep CPU state, control, each first instruction, and integration independently visible."""
+    assert validate_phase2_foundation_roadmap(load_milestones()) == []
+
+
+@pytest.mark.unit
+def test_phase2_roadmap_rejects_missing_instruction() -> None:
+    """Prevent an individual scalar instruction milestone from disappearing."""
+    state = deepcopy(load_milestones())
+    state["milestones"] = [item for item in state["milestones"] if item["id"] != "M060"]
+
+    errors = validate_phase2_foundation_roadmap(state)
+    assert any("roadmap is missing M060: Implement R5900 SRA" in error for error in errors)
+
+
+@pytest.mark.unit
+def test_phase2_roadmap_rejects_bundled_instruction_dependency() -> None:
+    """Keep every instruction behind the immediately preceding green gate."""
+    state = deepcopy(load_milestones())
+    milestone = next(item for item in state["milestones"] if item["id"] == "M061")
+    milestone["dependencies"] = ["M059"]
+
+    errors = validate_phase2_foundation_roadmap(state)
+    assert errors == ["M061 must depend only on M060"]

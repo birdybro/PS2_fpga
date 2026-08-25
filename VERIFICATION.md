@@ -106,6 +106,16 @@ last complete, next active, and most recently pushed resume pointers in
 `PROGRESS.md`. Directed unit tests prove stale progress and incomplete active
 dependencies are rejected.
 
+## R5900 foundation roadmap validation
+
+The Phase 2 foundation is a machine-checked linear sequence of 39 milestones:
+coverage and reference state, RTL state and multi-cycle control, fetch/decode and
+writeback, 22 separately gated scalar encodings, and three platform execution
+tests. Directed mutation tests remove SRA and bypass its dependency to prove an
+instruction cannot silently disappear or be bundled into a neighboring gate.
+The planning document also separates base MIPS evidence from R5900-specific
+behavior and defers unsupported or unproven ISA groups explicitly.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

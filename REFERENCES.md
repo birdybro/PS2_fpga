@@ -59,12 +59,15 @@ Independently authored PS2 hardware documentation with broad EE, DMAC, GIF,
 VIF, VU, GS, IOP, and SIF coverage. The upstream repository does not state a
 license, so it is link-only and architectural details require corroboration.
 
-<!-- ref:sgi-mips-iv-index -->
-### SGI MIPS IV Instruction Set archive index
+<!-- ref:mips-iv-instruction-set -->
+### MIPS IV Instruction Set, Revision 3.2
 
-Public archive index for the base MIPS IV instruction-set manual. It is useful
-for base semantics only; R5900-specific deviations require PS2-specific
-evidence.
+Publicly archived MIPS Technologies manual for the base user-mode ISA. Its
+functional groups, instruction formats, encoding tables, per-instruction
+operations, and documented exceptions guide the scalar foundation. It is not
+treated as proof that the R5900 implements every MIPS III or MIPS IV feature;
+PS2-specific inclusion, encoding, width, and exception behavior require
+separate evidence.
 
 ## Homebrew software and toolchain
 
@@ -83,8 +86,10 @@ synthesizable RTL.
 ### GNU Binutils R5900 support review
 
 Public GNU maintainer discussion of accepted R5900 target support, including
-the ISA subset, FPU limitations, MMI support, and ELF targets. Linked patch
-source has not been copied or used as RTL implementation source.
+the ISA subset, known missing base instructions, FPU limitations, MMI support,
+opcode divergences, and ELF targets. It is used as a roadmap guardrail, not as
+hardware-semantics authority. Linked patch source has not been copied or used
+as RTL implementation source.
 
 <!-- ref:system-v-gabi-elf -->
 ### System V generic ABI ELF object file format

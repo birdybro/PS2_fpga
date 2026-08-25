@@ -5,9 +5,11 @@ the Sony PlayStation 2 architecture. Development proceeds through small,
 independently verified milestones; architectural correctness and automated
 verification come before timing accuracy or FPGA-specific optimization.
 
-The project is at infrastructure level (Level 0). See [PROGRESS.md](PROGRESS.md)
-for the exact resume point and [MILESTONES.md](MILESTONES.md) for completion
-rules.
+The project has completed Level 0 infrastructure and the Phase 1 simulation
+platform: behavioral RAM, raw and EE ELF loading, deterministic termination,
+tracing, waveforms, and platform integration are verified. R5900 execution
+(Level 1) is not implemented yet. See [PROGRESS.md](PROGRESS.md) for the exact
+resume point and [MILESTONES.md](MILESTONES.md) for completion rules.
 
 No PlayStation 2 BIOS, game image, proprietary SDK material, or other
 copyrighted Sony binary belongs in this repository.

@@ -91,8 +91,11 @@ references:
     license: Mailing-list text; linked patch code is GNU project licensed
     source_code_consulted: false
     redistribution: link-only
-    consulted_sections: [architecture review summary, accepted target support]
-    notes: Public maintainer review is useful for ISA subset and ELF target corroboration.
+    consulted_sections:
+      - architecture review summary and accepted target support
+      - R5900 subset exclusions
+      - single-precision FPU and opcode divergence discussion
+    notes: Toolchain evidence and planning guardrail; not a substitute for hardware semantics.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format
     url: https://gabi.xinuos.com/elf/02-eheader.html
@@ -109,17 +112,21 @@ references:
       - assigned machine values
       - program header layout and PT_LOAD semantics
     notes: Primary specification for ELF identification, headers, and executable segments.
-  - id: sgi-mips-iv-index
-    title: SGI MIPS IV Instruction Set archive index
-    url: https://techpubs.jurassic.nl/manuals/hdwr/developer/
+  - id: mips-iv-instruction-set
+    title: MIPS IV Instruction Set Revision 3.2
+    url: https://techpubs.jurassic.nl/library/manuals/2000/007-2597-001/pdf/007-2597-001.pdf
     source_class: public-archive
     role: architecture
     subsystems: [r5900, cop0, fpu]
     license: Copyright MIPS Technologies; redistribution rights not assumed
     source_code_consulted: false
     redistribution: link-only
-    consulted_sections: [MIPS IV instruction set catalog entry]
-    notes: Public documentation archive for the base ISA; R5900 deviations need PS2 evidence.
+    consulted_sections:
+      - CPU architecture overview and functional instruction groups
+      - instruction description notation operations and exceptions
+      - CPU instruction formats and encoding tables
+      - load store ALU jump branch miscellaneous and coprocessor summaries
+    notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: cocotb-development-docs
     title: Cocotb development documentation
     url: https://docs.cocotb.org/en/development/master-notes.html

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the granular Phase 1 simulation-platform roadmap."""
+"""Validate granular simulation-platform and R5900 foundation roadmaps."""
 
 from pathlib import Path
 from typing import Any
@@ -38,11 +38,52 @@ PHASE1_ROADMAP = (
     ("M041", "Add raw binary platform integration test", "integration", "M040"),
     ("M042", "Add ELF loader and RAM integration test", "integration", "M041"),
 )
-NEXT_PHASE = ("M043", "Expand Phase 2 R5900 foundation roadmap", "planning", "M042")
+PHASE2_FOUNDATION_ROADMAP = (
+    ("M043", "Expand Phase 2 R5900 foundation roadmap", "planning", "M042"),
+    ("M044", "Establish R5900 ISA coverage matrix", "verification", "M043"),
+    ("M045", "Define Python R5900 architectural state", "reference", "M044"),
+    ("M046", "Define RTL R5900 architectural state types", "r5900", "M045"),
+    ("M047", "Implement 128-bit R5900 GPR storage", "r5900", "M046"),
+    ("M048", "Enforce immutable R5900 register zero", "r5900", "M047"),
+    ("M049", "Implement R5900 program counter state", "r5900", "M048"),
+    ("M050", "Define R5900 multi-cycle control states", "r5900", "M049"),
+    ("M051", "Issue R5900 32-bit instruction fetch requests", "r5900", "M050"),
+    ("M052", "Capture R5900 instruction fetch responses", "r5900", "M051"),
+    ("M053", "Extract R5900 instruction fields", "r5900", "M052"),
+    ("M054", "Add R5900 decode legality skeleton", "r5900", "M053"),
+    ("M055", "Report R5900 reserved instructions", "r5900", "M054"),
+    ("M056", "Add R5900 GPR writeback framework", "r5900", "M055"),
+    ("M057", "Implement R5900 NOP encoding", "r5900", "M056"),
+    ("M058", "Implement R5900 SLL", "r5900", "M057"),
+    ("M059", "Implement R5900 SRL", "r5900", "M058"),
+    ("M060", "Implement R5900 SRA", "r5900", "M059"),
+    ("M061", "Implement R5900 SLLV", "r5900", "M060"),
+    ("M062", "Implement R5900 SRLV", "r5900", "M061"),
+    ("M063", "Implement R5900 SRAV", "r5900", "M062"),
+    ("M064", "Implement R5900 LUI", "r5900", "M063"),
+    ("M065", "Implement R5900 ORI", "r5900", "M064"),
+    ("M066", "Implement R5900 ANDI", "r5900", "M065"),
+    ("M067", "Implement R5900 XORI", "r5900", "M066"),
+    ("M068", "Implement R5900 ADDIU", "r5900", "M067"),
+    ("M069", "Implement R5900 ADDU", "r5900", "M068"),
+    ("M070", "Implement R5900 SUBU", "r5900", "M069"),
+    ("M071", "Implement R5900 AND", "r5900", "M070"),
+    ("M072", "Implement R5900 OR", "r5900", "M071"),
+    ("M073", "Implement R5900 XOR", "r5900", "M072"),
+    ("M074", "Implement R5900 NOR", "r5900", "M073"),
+    ("M075", "Implement R5900 SLT", "r5900", "M074"),
+    ("M076", "Implement R5900 SLTU", "r5900", "M075"),
+    ("M077", "Implement R5900 SLTI", "r5900", "M076"),
+    ("M078", "Implement R5900 SLTIU", "r5900", "M077"),
+    ("M079", "Integrate R5900 fetch with simulation RAM", "integration", "M078"),
+    ("M080", "Execute a sequential R5900 NOP image", "integration", "M079"),
+    ("M081", "Execute an R5900 arithmetic EE ELF", "integration", "M080"),
+)
+NEXT_R5900_PHASE = ("M082", "Expand R5900 64-bit integer roadmap", "planning", "M081")
 
 
-def validate_phase1_roadmap(data: Any) -> list[str]:
-    """Return ordering, title, subsystem, and dependency errors."""
+def _validate_roadmap(data: Any, expected: tuple[tuple[str, str, str, str], ...]) -> list[str]:
+    """Return ordering, title, subsystem, and dependency errors for one roadmap."""
     if not isinstance(data, dict) or not isinstance(data.get("milestones"), list):
         return ["milestones must be a list"]
     milestones = data["milestones"]
@@ -52,7 +93,6 @@ def validate_phase1_roadmap(data: Any) -> list[str]:
         if isinstance(item, dict) and isinstance(item.get("id"), str)
     }
     errors: list[str] = []
-    expected = (*PHASE1_ROADMAP, NEXT_PHASE)
     previous_position = -1
     for milestone_id, title, subsystem, dependency in expected:
         found = indexed.get(milestone_id)
@@ -72,15 +112,30 @@ def validate_phase1_roadmap(data: Any) -> list[str]:
     return errors
 
 
+def validate_phase1_roadmap(data: Any) -> list[str]:
+    """Return ordering, title, subsystem, and dependency errors."""
+    return _validate_roadmap(data, (*PHASE1_ROADMAP, PHASE2_FOUNDATION_ROADMAP[0]))
+
+
+def validate_phase2_foundation_roadmap(data: Any) -> list[str]:
+    """Return errors in the granular R5900 functional-foundation sequence."""
+    return _validate_roadmap(data, (*PHASE2_FOUNDATION_ROADMAP, NEXT_R5900_PHASE))
+
+
 def main() -> int:
     data = yaml.safe_load(MILESTONES_PATH.read_text(encoding="utf-8"))
-    errors = validate_phase1_roadmap(data)
-    if errors:
-        print("Phase 1 roadmap validation failed:")
-        for error in errors:
+    phase1_errors = validate_phase1_roadmap(data)
+    phase2_errors = validate_phase2_foundation_roadmap(data)
+    if phase1_errors or phase2_errors:
+        print("Roadmap validation failed:")
+        for error in (*phase1_errors, *phase2_errors):
             print(f"  {error}")
         return 1
-    print(f"Phase 1 roadmap: {len(PHASE1_ROADMAP)} granular implementation milestones valid")
+    print(
+        "roadmaps: "
+        f"Phase 1 has {len(PHASE1_ROADMAP)} milestones; "
+        f"R5900 foundation has {len(PHASE2_FOUNDATION_ROADMAP)} milestones"
+    )
     return 0
 
 

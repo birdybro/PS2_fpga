@@ -7,7 +7,8 @@ unit, differential, randomized, integration, regression, and system tests.
 
 The first implementation target is a deliberately simple multi-cycle R5900
 execution core connected to behavioral memory. Pipeline and timing accuracy
-are later, explicitly tracked work.
+are later, explicitly tracked work. `docs/R5900_FOUNDATION.md` defines the
+initial state, control, evidence, verification, and deferral boundaries.
 
 ## Repository boundaries
 

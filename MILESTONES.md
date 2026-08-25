@@ -12,11 +12,15 @@ Phase 0 establishes repository and verification infrastructure. Phase 1 is
 expanded into 28 implementation milestones covering clock/reset, the memory
 transaction contract, each RAM width and direction, loaders, simulator control,
 observability, top-level composition, and two integration gates. Phase 2 has a
-dedicated roadmap-expansion boundary before R5900 implementation begins.
+dedicated roadmap-expansion boundary before R5900 implementation begins. The
+first Phase 2 expansion adds 39 independently gated milestones covering the ISA
+coverage database, reference and RTL state, fetch/decode/writeback foundations,
+22 individual scalar encodings, and three CPU/platform execution gates.
 
 The design contract and exit criteria for Phase 1 are documented in
-`docs/SIMULATION_PLATFORM.md`. `scripts/check_roadmap.py` makes the enumerated
-order, title, subsystem ownership, and one-step dependencies a tested contract.
+`docs/SIMULATION_PLATFORM.md`; the first CPU boundary is documented in
+`docs/R5900_FOUNDATION.md`. `scripts/check_roadmap.py` makes each enumerated
+order, title, subsystem ownership, and one-step dependency a tested contract.
 Later major subsystems will be expanded the same way before implementation.
 
 ## Machine-readable schema
