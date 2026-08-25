@@ -943,21 +943,27 @@ milestones:
       - independent Python model validation tests
       - deterministic 524-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M072): implement R5900 OR)"
+    commit: 0d3219c
     notes: OR both low 64-bit scalar lanes while preserving destination bits 127:64.
   - id: M073
     title: Implement R5900 XOR
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M072]
-    tests: [directed XOR bit patterns, randomized XOR differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Cover identity self-cancellation and alternating patterns.
+    tests:
+      - complete SPECIAL source destination and reserved-shift decode tests
+      - zero all-ones alternating sparse self-cancellation and bit-63 scalar patterns
+      - source upper-lane ignore and destination upper-lane preservation tests
+      - both destination aliases identical-source GPR-zero PC-wrap and exact-event tests
+      - independent Python model validation tests
+      - deterministic 524-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M073): implement R5900 XOR)"
+    notes: XOR both low 64-bit scalar lanes while preserving destination bits 127:64.
   - id: M074
     title: Implement R5900 NOR
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M073]
     tests: [directed NOR bit patterns, randomized NOR differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

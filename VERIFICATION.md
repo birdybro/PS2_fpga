@@ -470,6 +470,17 @@ and reserved-field rejection. A deterministic differential/randomized test
 executes twelve boundary plus 512 seeded instructions and compares PC, complete
 GPR state, writeback, and retirement after every instruction.
 
+## R5900 XOR
+
+SPECIAL function `0x26` with reserved `sa` clear now executes XOR for every
+source and destination register field. Four directed cocotb cases cover zero,
+all-ones, alternating, sparse, self-cancellation, cross-word, and bit-63 scalar
+patterns; ignored source bits 127:64; preserved destination bits 127:64; both
+destination aliases; source and destination zero; PC wrap; exact events; and
+reserved-field rejection. A deterministic differential/randomized test executes
+twelve boundary plus 512 seeded instructions and compares PC, complete GPR
+state, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

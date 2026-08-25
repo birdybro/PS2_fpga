@@ -20,6 +20,7 @@ OPERATION_ADDU = 13
 OPERATION_SUBU = 14
 OPERATION_AND = 15
 OPERATION_OR = 16
+OPERATION_XOR = 17
 
 
 async def check_dispatch(
@@ -228,6 +229,17 @@ async def test_r5900_decode_dispatch_sends_canonical_or_to_execute(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_xor_to_execute(dut) -> None:
+    """Dispatch XOR source and destination fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x0000_0026),
+        (4, 0x0020_0026),
+        (0x0010_0000, 0x023F_F826),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_XOR, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -> None:
     """Preserve fault PC/opcode/word while preventing execute and later writeback."""
     cases = (
@@ -240,6 +252,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (19, 0x0000_0063),
         (20, 0x0000_0064),
         (21, 0x0000_0065),
+        (22, 0x0000_0066),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),

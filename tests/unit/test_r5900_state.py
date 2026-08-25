@@ -24,6 +24,7 @@ from reference.ee.r5900 import (
     encode_srl,
     encode_srlv,
     encode_subu,
+    encode_xor,
     encode_xori,
 )
 
@@ -57,6 +58,7 @@ ALIASED_SUBU_RT_RESULT = 0x0123_4567_89AB_CDEF_0000_0000_7FFF_FFFE
 NEGATIVE_ONE_SCALAR = 0xFFFF_FFFF_FFFF_FFFF
 ENCODED_AND_EXAMPLE = 0x02F1_F824
 ENCODED_OR_EXAMPLE = 0x02F1_F825
+ENCODED_XOR_EXAMPLE = 0x02F1_F826
 
 
 @pytest.mark.unit
@@ -982,6 +984,67 @@ def test_r5900_reference_or_handles_aliases_zero_and_encoder_validation() -> Non
         error = TypeError if any(type(field) is bool for field in fields) else IndexError
         with pytest.raises(error):
             encode_or(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("source_a_scalar", "source_b_scalar", "expected_scalar"),
+    [
+        (0x0000_0000_0000_0000, 0x0000_0000_0000_0000, 0x0000_0000_0000_0000),
+        (0x0000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFF, 0xFFFF_FFFF_FFFF_FFFF),
+        (0xFFFF_FFFF_FFFF_FFFF, 0xFFFF_FFFF_FFFF_FFFF, 0x0000_0000_0000_0000),
+        (0xAAAA_AAAA_AAAA_AAAA, 0x5555_5555_5555_5555, 0xFFFF_FFFF_FFFF_FFFF),
+        (0xFFFF_0000_FFFF_0000, 0x0F0F_0F0F_0F0F_0F0F, 0xF0F0_0F0F_F0F0_0F0F),
+        (0x8000_0000_0000_0000, 0x0000_0000_0000_0001, 0x8000_0000_0000_0001),
+        (0x0000_0001_0000_0000, 0x0000_0000_0000_0001, 0x0000_0001_0000_0001),
+        (0x0123_4567_89AB_CDEF, 0xFF00_FF00_FF00_FF00, 0xFE23_BA67_76AB_32EF),
+    ],
+)
+def test_r5900_reference_xor_combines_scalar_lane_and_preserves_destination_upper_lane(
+    source_a_scalar: int,
+    source_b_scalar: int,
+    expected_scalar: int,
+) -> None:
+    """XOR all 64 scalar bits while ignoring source and preserving destination upper lanes."""
+    source_a = 0xFFFF_FFFF_FFFF_FFFF_0000_0000_0000_0000 | source_a_scalar
+    source_b = 0xAAAA_AAAA_AAAA_AAAA_0000_0000_0000_0000 | source_b_scalar
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source_a).write_gpr(4, source_b).write_gpr(5, destination)
+
+    updated = state.step(encode_xor(5, 3, 4))
+
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(3) == source_a
+    assert updated.read_gpr(4) == source_b
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_xor_handles_aliases_zero_and_encoder_validation() -> None:
+    """Cover both source aliases, self-cancellation, zero, and exact XOR encoding."""
+    source_a = 0xCAFE_BABE_1234_5678_F0F0_F0F0_AAAA_5555
+    source_b = 0x0123_4567_89AB_CDEF_0FF0_00FF_FFFF_0000
+    scalar_mask = (1 << 64) - 1
+    upper_mask = GPR_MASK ^ scalar_mask
+    result_scalar = (source_a ^ source_b) & scalar_mask
+    state = R5900State.initial().write_gpr(31, source_a).write_gpr(30, source_b)
+    rd_is_rs = state.step(encode_xor(31, 31, 30))
+    assert rd_is_rs.read_gpr(31) == (source_a & upper_mask) | result_scalar
+    rd_is_rt = state.step(encode_xor(30, 31, 30))
+    assert rd_is_rt.read_gpr(30) == (source_b & upper_mask) | result_scalar
+    same_sources = state.step(encode_xor(29, 30, 30))
+    assert same_sources.read_gpr(29) == 0
+    discarded = state.step(encode_xor(0, 31, 30))
+    assert discarded.gprs == state.gprs
+    zero_source = state.step(encode_xor(29, 0, 30))
+    assert zero_source.read_gpr(29) == (source_b & scalar_mask)
+    assert encode_xor(31, 23, 17) == ENCODED_XOR_EXAMPLE
+    for fields in ((-1, 0, 0), (0, GPR_COUNT, 0), (0, 0, True)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_xor(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit
