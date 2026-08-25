@@ -913,21 +913,27 @@ milestones:
       - independent Python model validation tests
       - deterministic 524-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M070): implement R5900 SUBU)"
+    commit: 3c642b2
     notes: Subtract both source low words modulo 32 bits and sign-extend the word result.
   - id: M071
     title: Implement R5900 AND
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M070]
-    tests: [directed AND bit patterns, randomized AND differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Compare the complete architecturally affected destination width.
+    tests:
+      - complete SPECIAL source destination and reserved-shift decode tests
+      - zero all-ones alternating sparse and bit-63 scalar patterns
+      - source upper-lane ignore and destination upper-lane preservation tests
+      - both destination aliases identical-source GPR-zero PC-wrap and exact-event tests
+      - independent Python model validation tests
+      - deterministic 524-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M071): implement R5900 AND)"
+    notes: AND both low 64-bit scalar lanes while preserving destination bits 127:64.
   - id: M072
     title: Implement R5900 OR
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M071]
     tests: [directed OR bit patterns, randomized OR differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

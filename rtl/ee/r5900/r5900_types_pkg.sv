@@ -47,7 +47,8 @@ package r5900_types_pkg;
         R5900_OPERATION_XORI  = 5'd11,
         R5900_OPERATION_ADDIU = 5'd12,
         R5900_OPERATION_ADDU  = 5'd13,
-        R5900_OPERATION_SUBU  = 5'd14
+        R5900_OPERATION_SUBU  = 5'd14,
+        R5900_OPERATION_AND   = 5'd15
     } r5900_operation_t;
 
     typedef struct packed {

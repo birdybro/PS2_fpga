@@ -19,6 +19,7 @@ XORI_OPCODE = 14
 ADDIU_OPCODE = 9
 ADDU_FUNCTION = 33
 SUBU_FUNCTION = 35
+AND_FUNCTION = 36
 IMMEDIATE_OPERATIONS = {0: 2, SRL_FUNCTION: 3, SRA_FUNCTION: 4}
 REGISTER_OPERATIONS = {
     SLLV_FUNCTION: 5,
@@ -26,6 +27,7 @@ REGISTER_OPERATIONS = {
     SRAV_FUNCTION: 7,
     ADDU_FUNCTION: 13,
     SUBU_FUNCTION: 14,
+    AND_FUNCTION: 15,
 }
 
 
@@ -96,6 +98,9 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x0000_0023,
         0x023F_F823,
         0x0000_0063,
+        0x0000_0024,
+        0x023F_F824,
+        0x0000_0064,
         0x0000_0800,
         0x0001_0000,
         0x0020_0000,

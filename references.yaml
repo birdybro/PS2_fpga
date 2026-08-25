@@ -120,7 +120,7 @@ references:
     license: GPL-3.0; repository COPYING.GPLv3 reviewed before consultation
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [scalar shift LUI logical immediate ADDIU ADDU and SUBU interpreter operations]
+    consulted_sections: [scalar shift LUI logical immediate ADDIU ADDU SUBU and AND interpreter operations]
     notes: >-
       Corroborates R5900 scalar result widths and immediate or register arithmetic handling;
       no source structure was copied.
@@ -161,6 +161,7 @@ references:
       - ADDIU instruction description
       - ADDU instruction description
       - SUBU instruction description
+      - AND instruction description
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual
