@@ -17,6 +17,7 @@ REQUIRED_COMMANDS = (
     "make regression",
 )
 VERILATOR_IMAGE = "verilator/verilator:v5.050"
+SAFE_DIRECTORY_COMMAND = 'git config --global --add safe.directory "$GITHUB_WORKSPACE"'
 
 
 def main() -> int:
@@ -41,6 +42,8 @@ def main() -> int:
     if missing:
         msg = f"CI is missing required commands: {', '.join(missing)}"
         raise ValueError(msg)
+    if SAFE_DIRECTORY_COMMAND not in run_commands:
+        raise ValueError("container CI must trust only the mounted GitHub workspace")
 
     action_uses = {step.get("uses", "") for step in steps}
     if not any(action.startswith("actions/checkout@") for action in action_uses):
