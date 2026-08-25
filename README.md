@@ -12,6 +12,12 @@ rules.
 No PlayStation 2 BIOS, game image, proprietary SDK material, or other
 copyrighted Sony binary belongs in this repository.
 
+## Development commands
+
+Run `make help` for the stable development command surface. Commands are made
+executable milestone-by-milestone; an unavailable verification layer fails
+with the milestone that introduces it rather than silently passing.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

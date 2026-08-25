@@ -20,21 +20,21 @@ milestones:
     dependencies: [M000]
     tests: [structure manifest check]
     references: [ARCHITECTURE.md]
-    commit: "self (milestone(M001): establish project structure)"
+    commit: 8795fd9
     notes: Create tracked subsystem boundaries without build artifacts.
   - id: M002
     title: Establish build configuration
     subsystem: infrastructure
-    status: active
+    status: complete
     dependencies: [M001]
     tests: [make help]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M002): establish build configuration)"
     notes: Provide stable top-level command contracts before tool-specific tests.
   - id: M003
     title: Add Verilator compilation smoke test
     subsystem: verification
-    status: pending
+    status: active
     dependencies: [M002]
     tests: [make build]
     references: [VERIFICATION.md]
