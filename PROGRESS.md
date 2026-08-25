@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M023 — implement aligned 64-bit RAM reads
-- Next milestone: M024 — implement aligned 64-bit RAM writes
+- Last completed milestone: M024 — implement aligned 64-bit RAM writes
+- Next milestone: M025 — implement aligned 128-bit RAM reads
 - Current subsystem: behavioral system memory
-- Current regression status: 57 tests pass with no skips; all aligned 64-bit reads match the byte-memory model
+- Current regression status: 67 tests pass with no skips; every 64-bit byte-enable pattern matches the byte-memory model
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no PS2 architectural timing model exists
 - External blockers: none
-- Most recent pushed commit: M023 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M024 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

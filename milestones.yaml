@@ -248,21 +248,24 @@ milestones:
       - exhaustive aligned-doubleword Python differential test
       - byte-memory read64 boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M023): implement aligned 64-bit RAM reads)"
+    commit: 821d061
     notes: Extend reads to aligned doublewords without changing 32-bit behavior.
   - id: M024
     title: Implement aligned 64-bit RAM writes
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M023]
-    tests: [directed 64-bit RAM write and lane tests]
+    tests:
+      - all 256 directed 64-bit byte-enable patterns and boundary lanes
+      - full-image Python write64 differential test covering every strobe
+      - byte-memory write64 value address and strobe-domain tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M024): implement aligned 64-bit RAM writes)"
     notes: Extend byte-enabled writes to aligned 64-bit transfers.
   - id: M025
     title: Implement aligned 128-bit RAM reads
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M024]
     tests: [directed 128-bit RAM read and endian tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

@@ -203,3 +203,13 @@ alignment, bounds, and rejection of 64-bit writes reserved for M024. The Python
 model independently uses bounded byte slices and `int.from_bytes`; differential
 simulation compares every aligned doubleword after initializing the complete
 RAM image.
+
+## Behavioral RAM aligned 64-bit writes
+
+The directed test resets an asymmetric eight-byte baseline for each of all 256
+legal byte-enable masks, verifies disabled-lane preservation, exercises both RAM
+boundaries, stalls one completion response, and rejects upper strobe lanes. The
+Python model independently updates a bytearray from `int.to_bytes` and validates
+address, value, and strobe domains. Differential simulation distributes every
+mask over repeated writes to all aligned doublewords, then compares the complete
+RAM image through 64-bit bus reads.

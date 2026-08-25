@@ -29,6 +29,7 @@ module behavioral_system_ram #(
     logic read32_request;
     logic read64_request;
     logic write32_request;
+    logic write64_request;
     logic supported_request;
     logic response_slot_available;
     logic request_fire;
@@ -46,6 +47,10 @@ module behavioral_system_ram #(
     localparam logic [STROBE_WIDTH-1:0] WRITE32_LANE_MASK = {
         {(STROBE_WIDTH - 4) {1'b0}},
         4'b1111
+    };
+    localparam logic [STROBE_WIDTH-1:0] WRITE64_LANE_MASK = {
+        {(STROBE_WIDTH - 8) {1'b0}},
+        8'hff
     };
 
     initial begin
@@ -73,7 +78,15 @@ module behavioral_system_ram #(
         && (bus.req_addr[1:0] == 2'b00)
         && (bus.req_addr <= LAST_READ32_ADDR)
         && ((bus.req_wstrb & ~WRITE32_LANE_MASK) == '0);
-    assign supported_request = read32_request || read64_request || write32_request;
+    assign write64_request = bus.req_write
+        && (bus.req_size == 3'd3)
+        && (bus.req_addr[2:0] == 3'b000)
+        && (bus.req_addr <= LAST_READ64_ADDR)
+        && ((bus.req_wstrb & ~WRITE64_LANE_MASK) == '0);
+    assign supported_request = read32_request
+        || read64_request
+        || write32_request
+        || write64_request;
     assign response_slot_available = !rsp_valid_q || bus.rsp_ready;
     assign bus.req_ready = rst_ni && response_slot_available && supported_request;
     assign request_fire = bus.req_valid && bus.req_ready;
@@ -131,6 +144,24 @@ module behavioral_system_ram #(
                     if (bus.req_wstrb[3]) begin
                         storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3]
                             <= bus.req_wdata[31:24];
+                    end
+                    if (write64_request) begin
+                        if (bus.req_wstrb[4]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_4]
+                                <= bus.req_wdata[39:32];
+                        end
+                        if (bus.req_wstrb[5]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_5]
+                                <= bus.req_wdata[47:40];
+                        end
+                        if (bus.req_wstrb[6]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_6]
+                                <= bus.req_wdata[55:48];
+                        end
+                        if (bus.req_wstrb[7]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_7]
+                                <= bus.req_wdata[63:56];
+                        end
                     end
                     rsp_rdata_q <= '0;
                 end else begin

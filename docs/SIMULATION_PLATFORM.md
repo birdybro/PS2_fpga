@@ -35,6 +35,9 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M023 adds aligned 64-bit reads for size encoding three. Eight consecutive
   bytes are returned little-endian in response bits 63:0 with all upper bits
   zero; 32-bit transfers retain their existing behavior.
+- M024 adds aligned 64-bit writes with every lower-eight-lane byte-enable
+  pattern, including a zero-strobe no-op. Disabled bytes remain unchanged,
+  upper strobe lanes are rejected, and narrower accesses remain supported.
 
 ## Planned boundaries
 

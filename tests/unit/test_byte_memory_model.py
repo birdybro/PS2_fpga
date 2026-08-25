@@ -93,3 +93,48 @@ def test_byte_memory_model_rejects_invalid_read64(address: int) -> None:
     model = ByteMemoryModel(16)
     with pytest.raises(ValueError):
         model.read64(address)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_writes_little_endian_doubleword() -> None:
+    """Decompose a doubleword through Python's byte conversion semantics."""
+    model = ByteMemoryModel(16)
+    model.write64(8, EXPECTED_DOUBLEWORD)
+    assert tuple(model.data[8:16]) == (0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF)
+    assert model.read64(8) == EXPECTED_DOUBLEWORD
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "address,value",
+    ((-8, 0), (4, 0), (16, 0), (0, -1), (0, 1 << 64)),
+)
+def test_byte_memory_model_rejects_invalid_write64(address: int, value: int) -> None:
+    """Reject invalid doubleword addresses and values outside 64 bits."""
+    model = ByteMemoryModel(16)
+    with pytest.raises(ValueError):
+        model.write64(address, value)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_applies_every_write64_strobe() -> None:
+    """Preserve disabled byte lanes for all 256 doubleword strobe patterns."""
+    baseline = bytes((0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88))
+    replacement = bytes((0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6, 0x07, 0x18))
+    value = int.from_bytes(replacement, byteorder="little", signed=False)
+    for strobe in range(256):
+        model = ByteMemoryModel(8)
+        model.data[:] = baseline
+        model.write64_masked(0, value, strobe)
+        expected = bytes(
+            replacement[lane] if strobe & (1 << lane) else baseline[lane] for lane in range(8)
+        )
+        assert model.data == expected
+
+
+@pytest.mark.unit
+def test_byte_memory_model_rejects_upper_write64_strobes() -> None:
+    """Keep the 64-bit model strobe domain to exactly eight byte lanes."""
+    model = ByteMemoryModel(8)
+    with pytest.raises(ValueError, match="strobe"):
+        model.write64_masked(0, 0, 0x100)
