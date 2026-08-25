@@ -15,6 +15,7 @@ SRAV_FUNCTION = 7
 DSLL_FUNCTION = 56
 DSRL_FUNCTION = 58
 DSRA_FUNCTION = 59
+DSLL32_FUNCTION = 60
 LUI_OPCODE = 15
 ORI_OPCODE = 13
 ANDI_OPCODE = 12
@@ -37,6 +38,7 @@ IMMEDIATE_OPERATIONS = {
     DSLL_FUNCTION: 23,
     DSRL_FUNCTION: 24,
     DSRA_FUNCTION: 25,
+    DSLL32_FUNCTION: 26,
 }
 REGISTER_OPERATIONS = {
     SLLV_FUNCTION: 5,
@@ -113,6 +115,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 67, 0x0000_003B),
         (True, 68, 0x001F_FFFB),
         (True, 69, 0x0020_003B),
+        (True, 70, 0x0000_003C),
+        (True, 71, 0x001F_FFFC),
+        (True, 72, 0x0020_003C),
         (True, 64, 0x3C00_0000),
         (True, 68, 0x3C1F_FFFF),
         (True, 72, 0x3C20_0000),

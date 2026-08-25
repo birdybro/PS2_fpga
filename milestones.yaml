@@ -1176,21 +1176,21 @@ milestones:
       - source-destination alias GPR-zero PC-wrap and exact-event tests
       - 524-case sequential randomized differential test comparing every GPR and PC
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M087): implement R5900 DSRA)"
+    commit: "07ca990"
     notes: Implement the immediate low-range arithmetic doubleword right shift with explicit signed semantics.
   - id: M088
     title: Implement R5900 DSLL32
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M087]
     tests: [shift-32 shift-63 aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M088): implement R5900 DSLL32)"
     notes: Implement the immediate high-range doubleword left shift.
   - id: M089
     title: Implement R5900 DSRL32
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M088]
     tests: [shift-32 shift-63 aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

@@ -330,6 +330,9 @@ cover both operand signs, counts 0, 1, 30, and 31, `rd == rt`, GPR zero,
 reserved `rs`, PC wrap, and exact events. Twelve boundary plus 512 sequential
 randomized cases make DSRA the twenty-fifth complete ISA coverage entry.
 
+DSLL32 function `0x3c` widens the encoded count before shifting, implementing
+effective counts 32 through 63 while preserving destination bits 127:64.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits

@@ -333,14 +333,14 @@ instructions:
     category: 64-bit shift immediate
     encoding: SPECIAL opcode 0x00, function 0x3c
     milestone: M088
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
-    notes: Planned logical left shift using the upper half of the 64-bit immediate shift-count range.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
+    notes: Shifts rt bits 63:0 left by sa plus 32 and preserves rd bits 127:64.
   - mnemonic: DSRL32
     category: 64-bit shift immediate
     encoding: SPECIAL opcode 0x00, function 0x3e

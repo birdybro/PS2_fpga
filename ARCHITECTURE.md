@@ -55,7 +55,8 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its five-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLL, DSRL, DSRA, ADDU, SUBU, AND, OR, XOR, NOR, SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, SLTI, and SLTIU
+SLLV, SRLV, SRAV, DSLL, DSRL, DSRA, DSLL32, ADDU, SUBU, AND, OR, XOR, NOR,
+SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
 operation with legality deasserted.
@@ -76,7 +77,9 @@ complete 128-bit value through centralized writeback. Every admitted operation
 advances PC by four and emits a typed retirement record with the pre-advance PC
 and exact instruction. DSLL, DSRL, and DSRA shift the complete low 64-bit source
 lane left, logically right, or arithmetically right by the immediate count and
-preserve destination bits 127:64. LUI places its immediate in word bits 31:16, applies the
+preserve destination bits 127:64. DSLL32 applies the same low-doubleword and
+upper-lane rules as DSLL with an effective shift count of encoded `sa + 32`.
+LUI places its immediate in word bits 31:16, applies the
 same scalar sign extension, and preserves the destination's upper 64 bits. The
 ORI, ANDI, and XORI zero-extend their immediates, combine them with source bits
 63:0, and also preserve the destination's upper 64 bits. ADDIU sign-extends its

@@ -477,6 +477,11 @@ differential/randomized test executes twelve boundary plus 512 seeded
 instructions sequentially and compares PC, the complete 4,096-bit GPR state,
 writeback, and retirement after every instruction.
 
+## R5900 DSLL32
+
+Function `0x3c` executes effective shifts 32 through 63. Directed tests cover
+counts 32, 33, 62, and 63; a 524-case differential stream compares all GPRs.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.

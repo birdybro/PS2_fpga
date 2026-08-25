@@ -135,11 +135,13 @@ references:
       - DSLL interpreter operation
       - DSRL interpreter operation
       - DSRA interpreter operation
+      - DSLL32 interpreter operation
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
     notes: >-
-      Corroborates R5900 scalar result widths, DSLL DSRL and DSRA low-doubleword
-      results with preserved upper lanes, and immediate or register arithmetic handling;
-      no source structure was copied.
+      Corroborates R5900 scalar result widths, DSLL DSRL DSRA and DSLL32
+      low-doubleword results with preserved upper lanes, DSLL32 high-range shift
+      counts, and immediate or register arithmetic handling; no source structure
+      was copied.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format
     url: https://gabi.xinuos.com/elf/02-eheader.html
