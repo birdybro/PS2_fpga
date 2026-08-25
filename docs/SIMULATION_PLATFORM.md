@@ -32,6 +32,9 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M022 accepts every lower-four-lane byte-enable pattern for aligned 32-bit
   writes, including a zero-strobe no-op. Disabled bytes remain unchanged and
   any strobe above lane three keeps the request unaccepted.
+- M023 adds aligned 64-bit reads for size encoding three. Eight consecutive
+  bytes are returned little-endian in response bits 63:0 with all upper bits
+  zero; 32-bit transfers retain their existing behavior.
 
 ## Planned boundaries
 

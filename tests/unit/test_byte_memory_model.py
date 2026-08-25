@@ -5,6 +5,7 @@ import pytest
 from reference.common.byte_memory import ByteMemoryModel
 
 EXPECTED_WORD = 0x6745_2301
+EXPECTED_DOUBLEWORD = 0xEFCD_AB89_6745_2301
 
 
 @pytest.mark.unit
@@ -74,3 +75,21 @@ def test_byte_memory_model_rejects_upper_write32_strobes() -> None:
     model = ByteMemoryModel(4)
     with pytest.raises(ValueError, match="strobe"):
         model.write32_masked(0, 0, 0x10)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_reads_little_endian_doubleword() -> None:
+    """Form a doubleword through Python's byte conversion semantics."""
+    model = ByteMemoryModel(16)
+    for address, value in enumerate((0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF), start=8):
+        model.write_byte(address, value)
+    assert model.read64(8) == EXPECTED_DOUBLEWORD
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("address", (-8, 4, 16))
+def test_byte_memory_model_rejects_invalid_read64(address: int) -> None:
+    """Reject negative, unaligned, and out-of-range doubleword addresses."""
+    model = ByteMemoryModel(16)
+    with pytest.raises(ValueError):
+        model.read64(address)

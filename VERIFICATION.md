@@ -193,3 +193,13 @@ first/final word lane boundaries and rejects any upper strobe bit. The Python
 model validates the same complete strobe domain using independent bytearray
 updates. Differential simulation applies all masks repeatedly across the RAM
 and compares every resulting word, including zero-strobe preservation.
+
+## Behavioral RAM aligned 64-bit reads
+
+The directed test reads the first, an interior, and the final legal aligned
+doubleword with asymmetric byte patterns. It checks little-endian assembly,
+zero-filled upper response bits, response stability under backpressure,
+alignment, bounds, and rejection of 64-bit writes reserved for M024. The Python
+model independently uses bounded byte slices and `int.from_bytes`; differential
+simulation compares every aligned doubleword after initializing the complete
+RAM image.

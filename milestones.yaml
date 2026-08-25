@@ -236,21 +236,24 @@ milestones:
       - full-image Python byte-enable differential test
       - byte-memory masked-write strobe-domain tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M022): implement RAM write byte enables)"
+    commit: 91d890a
     notes: Preserve disabled lanes for every 32-bit byte-enable combination.
   - id: M023
     title: Implement aligned 64-bit RAM reads
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M022]
-    tests: [directed 64-bit RAM read and endian tests]
+    tests:
+      - directed 64-bit endian alignment bounds and backpressure test
+      - exhaustive aligned-doubleword Python differential test
+      - byte-memory read64 boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M023): implement aligned 64-bit RAM reads)"
     notes: Extend reads to aligned doublewords without changing 32-bit behavior.
   - id: M024
     title: Implement aligned 64-bit RAM writes
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M023]
     tests: [directed 64-bit RAM write and lane tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

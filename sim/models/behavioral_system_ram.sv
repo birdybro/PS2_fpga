@@ -27,6 +27,7 @@ module behavioral_system_ram #(
     logic                  rsp_error_q;
 
     logic read32_request;
+    logic read64_request;
     logic write32_request;
     logic supported_request;
     logic response_slot_available;
@@ -34,23 +35,28 @@ module behavioral_system_ram #(
 
     localparam int unsigned STROBE_WIDTH = DATA_WIDTH / 8;
     localparam logic [ADDR_WIDTH-1:0] LAST_READ32_ADDR = SIZE_BYTES - 4;
+    localparam logic [ADDR_WIDTH-1:0] LAST_READ64_ADDR = SIZE_BYTES - 8;
     localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_1 = INDEX_WIDTH'(1);
     localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_2 = INDEX_WIDTH'(2);
     localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_3 = INDEX_WIDTH'(3);
+    localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_4 = INDEX_WIDTH'(4);
+    localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_5 = INDEX_WIDTH'(5);
+    localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_6 = INDEX_WIDTH'(6);
+    localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_7 = INDEX_WIDTH'(7);
     localparam logic [STROBE_WIDTH-1:0] WRITE32_LANE_MASK = {
         {(STROBE_WIDTH - 4) {1'b0}},
         4'b1111
     };
 
     initial begin
-        if (SIZE_BYTES < 4) begin
-            $fatal(1, "behavioral_system_ram SIZE_BYTES must be at least four");
+        if (SIZE_BYTES < 8) begin
+            $fatal(1, "behavioral_system_ram SIZE_BYTES must be at least eight");
         end
         if (INDEX_WIDTH >= ADDR_WIDTH) begin
             $fatal(1, "behavioral_system_ram ADDR_WIDTH must represent an out-of-bounds address");
         end
-        if (DATA_WIDTH < 32) begin
-            $fatal(1, "behavioral_system_ram DATA_WIDTH must be at least 32");
+        if (DATA_WIDTH < 64) begin
+            $fatal(1, "behavioral_system_ram DATA_WIDTH must be at least 64");
         end
     end
 
@@ -58,12 +64,16 @@ module behavioral_system_ram #(
         && (bus.req_size == 3'd2)
         && (bus.req_addr[1:0] == 2'b00)
         && (bus.req_addr <= LAST_READ32_ADDR);
+    assign read64_request = !bus.req_write
+        && (bus.req_size == 3'd3)
+        && (bus.req_addr[2:0] == 3'b000)
+        && (bus.req_addr <= LAST_READ64_ADDR);
     assign write32_request = bus.req_write
         && (bus.req_size == 3'd2)
         && (bus.req_addr[1:0] == 2'b00)
         && (bus.req_addr <= LAST_READ32_ADDR)
         && ((bus.req_wstrb & ~WRITE32_LANE_MASK) == '0);
-    assign supported_request = read32_request || write32_request;
+    assign supported_request = read32_request || read64_request || write32_request;
     assign response_slot_available = !rsp_valid_q || bus.rsp_ready;
     assign bus.req_ready = rst_ni && response_slot_available && supported_request;
     assign request_fire = bus.req_valid && bus.req_ready;
@@ -124,13 +134,27 @@ module behavioral_system_ram #(
                     end
                     rsp_rdata_q <= '0;
                 end else begin
-                    rsp_rdata_q <= {
-                        {(DATA_WIDTH - 32) {1'b0}},
-                        storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3],
-                        storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_2],
-                        storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_1],
-                        storage[bus.req_addr[INDEX_WIDTH-1:0]]
-                    };
+                    if (read64_request) begin
+                        rsp_rdata_q <= {
+                            {(DATA_WIDTH - 64) {1'b0}},
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_7],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_6],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_5],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_4],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_2],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_1],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0]]
+                        };
+                    end else begin
+                        rsp_rdata_q <= {
+                            {(DATA_WIDTH - 32) {1'b0}},
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_2],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_1],
+                            storage[bus.req_addr[INDEX_WIDTH-1:0]]
+                        };
+                    end
                 end
             end
         end
