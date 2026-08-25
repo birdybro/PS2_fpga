@@ -164,3 +164,13 @@ readback, explicit out-of-range reporting, zero-valued out-of-range reads,
 rejected writes without address truncation aliases, persistence across reset,
 and suppression of writes while reset is active. No bus transfer behavior is
 implemented or claimed in this storage milestone.
+
+## Aligned 32-bit behavioral RAM reads
+
+The directed read test initializes endian-asymmetric words at the first,
+interior, and final aligned addresses, then checks registered responses, zeroed
+upper bits, response backpressure, and rejection of unsupported request classes.
+An independent Python model uses `bytearray` slicing and `int.from_bytes`, with
+unit coverage for its bounds and alignment errors. Differential simulation
+initializes all 256 bytes to a non-symmetric deterministic pattern and compares
+every aligned 32-bit word against that model.

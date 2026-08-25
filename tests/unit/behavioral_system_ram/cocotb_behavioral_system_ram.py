@@ -44,6 +44,13 @@ async def byte_storage_bounds_and_reset_independence(dut) -> None:
     dut.backdoor_write_i.value = 0
     dut.backdoor_addr_i.value = 0
     dut.backdoor_wdata_i.value = 0
+    dut.req_valid_i.value = 0
+    dut.req_write_i.value = 0
+    dut.req_addr_i.value = 0
+    dut.req_size_i.value = 0
+    dut.req_wdata_i.value = 0
+    dut.req_wstrb_i.value = 0
+    dut.rsp_ready_i.value = 0
     await clock_edge(dut)
     dut.rst_ni.value = 1
 

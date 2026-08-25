@@ -1,4 +1,4 @@
-"""Pytest orchestration for behavioral byte-addressed system RAM."""
+"""Pytest orchestration for differential 32-bit behavioral RAM reads."""
 
 import os
 from pathlib import Path
@@ -9,15 +9,16 @@ from cocotb_tools.runner import get_runner
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TESTBENCH_DIR = Path(__file__).resolve().parent / "behavioral_system_ram"
+UNIT_TOP_DIR = REPO_ROOT / "tests/unit/behavioral_system_ram"
 
 
-@pytest.mark.unit
-def test_behavioral_system_ram_with_verilator() -> None:
-    """Verify byte boundaries, out-of-range rejection, and reset retention."""
+@pytest.mark.differential
+def test_behavioral_system_ram_read32_against_python_model() -> None:
+    """Compare all aligned words with an independently formulated byte model."""
     seed = int(os.environ.get("RANDOM_SEED", "1"))
     build_root = Path(os.environ.get("PS2_BUILD_ROOT", REPO_ROOT / "build"))
-    build_dir = build_root / "pytest" / "behavioral_system_ram"
-    results_path = build_root / "results" / "cocotb-behavioral-system-ram.xml"
+    build_dir = build_root / "pytest" / "behavioral_system_ram_read32_differential"
+    results_path = build_root / "results" / "cocotb-ram-read32-differential.xml"
     results_path.parent.mkdir(parents=True, exist_ok=True)
 
     runner = get_runner("verilator")
@@ -25,7 +26,7 @@ def test_behavioral_system_ram_with_verilator() -> None:
         sources=[
             REPO_ROOT / "rtl/memory/memory_bus_if.sv",
             REPO_ROOT / "sim/models/behavioral_system_ram.sv",
-            TESTBENCH_DIR / "behavioral_system_ram_bus_top.sv",
+            UNIT_TOP_DIR / "behavioral_system_ram_bus_top.sv",
         ],
         hdl_toplevel="behavioral_system_ram_bus_top",
         parameters={"SIZE_BYTES": 256},
@@ -34,7 +35,7 @@ def test_behavioral_system_ram_with_verilator() -> None:
         always=True,
     )
     result = runner.test(
-        test_module="cocotb_behavioral_system_ram",
+        test_module="cocotb_behavioral_system_ram_read32_differential",
         hdl_toplevel="behavioral_system_ram_bus_top",
         build_dir=build_dir,
         test_dir=TESTBENCH_DIR,

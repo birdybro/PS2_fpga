@@ -200,21 +200,24 @@ milestones:
     dependencies: [M018]
     tests: [byte boundary bounds alias rejection and reset retention test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M019): add byte-addressed behavioral RAM)"
+    commit: 2e77443
     notes: Introduce little-endian behavioral storage without RDRAM timing claims.
   - id: M020
     title: Implement aligned 32-bit RAM reads
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M019]
-    tests: [directed 32-bit RAM read tests]
+    tests:
+      - directed aligned read endian bounds and backpressure test
+      - exhaustive aligned-word Python differential test
+      - byte-memory reference-model boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M020): implement aligned 32-bit RAM reads)"
     notes: Read one aligned little-endian 32-bit word per accepted request.
   - id: M021
     title: Implement aligned 32-bit RAM writes
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M020]
     tests: [directed 32-bit RAM write and readback tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

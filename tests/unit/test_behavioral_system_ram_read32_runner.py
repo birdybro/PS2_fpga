@@ -1,4 +1,4 @@
-"""Pytest orchestration for behavioral byte-addressed system RAM."""
+"""Pytest orchestration for aligned 32-bit behavioral RAM reads."""
 
 import os
 from pathlib import Path
@@ -12,12 +12,12 @@ TESTBENCH_DIR = Path(__file__).resolve().parent / "behavioral_system_ram"
 
 
 @pytest.mark.unit
-def test_behavioral_system_ram_with_verilator() -> None:
-    """Verify byte boundaries, out-of-range rejection, and reset retention."""
+def test_behavioral_system_ram_read32_with_verilator() -> None:
+    """Verify little-endian aligned reads, bounds, and response backpressure."""
     seed = int(os.environ.get("RANDOM_SEED", "1"))
     build_root = Path(os.environ.get("PS2_BUILD_ROOT", REPO_ROOT / "build"))
-    build_dir = build_root / "pytest" / "behavioral_system_ram"
-    results_path = build_root / "results" / "cocotb-behavioral-system-ram.xml"
+    build_dir = build_root / "pytest" / "behavioral_system_ram_read32"
+    results_path = build_root / "results" / "cocotb-behavioral-system-ram-read32.xml"
     results_path.parent.mkdir(parents=True, exist_ok=True)
 
     runner = get_runner("verilator")
@@ -34,7 +34,7 @@ def test_behavioral_system_ram_with_verilator() -> None:
         always=True,
     )
     result = runner.test(
-        test_module="cocotb_behavioral_system_ram",
+        test_module="cocotb_behavioral_system_ram_read32",
         hdl_toplevel="behavioral_system_ram_bus_top",
         build_dir=build_dir,
         test_dir=TESTBENCH_DIR,

@@ -21,6 +21,10 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
   explicit bounds reporting and a byte backdoor reserved for loaders and tests.
   Stored bytes survive reset; writes are suppressed while reset is asserted.
   Power-up byte contents are unspecified until a loader or test initializes them.
+- M020 adds registered, aligned 32-bit reads through `memory_bus_if`. Read data
+  is little-endian in bits 31:0 with upper response bits zero. Responses remain
+  stable under backpressure; writes, other sizes, misalignment, and out-of-range
+  requests are not accepted.
 
 ## Planned boundaries
 
