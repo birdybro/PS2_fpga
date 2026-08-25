@@ -64,8 +64,13 @@ references:
     license: Academic Free License 2.0
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [README, public API documentation, license, EE toolchain sample definitions]
-    notes: AFL-2.0 sample makefile corroborates the mips64r5900el-ps2-elf EE target prefix.
+    consulted_sections:
+      - README
+      - public API documentation
+      - license
+      - EE toolchain sample definitions
+      - EE ELF loader implementation
+    notes: AFL-2.0 sources corroborate the native target and PT_LOAD-to-vaddr EE loading rule.
   - id: ps2tek
     title: PS2Tek PlayStation 2 technical documentation
     url: https://psi-rockin.github.io/ps2tek/index.html
@@ -102,7 +107,8 @@ references:
       - ELF identification
       - data encoding
       - assigned machine values
-    notes: Primary format specification for generic ELF identification and header layout.
+      - program header layout and PT_LOAD semantics
+    notes: Primary specification for ELF identification, headers, and executable segments.
   - id: sgi-mips-iv-index
     title: SGI MIPS IV Instruction Set archive index
     url: https://techpubs.jurassic.nl/manuals/hdwr/developer/

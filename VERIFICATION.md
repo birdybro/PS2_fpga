@@ -271,3 +271,17 @@ the immutable parsed record, and reject representative non-executable object
 types, non-MIPS machine values, big-endian MIPS headers, and an invalid API input
 domain. A separate case varies OS ABI, ABI version, and processor flags to
 ensure the validator does not silently impose undocumented restrictions.
+
+## ELF32 program headers and file-backed segments
+
+Twenty-one directed cases use independent integer-to-byte encoders for the
+fixed program-header table. They decode every field in both generic byte orders;
+reject incorrect entry sizes, truncated tables, and ELF32 table overflow; and
+accept an explicitly empty table. EE loading cases prove that `PT_LOAD` data is
+copied to `p_vaddr` even when `p_paddr` differs, non-load entries are ignored,
+gaps and future zero-fill bytes remain untouched, and returned range metadata is
+exact. Negative cases cover EOF and RAM crossings, 32-bit source and destination
+overflow, a malformed later segment, `p_filesz > p_memsz`, invalid alignment,
+address incongruence, out-of-order entries, full-memory-range overlap, and an
+invalid destination type. Every rejected multi-segment image is checked for no
+partial mutation.

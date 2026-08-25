@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M030 — validate EE ELF machine and endianness
-- Next milestone: M031 — load ELF PT_LOAD segments
+- Last completed milestone: M031 — load ELF PT_LOAD file segments
+- Next milestone: M032 — apply ELF zero-fill segments
 - Current subsystem: simulation loaders
-- Current regression status: 143 tests pass with no skips; EE target policy accepts only little-endian MIPS executables
+- Current regression status: 164 tests pass with no skips; validated PT_LOAD file bytes copy atomically to p_vaddr
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M030 milestone commit (this commit)
+- Most recent pushed commit: M031 milestone commit (this commit)
 
 ## Resume note
 

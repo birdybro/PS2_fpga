@@ -75,7 +75,9 @@ The public PS2 homebrew SDK is licensed under the Academic Free License 2.0.
 Its README, API documentation, license, and sample makefile EE toolchain prefix
 are approved inputs for software, loader, and register-interface planning. The
 consulted `mips64r5900el-ps2-elf-` prefix corroborates the little-endian native
-EE target; no PS2SDK implementation source has guided RTL.
+EE target. Its EE ELF loader's `PT_LOAD` destination behavior informed the
+simulation-only M031 loader; no PS2SDK implementation source has guided
+synthesizable RTL.
 
 <!-- ref:binutils-r5900-review -->
 ### GNU Binutils R5900 support review
@@ -88,9 +90,9 @@ source has not been copied or used as RTL implementation source.
 ### System V generic ABI ELF object file format
 
 The public Xinuos generic ABI specification defines `e_ident`, ELF class and
-data-encoding tags, and the `Elf32_Ehdr` field layout. It guides only generic
-container parsing in M029; PS2 EE target acceptance remains a separate M030
-decision using PS2/MIPS-specific evidence.
+data-encoding tags, `Elf32_Ehdr` and `Elf32_Phdr` layouts, and `PT_LOAD`
+semantics. It guides generic container parsing in M029 and M031; PS2 EE target
+acceptance remains the separate M030 policy using PS2/MIPS-specific evidence.
 
 ## Verification tooling
 

@@ -332,21 +332,24 @@ milestones:
       - object-type machine and big-endian rejection tests
       - OS ABI version flags and validator input-domain policy tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: "self (milestone(M030): validate EE ELF machine and endianness)"
+    commit: 2b5212c
     notes: Accept only the explicitly supported EE test executable format.
   - id: M031
     title: Load ELF PT_LOAD segments
     subsystem: loader
-    status: active
+    status: complete
     dependencies: [M030]
-    tests: [multi-segment ELF load and bounds tests]
+    tests:
+      - endian-aware fixed program-header decode and table boundary tests
+      - p_vaddr multi-segment copy non-load isolation and metadata tests
+      - atomic source destination size alignment ordering and overlap rejection tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M031): load ELF PT_LOAD file segments)"
     notes: Copy file-backed loadable segments to their validated memory addresses.
   - id: M032
     title: Apply ELF zero-fill segments
     subsystem: loader
-    status: pending
+    status: active
     dependencies: [M031]
     tests: [ELF BSS zero-fill and malformed-size tests]
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]

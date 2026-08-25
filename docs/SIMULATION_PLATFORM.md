@@ -134,6 +134,16 @@ validator does not restrict OS ABI, ABI version, or processor flags without a
 documented requirement. This keeps generic ELF decoding distinct from target
 admission and avoids inventing toolchain policy. Memory remains untouched.
 
+M031 decodes the fixed 32-byte `Elf32_Phdr` table and atomically copies the
+file-backed bytes of each `PT_LOAD` entry. System V defines `p_vaddr` as the
+in-memory destination and reserves `p_paddr`; PS2SDK's licensed EE loader uses
+the same virtual-address rule. Before any memory change, the simulator validates
+the complete table and load plan: entry size, table/source/destination bounds,
+ELF32 range overflow, `p_filesz <= p_memsz`, alignment and congruence, ascending
+virtual addresses, and non-overlapping full memory ranges. Non-load entries are
+ignored. Only `p_filesz` bytes are copied in this milestone; the remainder up to
+`p_memsz` is deliberately preserved until M032 adds specified zero-fill.
+
 Downloaded or user-supplied programs remain external unless a tiny purpose-built
 fixture is clearly licensed and intentionally reviewed for inclusion.
 
