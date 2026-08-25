@@ -74,21 +74,21 @@ milestones:
     dependencies: [M006]
     tests: [make lint]
     references: [CONTRIBUTING.md]
-    commit: "self (milestone(M007): add lint configuration)"
+    commit: c44017c
     notes: Lint HDL, Python, documentation state, and repository hygiene.
   - id: M008
     title: Add deterministic randomized-test infrastructure
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M007]
     tests: [make randomized]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M008): add deterministic randomized tests)"
     notes: Make seeds explicit and reproducible.
   - id: M009
     title: Add waveform generation
     subsystem: simulation
-    status: pending
+    status: active
     dependencies: [M008]
     tests: [make waves]
     references: [VERIFICATION.md]

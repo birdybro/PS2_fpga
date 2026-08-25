@@ -36,6 +36,15 @@ def audit_results(report: Path) -> tuple[int, int, int, int]:
     return tests, failures, errors, skipped
 
 
+def record_failing_seed(build_root: Path, suite: str, seed: int) -> Path:
+    """Append a reproducible failing suite seed to an ignored local log."""
+    log_path = build_root / "results" / "failing-seeds.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("a", encoding="utf-8") as log_file:
+        log_file.write(f"suite={suite} seed={seed}\n")
+    return log_path
+
+
 def main() -> int:
     args = parse_args()
     build_root = args.build_root.resolve()
@@ -58,6 +67,9 @@ def main() -> int:
     environment["PS2_BUILD_ROOT"] = str(build_root)
     completed = subprocess.run(command, env=environment, check=False)
     if completed.returncode != 0:
+        if args.suite in {"test", "randomized", "regression"}:
+            log_path = record_failing_seed(build_root, args.suite, args.seed)
+            print(f"failing seed {args.seed} recorded in {log_path}", file=sys.stderr)
         return completed.returncode
 
     tests, failures, errors, skipped = audit_results(report)
@@ -69,6 +81,9 @@ def main() -> int:
         print(f"{args.suite}: no tests were collected", file=sys.stderr)
         return 5
     if failures or errors or skipped:
+        if args.suite in {"test", "randomized", "regression"}:
+            log_path = record_failing_seed(build_root, args.suite, args.seed)
+            print(f"failing seed {args.seed} recorded in {log_path}", file=sys.stderr)
         print(f"{args.suite}: result-integrity gate failed", file=sys.stderr)
         return 1
     return 0

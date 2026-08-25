@@ -54,3 +54,12 @@ suite fails when it collects zero tests or contains any failure, error, or skip.
 format validation over Python, yamllint over machine-readable state, Git
 whitespace validation, and a tracked-file hygiene audit. All checks are fatal;
 there is no warning-only lint path.
+
+## Deterministic randomized tests
+
+`make randomized` runs boundary-heavy randomized tests with default seed `1`.
+Override it with `make randomized RANDOM_SEED=<integer>`; the same outer seed
+reproduces cocotb's derived per-test seed. Assertions include the effective
+cocotb seed and iteration. If a randomized, routine, or regression invocation
+fails, the runner appends its outer seed to ignored
+`build/results/failing-seeds.log` so a later run cannot erase the reproducer.

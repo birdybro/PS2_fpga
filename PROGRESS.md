@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M007 — add lint configuration
-- Next milestone: M008 — add deterministic randomized-test infrastructure
+- Last completed milestone: M008 — add deterministic randomized-test infrastructure
+- Next milestone: M009 — add waveform generation
 - Current subsystem: repository infrastructure
-- Current regression status: 2 regression passes with no failures/errors/skips; Verilator, Ruff, yamllint, and hygiene checks pass
+- Current regression status: randomized seeds 1 and 305419896 pass; full regression and strict lint pass with no skips
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M007 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M008 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
