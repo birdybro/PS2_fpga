@@ -285,3 +285,12 @@ overflow, a malformed later segment, `p_filesz > p_memsz`, invalid alignment,
 address incongruence, out-of-order entries, full-memory-range overlap, and an
 invalid destination type. Every rejected multi-segment image is checked for no
 partial mutation.
+
+## ELF32 memory-only segment tails
+
+Four directed cases exercise the complete EE segment API above the file-only
+loader. They verify initialized data followed by zero-filled BSS, a BSS-only
+segment, preservation of gaps and bytes adjacent to equal-sized file/memory
+segments, and a zero-fill tail ending exactly at the exclusive RAM boundary. A
+multi-segment malformed-size case proves `p_filesz > p_memsz` is rejected before
+any earlier file copy or BSS clear.

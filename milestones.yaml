@@ -344,21 +344,24 @@ milestones:
       - p_vaddr multi-segment copy non-load isolation and metadata tests
       - atomic source destination size alignment ordering and overlap rejection tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: "self (milestone(M031): load ELF PT_LOAD file segments)"
+    commit: cf2d25d
     notes: Copy file-backed loadable segments to their validated memory addresses.
   - id: M032
     title: Apply ELF zero-fill segments
     subsystem: loader
-    status: active
+    status: complete
     dependencies: [M031]
-    tests: [ELF BSS zero-fill and malformed-size tests]
+    tests:
+      - multi-segment initialized-data BSS-only and gap-preservation tests
+      - exclusive RAM boundary and equal-size adjacency tests
+      - atomic malformed-later-segment size rejection test
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M032): apply ELF segment zero-fill)"
     notes: Zero the memory-only tail when segment memory size exceeds file size.
   - id: M033
     title: Publish ELF entry point
     subsystem: loader
-    status: pending
+    status: active
     dependencies: [M032]
     tests: [ELF entry-point propagation test]
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]

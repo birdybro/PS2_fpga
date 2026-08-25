@@ -142,7 +142,14 @@ the complete table and load plan: entry size, table/source/destination bounds,
 ELF32 range overflow, `p_filesz <= p_memsz`, alignment and congruence, ascending
 virtual addresses, and non-overlapping full memory ranges. Non-load entries are
 ignored. Only `p_filesz` bytes are copied in this milestone; the remainder up to
-`p_memsz` is deliberately preserved until M032 adds specified zero-fill.
+`p_memsz` is deliberately preserved by the file-only diagnostic API.
+
+M032 adds the complete segment-loading API. It reuses the same whole-image plan,
+copies each file payload, and then writes zero to exactly the half-open tail
+`[p_vaddr + p_filesz, p_vaddr + p_memsz)`. Segments with equal file and memory
+sizes leave adjacent RAM untouched; segments with no file bytes may initialize
+an entire BSS range. Validation still completes before the first copy or clear,
+so a malformed later segment cannot partially alter an earlier one.
 
 Downloaded or user-supplied programs remain external unless a tiny purpose-built
 fixture is clearly licensed and intentionally reviewed for inclusion.

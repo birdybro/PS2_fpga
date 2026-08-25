@@ -305,19 +305,43 @@ def _plan_file_segment_loads(
     return tuple(loads)
 
 
-def load_ee_elf32_file_segments(
+def _prepare_ee_segment_load(
     memory: bytearray,
     image: bytes | bytearray | memoryview,
-) -> tuple[Elf32SegmentLoad, ...]:
-    """Atomically copy EE PT_LOAD file bytes to their virtual addresses."""
+) -> tuple[bytes, tuple[Elf32SegmentLoad, ...]]:
     _validate_elf_memory(memory)
     payload = _coerce_elf_image(image)
     header = parse_ee_elf32_header(payload)
     program_headers = _parse_program_headers(payload, header)
     loads = _plan_file_segment_loads(len(memory), len(payload), program_headers)
+    return payload, loads
+
+
+def load_ee_elf32_file_segments(
+    memory: bytearray,
+    image: bytes | bytearray | memoryview,
+) -> tuple[Elf32SegmentLoad, ...]:
+    """Atomically copy EE PT_LOAD file bytes to their virtual addresses."""
+    payload, loads = _prepare_ee_segment_load(memory, image)
 
     for load in loads:
         memory[load.start_address : load.file_end_address] = payload[
             load.file_offset : load.file_end_offset
         ]
+    return loads
+
+
+def load_ee_elf32_segments(
+    memory: bytearray,
+    image: bytes | bytearray | memoryview,
+) -> tuple[Elf32SegmentLoad, ...]:
+    """Atomically load EE PT_LOAD file bytes and zero each memory-only tail."""
+    payload, loads = _prepare_ee_segment_load(memory, image)
+
+    for load in loads:
+        memory[load.start_address : load.file_end_address] = payload[
+            load.file_offset : load.file_end_offset
+        ]
+        zero_fill_size = load.memory_size_bytes - load.file_size_bytes
+        memory[load.file_end_address : load.memory_end_address] = bytes(zero_fill_size)
     return loads

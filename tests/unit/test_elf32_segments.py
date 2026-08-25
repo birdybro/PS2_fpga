@@ -12,6 +12,7 @@ from sim.loaders.elf32 import (
     Elf32ProgramHeader,
     ElfFormatError,
     load_ee_elf32_file_segments,
+    load_ee_elf32_segments,
     parse_elf32_program_headers,
 )
 
@@ -382,3 +383,97 @@ def test_load_file_segments_requires_mutable_byte_memory() -> None:
     image = build_elf32_image([])
     with pytest.raises(TypeError, match="bytearray"):
         load_ee_elf32_file_segments(b"memory", image)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+def test_load_segments_zeroes_memory_tails_and_preserves_gaps() -> None:
+    """Zero each BSS tail while preserving bytes outside complete segment ranges."""
+    image = build_elf32_image(
+        [
+            program_header(
+                file_offset=0x100,
+                virtual_address=0x10,
+                file_size=3,
+                memory_size=7,
+            ),
+            program_header(
+                file_offset=0x110,
+                virtual_address=0x30,
+                file_size=0,
+                memory_size=4,
+            ),
+        ],
+        chunks=((0x100, b"ABC"), (0x110, b"")),
+    )
+    memory = bytearray([0xA5] * 0x40)
+
+    loads = load_ee_elf32_segments(memory, image)
+
+    assert [load.program_header_index for load in loads] == [0, 1]
+    assert memory[:0x10] == bytes([0xA5] * 0x10)
+    assert memory[0x10:0x13] == b"ABC"
+    assert memory[0x13:0x17] == bytes(4)
+    assert memory[0x17:0x30] == bytes([0xA5] * (0x30 - 0x17))
+    assert memory[0x30:0x34] == bytes(4)
+    assert memory[0x34:] == bytes([0xA5] * (0x40 - 0x34))
+
+
+@pytest.mark.unit
+def test_load_segments_zero_fills_to_exclusive_memory_boundary() -> None:
+    """Allow a BSS tail whose final byte is the final simulated RAM byte."""
+    image = build_elf32_image(
+        [
+            program_header(
+                file_offset=0x100,
+                virtual_address=0x3C,
+                file_size=1,
+                memory_size=4,
+            )
+        ],
+        chunks=((0x100, b"Z"),),
+    )
+    memory = bytearray([0xA5] * 0x40)
+    load = load_ee_elf32_segments(memory, image)[0]
+    assert load.memory_end_address == len(memory)
+    assert memory[0x3C:] == b"Z\x00\x00\x00"
+    assert memory[:0x3C] == bytes([0xA5] * 0x3C)
+
+
+@pytest.mark.unit
+def test_load_segments_with_equal_sizes_does_not_zero_adjacent_memory() -> None:
+    """Keep the empty BSS interval from touching the byte after a segment."""
+    image = build_elf32_image(
+        [program_header(file_offset=0x100, virtual_address=0x20)],
+        chunks=((0x100, b"DATA"),),
+    )
+    memory = bytearray([0xA5] * 0x40)
+    load_ee_elf32_segments(memory, image)
+    assert memory[0x20:0x24] == b"DATA"
+    assert memory[0x24:0x25] == bytes([0xA5])
+
+
+@pytest.mark.unit
+def test_load_segments_rejects_later_malformed_size_without_partial_zero_fill() -> None:
+    """Reject p_filesz greater than p_memsz before copying or clearing any segment."""
+    image = build_elf32_image(
+        [
+            program_header(
+                file_offset=0x100,
+                virtual_address=0x10,
+                file_size=2,
+                memory_size=6,
+            ),
+            program_header(
+                file_offset=0x110,
+                virtual_address=0x30,
+                file_size=4,
+                memory_size=3,
+            ),
+        ],
+        chunks=((0x100, b"OK"), (0x110, b"FAIL")),
+    )
+    memory = bytearray([0xA5] * 0x40)
+    before = memory[:]
+    with pytest.raises(ElfFormatError, match=r"file size.*exceeds memory size"):
+        load_ee_elf32_segments(memory, image)
+    assert memory == before
