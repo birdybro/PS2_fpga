@@ -27,6 +27,7 @@ SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
 XOR_FUNCTION = 38
+NOR_FUNCTION = 39
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -202,6 +203,14 @@ def encode_xor(destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | XOR_FUNCTION
+
+
+def encode_nor(destination: int, source_a: int, source_b: int) -> int:
+    """Encode canonical SPECIAL NOR with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(source_a)
+    rt = _require_gpr_index(source_b)
+    return (rs << 21) | (rt << 16) | (rd << 11) | NOR_FUNCTION
 
 
 def _merge_scalar(old_destination: int, scalar: int) -> int:
@@ -386,6 +395,15 @@ class R5900State:
         result = _merge_scalar(self.read_gpr(rd), self.read_gpr(rs) ^ self.read_gpr(rt))
         return self.write_gpr(rd, result)
 
+    def _step_nor(self, word: int) -> R5900State:
+        """NOR the low 64-bit scalar lanes and preserve the destination upper lane."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        scalar = ~(self.read_gpr(rs) | self.read_gpr(rt)) & SCALAR_MASK
+        result = _merge_scalar(self.read_gpr(rd), scalar)
+        return self.write_gpr(rd, result)
+
     def _step_register_alu(self, word: int, function: int) -> R5900State:
         """Dispatch one admitted SPECIAL register ALU operation."""
         if function == ADDU_FUNCTION:
@@ -396,7 +414,9 @@ class R5900State:
             return self._step_and(word)
         if function == OR_FUNCTION:
             return self._step_or(word)
-        return self._step_xor(word)
+        if function == XOR_FUNCTION:
+            return self._step_xor(word)
+        return self._step_nor(word)
 
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
@@ -418,6 +438,7 @@ class R5900State:
                 AND_FUNCTION,
                 OR_FUNCTION,
                 XOR_FUNCTION,
+                NOR_FUNCTION,
             ):
                 updated = self._step_register_alu(word, function)
             elif opcode == ANDI_OPCODE:

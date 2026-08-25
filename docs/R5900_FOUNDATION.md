@@ -295,6 +295,15 @@ source upper lanes; both destination aliases; register zero; PC wrap; exact
 events; and reserved-field rejection. Twelve boundary plus 512 randomized cases
 make XOR the seventeenth complete ISA coverage entry.
 
+Canonical NOR admits every `rs`, `rt`, and `rd` under SPECIAL function `0x27`
+when reserved `sa` is zero. It complements the inclusive combination of both
+low 64-bit scalar source lanes and retains old destination bits 127:64.
+Directed checks cover zero, all-ones, alternating, sparse, cross-word, and
+bit-63 patterns; the exact 64-bit complement boundary; ignored source upper
+lanes; both destination aliases; identical sources; register zero; PC wrap;
+exact events; and reserved-field rejection. Twelve boundary plus 512 randomized
+cases make NOR the eighteenth complete ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

@@ -481,6 +481,18 @@ reserved-field rejection. A deterministic differential/randomized test executes
 twelve boundary plus 512 seeded instructions and compares PC, complete GPR
 state, writeback, and retirement after every instruction.
 
+## R5900 NOR
+
+SPECIAL function `0x27` with reserved `sa` clear now executes NOR for every
+source and destination register field. Four directed cocotb cases cover zero,
+all-ones, alternating, sparse, cross-word, and bit-63 scalar patterns; exact
+64-bit complement masking; ignored source bits 127:64; preserved destination
+bits 127:64; both destination aliases; identical sources; source and
+destination zero; PC wrap; exact events; and reserved-field rejection. A
+deterministic differential/randomized test executes twelve boundary plus 512
+seeded instructions and compares PC, complete GPR state, writeback, and
+retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,
