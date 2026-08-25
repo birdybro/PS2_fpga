@@ -164,21 +164,21 @@ milestones:
     dependencies: [M014]
     tests: [clock initial-level period duty-cycle and edge-count directed test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M015): add deterministic simulation clock)"
+    commit: a3fba60
     notes: Provide deterministic simulation-only clock generation.
   - id: M016
     title: Add simulation reset sequencer
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M015]
-    tests: [reset duration and release-edge directed test]
+    tests: [reset asserted-edge count falling-edge release and stability test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M016): add deterministic reset sequencer)"
     notes: Drive deterministic active-low reset independently from architectural RTL.
   - id: M017
     title: Define internal memory transaction interface
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M016]
     tests: [interface elaboration and handshake smoke test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

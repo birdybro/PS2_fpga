@@ -8,6 +8,10 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M015 provides `sim_clock`, a simulation-only clock source with a 10 ns default
   period, low initial level, 1 ps precision, and a fatal parameter check for
   periods that cannot be divided into equal half cycles.
+- M016 provides `sim_reset`, a simulation-only active-low reset sequencer. It
+  asserts before the first clock edge, holds for four rising edges by default,
+  releases on the following falling edge to avoid a sequential sampling race,
+  and remains released thereafter.
 
 ## Planned boundaries
 

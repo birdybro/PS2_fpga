@@ -130,3 +130,10 @@ clock at an explicit time-valued period. Its directed cocotb test measures the
 initial rising edge, four complete periods, and the following falling edge at
 1 ps precision. Strict lint covers simulation SystemVerilog separately with
 Verilator timing enabled.
+
+## Simulation reset
+
+The simulation-only `sim_reset` model holds active-low reset for a positive,
+parameterized rising-edge count. Its isolated test composes the clock and reset
+models, verifies reset before the first edge, samples every asserted edge,
+checks exact falling-edge release, and observes three additional stable cycles.
