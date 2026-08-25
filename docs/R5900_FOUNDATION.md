@@ -31,12 +31,18 @@ remain pending rather than inheriting generic MIPS behavior silently.
 
 ## Initial architectural state
 
-The functional model will expose 32 general-purpose registers with 128-bit
-storage, an immutable all-zero GPR 0, a 32-bit program counter, the current
-32-bit instruction, multi-cycle control state, reserved-instruction status, and
-one centralized GPR writeback event. HI/LO-family state, COP0, exception entry,
-branches and delay slots, data-memory operations, FPU, and MMI state are added
-only by later granular roadmaps.
+The timing-free Python reference state contains 32 general-purpose registers
+with 128-bit storage, an immutable all-zero GPR 0, and a 32-bit program counter.
+It is a frozen snapshot: computed GPR and PC updates return a new value and mask
+Python integers explicitly to the architectural width. Its validated initial
+PC rejects out-of-range loader input rather than silently truncating it.
+
+The functional RTL will separately expose the current 32-bit instruction,
+multi-cycle control state, reserved-instruction status, and one centralized GPR
+writeback event as those milestones arrive. Those timing and diagnostic fields
+do not belong in the reference model's architectural snapshot. HI/LO-family
+state, COP0, exception entry, branches and delay slots, data-memory operations,
+FPU, and MMI state are added only by later granular roadmaps.
 
 The simulation loader's published ELF entry point supplies the initial PC for
 early software tests. This is a harness start-address mechanism, not a claim

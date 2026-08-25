@@ -126,6 +126,16 @@ exception testing independently. Summary states cannot become `partial` or
 mutation tests prove that a missing or duplicate instruction, false completion,
 wrong milestone owner, and unknown source all fail verification.
 
+## R5900 architectural reference state
+
+`reference/ee/r5900.py` defines a timing-free frozen state snapshot containing
+32 explicitly bounded 128-bit GPRs and a 32-bit PC. A validated initializer
+accepts the simulation loader's entry point without truncation. Computed GPR and
+PC updates explicitly mask Python's unlimited integers, return a new snapshot,
+and preserve all 128 bits of GPR zero. Thirty directed cases cover both width
+boundaries, malformed snapshots, invalid types and indices, copy isolation,
+every writable register, overflow normalization, and zero-register suppression.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

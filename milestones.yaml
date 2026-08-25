@@ -505,21 +505,26 @@ milestones:
       - milestone ownership mutation test
       - unknown source provenance mutation test
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md, REFERENCES.md]
-    commit: "self (milestone(M044): establish R5900 ISA coverage matrix)"
+    commit: a73bd44
     notes: Track decode, implementation, and every verification layer before RTL instructions.
   - id: M045
     title: Define Python R5900 architectural state
     subsystem: reference
-    status: active
+    status: complete
     dependencies: [M044]
-    tests: [reference state width reset copy and zero-register tests]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Establish an immutable-step functional model independent of RTL control structure.
+    tests:
+      - reference state initial PC and exact width boundary tests
+      - immutable copy and every-writable-GPR update test
+      - explicit GPR and PC normalization tests
+      - register-zero suppression test
+      - malformed snapshot index and type rejection tests
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M045): define Python R5900 architectural state)"
+    notes: Establish immutable timing-free state transitions independent of RTL control structure.
   - id: M046
     title: Define RTL R5900 architectural state types
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M045]
     tests: [R5900 package and debug-state interface compilation tests]
     references: [docs/R5900_FOUNDATION.md, docs/CONVENTIONS.md]
