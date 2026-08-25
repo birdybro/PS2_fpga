@@ -186,6 +186,18 @@ multi-edge hold; wrap to zero; repeated advance; aligned and unaligned redirect;
 simultaneous redirect/advance; and reset resampling with highest priority. No
 alignment or reset-vector rule is invented at this storage boundary.
 
+## R5900 functional control states
+
+The three-bit enum defines fetch-request, fetch-response, decode, execute, and
+writeback states. Each state holds until its own completion input and advances
+to exactly one successor; reset returns to fetch-request. Two legal cocotb cases
+stall every state, traverse a complete loop, assert irrelevant completions,
+exercise simultaneous events, and prove reset priority. A reusable assertion
+checker is instantiated by the controller and rejects every value outside the
+five-state set. A test-only second checker receives enum value seven and proves
+the invariant terminates assertion-enabled simulation with the expected marker,
+without forcing or multiply driving controller RTL.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

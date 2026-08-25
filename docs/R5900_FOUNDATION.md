@@ -92,6 +92,12 @@ produce a diagnostic reserved-instruction event with the faulting PC and word;
 architectural COP0 exception entry is a later milestone and must replace that
 diagnostic through tested behavior.
 
+The five control states are now a typed three-bit enum. Each state holds until
+its corresponding completion event, advances to only its documented successor,
+and returns from writeback to fetch-request. Reset enters fetch-request. A
+reusable fatal checker rejects the remaining three enum values. The completion
+inputs are functional boundaries for later modules, not fixed cycle latencies.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

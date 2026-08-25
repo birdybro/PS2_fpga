@@ -19,6 +19,8 @@ all 128 bits of GPR zero above that storage.
 `rtl/ee/r5900/r5900_pc.sv` holds the functional 32-bit PC and accepts an
 external simulation start address; physical reset-vector policy remains outside
 this early CPU boundary.
+`rtl/ee/r5900/r5900_control.sv` is a five-state, completion-gated functional
+sequencer. It expresses no pipeline, latency, issue-width, or hazard timing.
 
 ## Repository boundaries
 

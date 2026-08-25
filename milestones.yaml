@@ -573,21 +573,26 @@ milestones:
       - redirect and simultaneous-advance priority test
       - reset priority and start-address resampling test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M049): implement R5900 program counter state)"
+    commit: 237f404
     notes: Accept an exact simulation start address while deferring reset-vector policy to COP0.
   - id: M050
     title: Define R5900 multi-cycle control states
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M049]
-    tests: [control reset legal transition and illegal-state assertion tests]
+    tests:
+      - three-bit control enum compile-time width test
+      - every-state stall and complete legal-loop test
+      - irrelevant and simultaneous completion isolation test
+      - reset-state and reset-priority test
+      - fatal illegal-enum assertion injection test
     references: [docs/R5900_FOUNDATION.md, ARCHITECTURE.md]
-    commit: null
-    notes: Establish functional fetch decode execute and writeback sequencing.
+    commit: "self (milestone(M050): define R5900 multi-cycle control states)"
+    notes: Establish completion-gated functional fetch decode execute and writeback sequencing.
   - id: M051
     title: Issue R5900 32-bit instruction fetch requests
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M050]
     tests: [fetch address size validity stall and single-acceptance tests]
     references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]
