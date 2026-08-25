@@ -6,6 +6,7 @@ from cocotb.triggers import Timer
 OPERATION_NONE = 0
 OPERATION_NOP = 1
 OPERATION_SLL = 2
+OPERATION_SRL = 3
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -37,6 +38,20 @@ async def test_r5900_decode_recognizes_canonical_nonzero_sll_encodings(dut) -> N
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_canonical_srl_encodings(dut) -> None:
+    """Admit SRL variable fields while the SPECIAL reserved field remains zero."""
+    for rt, rd, shift_amount in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rt << 16) | (rd << 11) | (shift_amount << 6) | 2
+        await check_decode(dut, word, True, OPERATION_SRL)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep all 63 non-SPECIAL primary opcode spaces closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
@@ -48,7 +63,7 @@ async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
 @cocotb.test()
 async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(dut) -> None:
     """Reject every unsupported function and nonzero reserved SLL rs field."""
-    for function in range(1, 64):
+    for function in (*range(1, 2), *range(3, 64)):
         await check_decode(dut, function, False, OPERATION_NONE)
 
     for value in (1, 1 << 4, 0x1F):

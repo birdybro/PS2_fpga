@@ -2,7 +2,7 @@
 
 `default_nettype none
 
-module r5900_sll_top (
+module r5900_shift_immediate_top (
     input  logic          clk_i,
     input  logic          rst_ni,
     input  logic [31:0]   start_pc_i,

@@ -35,7 +35,8 @@ package r5900_types_pkg;
     typedef enum logic [4:0] {
         R5900_OPERATION_NONE = 5'd0,
         R5900_OPERATION_NOP  = 5'd1,
-        R5900_OPERATION_SLL  = 5'd2
+        R5900_OPERATION_SLL  = 5'd2,
+        R5900_OPERATION_SRL  = 5'd3
     } r5900_operation_t;
 
     typedef struct packed {

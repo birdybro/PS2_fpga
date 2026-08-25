@@ -301,6 +301,20 @@ layers executes seven boundary plus 512 seeded instructions sequentially and
 compares the PC, complete 4,096-bit GPR state, writeback, and retirement after
 every instruction.
 
+## R5900 SRL
+
+Canonical SPECIAL function-two words with reserved `rs` equal to zero now
+execute as 32-bit SRL. Five directed cocotb cases cover counts 0, 1, 30, and
+31; logical zero fill; the zero-count negative-word result that still requires
+scalar sign extension; ignored source high bits; preserved destination bits
+127:64; `rd == rt`; GPR-zero suppression; SLL/SRL operation separation;
+reserved-field rejection; PC wrap; and exact writeback and retirement events.
+SLL and SRL share only a composition harness, while their cocotb expectations
+and Python transitions remain operation-specific. A deterministic test marked
+in both differential and randomized layers executes seven boundary plus 512
+seeded SRL instructions sequentially and compares the PC, complete GPR state,
+writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

@@ -131,11 +131,12 @@ the machine-readable ISA coverage therefore remains pending until instruction
 admission and semantics pass their own milestones.
 
 Decode admission is explicit and closed by default. The five-bit operation enum
-contains no-operation, NOP, and SLL. Exact word zero selects the canonical NOP
-alias; other SPECIAL function-zero words select SLL only while reserved `rs` is
-zero. Every other primary and SPECIAL encoding remains illegal even if a later
-milestone plans it. This makes instruction support grow only through
-independently verified admissions.
+contains no-operation, NOP, SLL, and SRL. Exact word zero selects the canonical
+NOP alias; other SPECIAL function-zero words select SLL, while SPECIAL
+function-two words select SRL. Both require reserved `rs` to be zero. Every
+other primary and SPECIAL encoding remains illegal even if a later milestone
+plans it. This makes instruction support grow only through independently
+verified admissions.
 
 A decode-dispatch boundary now consumes that closed decoder. A valid admitted
 word produces an execute-valid operation, while a valid unsupported word cannot
@@ -169,6 +170,14 @@ all-zero encoding remains NOP and issues no commit at all. Both aliasing
 `rd == rt` and distinct source/destination forms read the original state before
 the complete 128-bit destination is formed. The independent Python transition
 and RTL executor now make SLL the second complete ISA coverage entry.
+
+Canonical SRL uses the same destination merge after logically shifting
+`rt[31:0]` right by the immediate count. Zeroes enter at the top of the word,
+but the completed 32-bit word is still interpreted by the EE scalar destination
+rule: a count of zero can therefore preserve bit 31 and produce ones in bits
+63:32, while every nonzero count necessarily clears bit 31. Source bits 127:32
+remain irrelevant and destination bits 127:64 remain intact. Directed and
+randomized differential tests make SRL the third complete ISA coverage entry.
 
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing

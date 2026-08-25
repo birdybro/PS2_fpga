@@ -705,21 +705,32 @@ milestones:
       - docs/R5900_FOUNDATION.md
       - coverage/r5900_isa.yaml
       - REFERENCES.md
-    commit: "self (milestone(M058): implement R5900 SLL)"
+    commit: b20a8cc
     notes: Preserve rd bits 127:64 while sign-extending the shifted word through bits 63:32.
   - id: M059
     title: Implement R5900 SRL
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M058]
-    tests: [directed SRL boundaries, randomized SRL differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Cover shift counts zero one thirty and thirty-one with asymmetric values.
+    tests:
+      - canonical encoding and reserved rs rejection tests
+      - zero one thirty and thirty-one logical shift boundary tests
+      - zero-count negative-word scalar sign-extension test
+      - source high-bit independence and destination upper-lane preservation tests
+      - rd equals rt and GPR-zero suppression tests
+      - exact writeback and retirement event tests
+      - independent Python model validation tests
+      - deterministic 519-case sequential randomized differential test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - coverage/r5900_isa.yaml
+      - REFERENCES.md
+    commit: "self (milestone(M059): implement R5900 SRL)"
+    notes: Zero-fill the word shift before applying the shared EE scalar destination rule.
   - id: M060
     title: Implement R5900 SRA
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M059]
     tests: [directed SRA signed boundaries, randomized SRA differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

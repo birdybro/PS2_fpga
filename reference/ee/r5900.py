@@ -12,6 +12,7 @@ INSTRUCTION_MASK = (1 << INSTRUCTION_WIDTH) - 1
 NOP_INSTRUCTION = 0
 SPECIAL_OPCODE = 0
 SLL_FUNCTION = 0
+SRL_FUNCTION = 2
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -68,6 +69,23 @@ def encode_sll(destination: int, source: int, shift_amount: int) -> int:
     rt = _require_gpr_index(source)
     sa = _require_shift_amount(shift_amount)
     return (rt << 16) | (rd << 11) | (sa << 6)
+
+
+def encode_srl(destination: int, source: int, shift_amount: int) -> int:
+    """Encode one canonical SPECIAL SRL word with its reserved field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    sa = _require_shift_amount(shift_amount)
+    return (rt << 16) | (rd << 11) | (sa << 6) | SRL_FUNCTION
+
+
+def _merge_scalar_word(old_destination: int, word: int) -> int:
+    """Sign-extend one word through the scalar lane and preserve the upper lane."""
+    normalized_word = word & WORD_MASK
+    scalar_result = normalized_word
+    if normalized_word & (1 << (WORD_WIDTH - 1)):
+        scalar_result |= SCALAR_MASK ^ WORD_MASK
+    return (old_destination & (GPR_MASK ^ SCALAR_MASK)) | scalar_result
 
 
 @dataclass(frozen=True, slots=True)
@@ -131,13 +149,18 @@ class R5900State:
             rt = (word >> 16) & 0x1F
             rd = (word >> 11) & 0x1F
             shift_amount = (word >> 6) & 0x1F
-            shifted_word = (self.read_gpr(rt) & WORD_MASK) << shift_amount
-            shifted_word &= WORD_MASK
-            scalar_result = shifted_word
-            if shifted_word & (1 << (WORD_WIDTH - 1)):
-                scalar_result |= SCALAR_MASK ^ WORD_MASK
             old_destination = self.read_gpr(rd)
-            result = (old_destination & (GPR_MASK ^ SCALAR_MASK)) | scalar_result
+            shifted_word = (self.read_gpr(rt) & WORD_MASK) << shift_amount
+            result = _merge_scalar_word(old_destination, shifted_word)
+            return self.write_gpr(rd, result).write_pc(self.pc + 4)
+
+        if opcode == SPECIAL_OPCODE and reserved_rs == 0 and function == SRL_FUNCTION:
+            rt = (word >> 16) & 0x1F
+            rd = (word >> 11) & 0x1F
+            shift_amount = (word >> 6) & 0x1F
+            old_destination = self.read_gpr(rd)
+            shifted_word = (self.read_gpr(rt) & WORD_MASK) >> shift_amount
+            result = _merge_scalar_word(old_destination, shifted_word)
             return self.write_gpr(rd, result).write_pc(self.pc + 4)
 
         msg = f"unsupported R5900 instruction: 0x{word:08x}"

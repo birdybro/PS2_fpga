@@ -6,6 +6,7 @@ from cocotb.triggers import Timer
 OPERATION_NONE = 0
 OPERATION_NOP = 1
 OPERATION_SLL = 2
+OPERATION_SRL = 3
 
 
 async def check_dispatch(
@@ -57,6 +58,17 @@ async def test_r5900_decode_dispatch_sends_canonical_sll_to_execute(dut) -> None
         (0x0010_0000, 0x001F_FFC0),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SLL, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_srl_to_execute(dut) -> None:
+    """Dispatch SRL variable fields without a reserved diagnostic."""
+    for pc, instruction in (
+        (0, 0x0000_0002),
+        (4, 0x0001_0002),
+        (0x0010_0000, 0x001F_FFC2),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SRL, False))
 
 
 @cocotb.test()

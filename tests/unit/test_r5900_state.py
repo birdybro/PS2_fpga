@@ -11,6 +11,7 @@ from reference.ee.r5900 import (
     R5900State,
     UnsupportedInstructionError,
     encode_sll,
+    encode_srl,
 )
 
 EE_PROGRAM_START = 0x0010_0000
@@ -18,6 +19,7 @@ PRESERVED_GPR_VALUE = 0x55
 PC_COPY_START = 0x1000
 ALIASED_SLL_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0010
 TWO_INSTRUCTION_PC = 8
+ALIASED_SRL_RESULT = 0xCAFE_BABE_1234_5678_0000_0000_0800_0001
 
 
 @pytest.mark.unit
@@ -226,6 +228,55 @@ def test_r5900_sll_encoder_rejects_non_fields(
     """Reject values that cannot occupy canonical SLL register and shift fields."""
     with pytest.raises(error):
         encode_sll(destination, source, shift_amount)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("shift_amount", "low_word", "expected_scalar"),
+    [
+        (0, 0x7FFF_FFFF, 0x0000_0000_7FFF_FFFF),
+        (0, 0xF000_0001, 0xFFFF_FFFF_F000_0001),
+        (1, 0xF000_0000, 0x0000_0000_7800_0000),
+        (30, 0xF000_0000, 0x0000_0000_0000_0003),
+        (31, 0x8000_0000, 0x0000_0000_0000_0001),
+    ],
+)
+def test_r5900_reference_srl_word_and_destination_width_rules(
+    shift_amount: int,
+    low_word: int,
+    expected_scalar: int,
+) -> None:
+    """Logically shift rt low word, then apply the EE scalar destination rule."""
+    source = 0xDEAD_BEEF_CAFE_F00D_1234_5678_0000_0000 | low_word
+    old_destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source).write_gpr(5, old_destination)
+
+    updated = state.step(encode_srl(5, 3, shift_amount))
+
+    assert updated.read_gpr(5) == (old_destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_srl_reads_before_alias_and_protects_zero() -> None:
+    """Handle rd equal to rt and legal SRL writes targeting GPR zero."""
+    original = 0xCAFE_BABE_1234_5678_8765_4321_8000_0010
+    state = R5900State.initial().write_gpr(7, original)
+    aliased = state.step(encode_srl(7, 7, 4))
+    assert aliased.read_gpr(7) == ALIASED_SRL_RESULT
+
+    discarded = aliased.step(encode_srl(0, 7, 31))
+    assert discarded.read_gpr(0) == 0
+    assert discarded.read_gpr(7) == aliased.read_gpr(7)
+    assert discarded.pc == TWO_INSTRUCTION_PC
+
+
+@pytest.mark.unit
+def test_r5900_srl_encoder_sets_function_and_variable_fields() -> None:
+    """Place canonical SRL variable fields without changing reserved rs."""
+    assert encode_srl(31, 17, 31) == (17 << 16) | (31 << 11) | (31 << 6) | 2
 
 
 @pytest.mark.unit

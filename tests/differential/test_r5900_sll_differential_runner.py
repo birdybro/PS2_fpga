@@ -8,7 +8,7 @@ import pytest
 from cocotb_tools.runner import get_runner
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-UNIT_TESTBENCH_DIR = REPO_ROOT / "tests/unit/r5900_sll"
+HARNESS_DIR = REPO_ROOT / "tests/unit/r5900_shift_immediate"
 TESTBENCH_DIR = Path(__file__).resolve().parent / "r5900_sll"
 
 
@@ -23,7 +23,7 @@ def sll_sources() -> list[Path]:
         REPO_ROOT / "rtl/ee/r5900/r5900_decode_dispatch.sv",
         REPO_ROOT / "rtl/ee/r5900/r5900_writeback.sv",
         REPO_ROOT / "rtl/ee/r5900/r5900_execute.sv",
-        UNIT_TESTBENCH_DIR / "r5900_sll_top.sv",
+        HARNESS_DIR / "r5900_shift_immediate_top.sv",
     ]
 
 
@@ -38,14 +38,14 @@ def test_r5900_sll_randomized_differential() -> None:
     runner = get_runner("verilator")
     runner.build(
         sources=sll_sources(),
-        hdl_toplevel="r5900_sll_top",
+        hdl_toplevel="r5900_shift_immediate_top",
         build_args=["-Wall", "--assert", "--timing"],
         build_dir=build_dir,
         always=True,
     )
     result = runner.test(
         test_module="cocotb_r5900_sll_differential",
-        hdl_toplevel="r5900_sll_top",
+        hdl_toplevel="r5900_shift_immediate_top",
         build_dir=build_dir,
         test_dir=TESTBENCH_DIR,
         seed=seed,

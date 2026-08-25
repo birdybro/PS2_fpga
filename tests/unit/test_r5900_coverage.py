@@ -57,10 +57,10 @@ def test_r5900_coverage_rejects_duplicate_mnemonic() -> None:
 def test_r5900_coverage_rejects_false_complete_status() -> None:
     """Do not report an unimplemented or untested instruction as complete."""
     coverage = deepcopy(load_yaml("coverage/r5900_isa.yaml"))
-    coverage["instructions"][2]["status"] = "complete"
+    coverage["instructions"][3]["status"] = "complete"
 
     errors = validate(coverage)
-    assert "SRL complete status requires implementation and all required tests" in errors
+    assert "SRA complete status requires implementation and all required tests" in errors
 
 
 @pytest.mark.unit

@@ -37,7 +37,7 @@ R5900_WRITEBACK := rtl/ee/r5900/r5900_writeback.sv
 R5900_WRITEBACK_LINT_TOP := tests/unit/r5900_writeback/r5900_writeback_top.sv
 R5900_EXECUTE := rtl/ee/r5900/r5900_execute.sv
 R5900_NOP_LINT_TOP := tests/unit/r5900_nop/r5900_nop_top.sv
-R5900_SLL_LINT_TOP := tests/unit/r5900_sll/r5900_sll_top.sv
+R5900_SHIFT_IMMEDIATE_LINT_TOP := tests/unit/r5900_shift_immediate/r5900_shift_immediate_top.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
@@ -117,10 +117,10 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
 		$(R5900_PC) $(R5900_GPR_STORAGE) $(R5900_GPR_FILE) $(R5900_DECODE) \
 		$(R5900_DECODE_DISPATCH) $(R5900_WRITEBACK) $(R5900_EXECUTE) $(R5900_NOP_LINT_TOP)
-	$(VERILATOR) --lint-only -Wall --assert --top-module r5900_sll_top \
+	$(VERILATOR) --lint-only -Wall --assert --top-module r5900_shift_immediate_top \
 		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
 		$(R5900_PC) $(R5900_GPR_STORAGE) $(R5900_GPR_FILE) $(R5900_DECODE) \
-		$(R5900_DECODE_DISPATCH) $(R5900_WRITEBACK) $(R5900_EXECUTE) $(R5900_SLL_LINT_TOP)
+		$(R5900_DECODE_DISPATCH) $(R5900_WRITEBACK) $(R5900_EXECUTE) $(R5900_SHIFT_IMMEDIATE_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
 		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
 		rtl/memory/memory_bus_protocol_checker.sv $(SIM_SOURCES)
