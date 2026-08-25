@@ -436,6 +436,18 @@ reserved-field rejection. A deterministic differential/randomized test executes
 twelve boundary plus 512 seeded instructions and compares PC, complete GPR
 state, writeback, and retirement after every instruction.
 
+## R5900 SUBU
+
+SPECIAL function `0x23` with reserved `sa` clear now executes SUBU for every
+source and destination register field. Four directed cocotb cases cover zero,
+one, signed extrema, and all-ones operands; positive and negative 32-bit borrow
+wrap without an overflow exception; operand ordering; scalar sign extension;
+ignored source bits 127:32; preserved destination bits 127:64; both destination
+aliases; identical sources; source and destination zero; PC wrap; exact events;
+and reserved-field rejection. A deterministic differential/randomized test
+executes twelve boundary plus 512 seeded instructions and compares PC, complete
+GPR state, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

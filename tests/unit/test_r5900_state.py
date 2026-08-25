@@ -21,6 +21,7 @@ from reference.ee.r5900 import (
     encode_srav,
     encode_srl,
     encode_srlv,
+    encode_subu,
     encode_xori,
 )
 
@@ -48,6 +49,10 @@ ALIASED_ADDIU_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0000
 ALIASED_ADDU_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0000
 ALIASED_ADDU_RT_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_8000_0000
 DOUBLED_ADDU_SOURCE_RESULT = 2
+ENCODED_SUBU_EXAMPLE = 0x02F1_F823
+ALIASED_SUBU_RS_RESULT = 0xCAFE_BABE_1234_5678_0000_0000_7FFF_FFFE
+ALIASED_SUBU_RT_RESULT = 0x0123_4567_89AB_CDEF_0000_0000_7FFF_FFFE
+NEGATIVE_ONE_SCALAR = 0xFFFF_FFFF_FFFF_FFFF
 
 
 @pytest.mark.unit
@@ -793,6 +798,64 @@ def test_r5900_reference_addu_handles_all_aliases_zero_and_encoder_validation() 
         error = TypeError if any(type(field) is bool for field in fields) else IndexError
         with pytest.raises(error):
             encode_addu(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("minuend_word", "subtrahend_word", "expected_scalar"),
+    [
+        (0x0000_0000, 0x0000_0000, 0x0000_0000_0000_0000),
+        (0x0000_0001, 0x0000_0000, 0x0000_0000_0000_0001),
+        (0x7FFF_FFFF, 0x0000_0000, 0x0000_0000_7FFF_FFFF),
+        (0x8000_0000, 0x0000_0000, 0xFFFF_FFFF_8000_0000),
+        (0xFFFF_FFFF, 0x0000_0000, 0xFFFF_FFFF_FFFF_FFFF),
+        (0x8000_0000, 0x0000_0001, 0x0000_0000_7FFF_FFFF),
+        (0x7FFF_FFFF, 0xFFFF_FFFF, 0xFFFF_FFFF_8000_0000),
+        (0x0000_0000, 0x0000_0001, 0xFFFF_FFFF_FFFF_FFFF),
+    ],
+)
+def test_r5900_reference_subu_wraps_word_and_preserves_destination_upper_lane(
+    minuend_word: int,
+    subtrahend_word: int,
+    expected_scalar: int,
+) -> None:
+    """Subtract source low words modulo 32 bits and merge the signed result into rd."""
+    minuend = 0xFFFF_FFFF_FFFF_FFFF_1234_5678_0000_0000 | minuend_word
+    subtrahend = 0xAAAA_AAAA_AAAA_AAAA_8765_4321_0000_0000 | subtrahend_word
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, minuend).write_gpr(4, subtrahend).write_gpr(5, destination)
+
+    updated = state.step(encode_subu(5, 3, 4))
+
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(3) == minuend
+    assert updated.read_gpr(4) == subtrahend
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_subu_handles_order_aliases_zero_and_encoder_validation() -> None:
+    """Cover ordered source aliases, identical sources, zero, and exact SUBU encoding."""
+    minuend = 0xCAFE_BABE_1234_5678_AAAA_BBBB_7FFF_FFFF
+    subtrahend = 0x0123_4567_89AB_CDEF_1111_2222_0000_0001
+    state = R5900State.initial().write_gpr(31, minuend).write_gpr(30, subtrahend)
+    rd_is_rs = state.step(encode_subu(31, 31, 30))
+    assert rd_is_rs.read_gpr(31) == ALIASED_SUBU_RS_RESULT
+    rd_is_rt = state.step(encode_subu(30, 31, 30))
+    assert rd_is_rt.read_gpr(30) == ALIASED_SUBU_RT_RESULT
+    same_sources = state.step(encode_subu(29, 30, 30))
+    assert same_sources.read_gpr(29) == 0
+    discarded = state.step(encode_subu(0, 31, 30))
+    assert discarded.gprs == state.gprs
+    zero_minus_source = state.step(encode_subu(29, 0, 30))
+    assert zero_minus_source.read_gpr(29) == NEGATIVE_ONE_SCALAR
+    assert encode_subu(31, 23, 17) == ENCODED_SUBU_EXAMPLE
+    for fields in ((-1, 0, 0), (0, GPR_COUNT, 0), (0, 0, True)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_subu(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

@@ -23,6 +23,7 @@ ANDI_OPCODE = 12
 XORI_OPCODE = 14
 ADDIU_OPCODE = 9
 ADDU_FUNCTION = 33
+SUBU_FUNCTION = 35
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -166,6 +167,14 @@ def encode_addu(destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | ADDU_FUNCTION
+
+
+def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
+    """Encode canonical SPECIAL SUBU with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(minuend)
+    rt = _require_gpr_index(subtrahend)
+    return (rs << 21) | (rt << 16) | (rd << 11) | SUBU_FUNCTION
 
 
 def _merge_scalar(old_destination: int, scalar: int) -> int:
@@ -317,6 +326,15 @@ class R5900State:
         result = _merge_scalar_word(self.read_gpr(rd), result_word)
         return self.write_gpr(rd, result)
 
+    def _step_subu(self, word: int) -> R5900State:
+        """Subtract source words modulo 32 bits without an overflow exception."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        result_word = (self.read_gpr(rs) & WORD_MASK) - (self.read_gpr(rt) & WORD_MASK)
+        result = _merge_scalar_word(self.read_gpr(rd), result_word)
+        return self.write_gpr(rd, result)
+
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
@@ -333,6 +351,8 @@ class R5900State:
                 updated = self._step_addiu(word)
             elif opcode == SPECIAL_OPCODE and reserved_shift == 0 and function == ADDU_FUNCTION:
                 updated = self._step_addu(word)
+            elif opcode == SPECIAL_OPCODE and reserved_shift == 0 and function == SUBU_FUNCTION:
+                updated = self._step_subu(word)
             elif opcode == ANDI_OPCODE:
                 updated = self._step_andi(word)
             elif opcode == XORI_OPCODE:

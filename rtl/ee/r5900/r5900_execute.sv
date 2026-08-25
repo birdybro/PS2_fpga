@@ -33,6 +33,7 @@ module r5900_execute (
     logic [31:0] srav_word;
     logic [31:0] addiu_word;
     logic [31:0] addu_word;
+    logic [31:0] subu_word;
 
     assign sll_word = source_rt_word_i << instruction_i[10:6];
     assign srl_word = source_rt_word_i >> instruction_i[10:6];
@@ -44,6 +45,7 @@ module r5900_execute (
     assign addiu_word = source_rs_scalar_i[31:0]
         + {{16{instruction_i[15]}}, instruction_i[15:0]};
     assign addu_word = source_rs_scalar_i[31:0] + source_rt_word_i;
+    assign subu_word = source_rs_scalar_i[31:0] - source_rt_word_i;
 
     always_comb begin
         complete_o = 1'b0;
@@ -280,6 +282,26 @@ module r5900_execute (
                             destination_upper_i,
                             {32{addu_word[31]}},
                             addu_word
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_SUBU: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h23)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            {32{subu_word[31]}},
+                            subu_word
                         };
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;

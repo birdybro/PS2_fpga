@@ -262,6 +262,15 @@ ignored source high bits, both destination aliases, identical sources, register
 zero, PC wrap, exact events, and reserved-field rejection. Twelve boundary plus
 512 randomized cases make ADDU the thirteenth complete ISA coverage entry.
 
+Canonical SUBU admits every `rs`, `rt`, and `rd` under SPECIAL function `0x23`
+when reserved `sa` is zero. It subtracts source bits 31:0 modulo 32 bits without
+an overflow exception, sign-extends the result through bits 63:32, and retains
+old destination bits 127:64. Directed checks cover signed extrema, borrow wrap,
+operand order, ignored source high bits, both destination aliases, identical
+sources, register zero, PC wrap, exact events, and reserved-field rejection.
+Twelve boundary plus 512 randomized cases make SUBU the fourteenth complete ISA
+coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

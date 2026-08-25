@@ -17,6 +17,7 @@ OPERATION_ANDI = 10
 OPERATION_XORI = 11
 OPERATION_ADDIU = 12
 OPERATION_ADDU = 13
+OPERATION_SUBU = 14
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -200,6 +201,21 @@ async def test_r5900_decode_recognizes_every_addu_register_field(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_every_subu_register_field(dut) -> None:
+    """Admit all SUBU register fields while its reserved shift field stays zero."""
+    for rs, rt, rd in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rs << 21) | (rt << 16) | (rd << 11) | 0x23
+        await check_decode(dut, word, True, OPERATION_SUBU)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep every unsupported non-SPECIAL primary opcode space closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
@@ -211,7 +227,13 @@ async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
 @cocotb.test()
 async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(dut) -> None:
     """Reject every unsupported function and nonzero reserved SLL rs field."""
-    for function in (*range(1, 2), *range(5, 6), *range(8, 33), *range(34, 64)):
+    for function in (
+        *range(1, 2),
+        *range(5, 6),
+        *range(8, 33),
+        *range(34, 35),
+        *range(36, 64),
+    ):
         await check_decode(dut, function, False, OPERATION_NONE)
 
     for value in (1, 1 << 4, 0x1F):
@@ -220,4 +242,5 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         await check_decode(dut, (value << 6) | 6, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 7, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x21, False, OPERATION_NONE)
+        await check_decode(dut, (value << 6) | 0x23, False, OPERATION_NONE)
         await check_decode(dut, (0x0F << 26) | (value << 21), False, OPERATION_NONE)

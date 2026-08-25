@@ -898,21 +898,27 @@ milestones:
       - independent Python model validation tests
       - deterministic 524-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M069): implement R5900 ADDU)"
+    commit: b4685b2
     notes: Add both source low words modulo 32 bits and sign-extend the word result.
   - id: M070
     title: Implement R5900 SUBU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M069]
-    tests: [directed SUBU borrow wrap boundaries, randomized SUBU differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Verify subtraction wrap and signed-looking bit patterns without overflow traps.
+    tests:
+      - complete SPECIAL source destination and reserved-shift decode tests
+      - zero one signed-extrema and all-ones operand boundaries
+      - positive and negative 32-bit borrow wrap tests without overflow exceptions
+      - ordered destination aliases identical-source GPR-zero PC-wrap and exact-event tests
+      - independent Python model validation tests
+      - deterministic 524-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M070): implement R5900 SUBU)"
+    notes: Subtract both source low words modulo 32 bits and sign-extend the word result.
   - id: M071
     title: Implement R5900 AND
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M070]
     tests: [directed AND bit patterns, randomized AND differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
