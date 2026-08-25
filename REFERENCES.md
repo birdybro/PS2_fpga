@@ -129,14 +129,14 @@ copied.
 ### PCSX2 R5900 interpreter implementation
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate,
-DSLL, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU, SLTI, and SLTIU interpreter operations in this public emulator. It independently
+DSLL, DSRL, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU, SLTI, and SLTIU interpreter operations in this public emulator. It independently
 corroborates 32-bit operand selection, sign-extended scalar results, preserved
 upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word
 arithmetic wrap and 64-bit scalar logical results, including bounded complement
 for NOR and signed or unsigned 64-bit comparison with a 0-or-1 scalar result
 for SLT and SLTU, plus sign-extended immediate comparison for SLTI and SLTIU.
-Its DSLL operation separately corroborates a low-64-bit result and unchanged
-destination bits 127:64.
+Its DSLL and DSRL operations separately corroborate low-64-bit logical results
+and unchanged destination bits 127:64.
 The project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
 

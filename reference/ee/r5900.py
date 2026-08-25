@@ -18,6 +18,7 @@ SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 DSLL_FUNCTION = 56
+DSRL_FUNCTION = 58
 LUI_OPCODE = 15
 ORI_OPCODE = 13
 ANDI_OPCODE = 12
@@ -115,6 +116,14 @@ def encode_dsll(destination: int, source: int, shift_amount: int) -> int:
     rt = _require_gpr_index(source)
     sa = _require_shift_amount(shift_amount)
     return (rt << 16) | (rd << 11) | (sa << 6) | DSLL_FUNCTION
+
+
+def encode_dsrl(destination: int, source: int, shift_amount: int) -> int:
+    """Encode one canonical SPECIAL DSRL word with its reserved field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    sa = _require_shift_amount(shift_amount)
+    return (rt << 16) | (rd << 11) | (sa << 6) | DSRL_FUNCTION
 
 
 def encode_sllv(destination: int, source: int, shift_register: int) -> int:
@@ -394,12 +403,16 @@ class R5900State:
         result = _merge_scalar_word(self.read_gpr(rd), shifted_word)
         return self.write_gpr(rd, result)
 
-    def _step_dsll(self, word: int) -> R5900State:
-        """Apply one admitted constant doubleword left shift without advancing PC."""
+    def _step_immediate_doubleword_shift(self, word: int, function: int) -> R5900State:
+        """Apply one admitted low-range constant doubleword shift."""
         rt = (word >> 16) & 0x1F
         rd = (word >> 11) & 0x1F
         shift_amount = (word >> 6) & 0x1F
-        shifted_scalar = (self.read_gpr(rt) & SCALAR_MASK) << shift_amount
+        source_scalar = self.read_gpr(rt) & SCALAR_MASK
+        if function == DSLL_FUNCTION:
+            shifted_scalar = source_scalar << shift_amount
+        else:
+            shifted_scalar = source_scalar >> shift_amount
         result = _merge_scalar(self.read_gpr(rd), shifted_scalar)
         return self.write_gpr(rd, result)
 
@@ -622,8 +635,8 @@ class R5900State:
                 updated = self._step_ori(word)
             elif opcode == LUI_OPCODE and reserved_rs == 0:
                 updated = self._step_lui(word)
-            elif immediate and function == DSLL_FUNCTION:
-                updated = self._step_dsll(word)
+            elif immediate and function in (DSLL_FUNCTION, DSRL_FUNCTION):
+                updated = self._step_immediate_doubleword_shift(word, function)
             elif immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
                 updated = self._step_immediate_shift(word, function)
             elif variable and function in (SLLV_FUNCTION, SRLV_FUNCTION, SRAV_FUNCTION):

@@ -133,10 +133,11 @@ references:
     consulted_sections:
       - scalar shift and immediate interpreter operations
       - DSLL interpreter operation
+      - DSRL interpreter operation
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
     notes: >-
-      Corroborates R5900 scalar result widths, DSLL low-doubleword result and
-      preserved upper lane, and immediate or register arithmetic handling;
+      Corroborates R5900 scalar result widths, DSLL and DSRL low-doubleword
+      results with preserved upper lanes, and immediate or register arithmetic handling;
       no source structure was copied.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format

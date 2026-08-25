@@ -1148,21 +1148,26 @@ milestones:
       - source-destination alias GPR-zero PC-wrap and exact-event tests
       - 524-case sequential randomized differential test comparing every GPR and PC
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M085): implement R5900 DSLL)"
+    commit: a88c55c
     notes: Implement the immediate low-range doubleword left shift without changing the 128-bit upper destination lane.
   - id: M086
     title: Implement R5900 DSRL
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M085]
-    tests: [decode boundaries aliases upper-lane preservation and randomized differential tests]
+    tests:
+      - exact SPECIAL function 0x3a decode and reserved rs rejection tests
+      - logical low-64-bit shift and destination upper-lane preservation tests
+      - shift-count 0 1 30 and 31 zero-fill boundary tests
+      - source-destination alias GPR-zero PC-wrap and exact-event tests
+      - 524-case sequential randomized differential test comparing every GPR and PC
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
-    notes: Implement one immediate low-range logical doubleword right shift.
+    commit: "self (milestone(M086): implement R5900 DSRL)"
+    notes: Implement the immediate low-range logical doubleword right shift without word sign extension.
   - id: M087
     title: Implement R5900 DSRA
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M086]
     tests: [decode sign boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

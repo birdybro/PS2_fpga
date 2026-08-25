@@ -452,6 +452,18 @@ deterministic differential/randomized test executes twelve boundary plus 512
 seeded instructions sequentially and compares PC, the complete 4,096-bit GPR
 state, writeback, and retirement after every instruction.
 
+## R5900 DSRL
+
+Canonical SPECIAL function `0x3a` with reserved `rs` equal to zero now executes
+as 64-bit logical-right DSRL. Five directed cocotb cases cover counts 0, 1, 30,
+and 31; zero fill and shifted-out low bits; ignored source bits 127:64;
+preserved destination bits 127:64; `rd == rt`; GPR-zero suppression; reserved
+`rs`; PC wrap; and exact writeback and retirement events. Count zero explicitly
+proves that source bit 63 remains data rather than triggering sign extension.
+A deterministic differential/randomized test executes twelve boundary plus 512
+seeded instructions sequentially and compares PC, the complete 4,096-bit GPR
+state, writeback, and retirement after every instruction.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.
