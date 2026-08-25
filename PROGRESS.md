@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M056 — add R5900 GPR writeback framework
-- Next milestone: M057 — implement R5900 NOP encoding
-- Current subsystem: R5900 NOP execution semantics
-- Current regression status: 249 tests pass with no skips; centralized one-shot writeback and 512-cycle full-GPR randomized comparison are green
-- Known architectural inaccuracies: reserved words emit diagnostics but do not enter COP0 exceptions; exact NOP is decoded but has no state-transition implementation
+- Last completed milestone: M057 — implement R5900 NOP encoding
+- Next milestone: M058 — implement R5900 SLL
+- Current subsystem: R5900 32-bit shift-left logical semantics
+- Current regression status: 253 tests pass with no skips; exact NOP directed/reference checks and 260-state randomized differential coverage are green
+- Known architectural inaccuracies: only NOP executes; reserved words emit diagnostics but do not enter COP0 exceptions
 - Known timing inaccuracies: fetch uses functional ready/valid handshakes and a one-entry buffer; CPU pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M056 milestone commit (this commit)
+- Most recent pushed commit: M057 milestone commit (this commit)
 
 ## Resume note
 
@@ -17,6 +17,6 @@ Verilator 5.050, Python 3.14, cocotb, and pytest. `make ci` is the complete
 local verification gate. Architectural GPR, PC, functional control state, and
 independently tested fetch request and response blocks now exist. Instruction
 fields are extracted, exact zero-word NOP is admitted, and unsupported words are
-blocked with diagnostic context. The centralized GPR writeback path is ready,
-but execution semantics do not yet exist; resume with the single active
-milestone in `milestones.yaml`.
+blocked with diagnostic context. Exact zero-word NOP now executes, advances PC,
+and retires without GPR changes; resume with the single active milestone in
+`milestones.yaml`.

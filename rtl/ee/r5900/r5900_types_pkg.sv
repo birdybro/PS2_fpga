@@ -54,6 +54,12 @@ package r5900_types_pkg;
         r5900_instruction_t instruction;
     } r5900_reserved_instruction_t;
 
+    typedef struct packed {
+        logic                valid;
+        r5900_pc_t           pc;
+        r5900_instruction_t instruction;
+    } r5900_retirement_t;
+
 endpackage
 
 `default_nettype wire

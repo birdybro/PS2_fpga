@@ -46,6 +46,10 @@ exact PC and instruction. This is intentionally not COP0 exception entry.
 adapter. It accepts one commit per asserted episode, suppresses destination
 zero, emits the same typed event used by debug and differential observation,
 and drives the existing GPR file's index/value write port.
+`rtl/ee/r5900/r5900_execute.sv` is the growing functional operation boundary.
+Its first operation implements exact zero-word NOP: complete and advance PC by
+four, emit a typed retirement record with the pre-advance PC and instruction,
+and issue no GPR writeback. The debug interface carries that retirement record.
 
 ## Repository boundaries
 

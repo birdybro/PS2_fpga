@@ -671,21 +671,27 @@ milestones:
       - reset write blocking and post-reset rearm test
       - deterministic 512-cycle full-GPR randomized model comparison
     references: [docs/R5900_FOUNDATION.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M056): add R5900 GPR writeback framework)"
+    commit: 0ffd8cd
     notes: Centralize architectural GPR updates for differential observation.
   - id: M057
     title: Implement R5900 NOP encoding
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M056]
-    tests: [exact zero-word no-state-change PC-advance and trace tests]
+    tests:
+      - exact zero-word and near-miss encoding tests
+      - modulo-32-bit four-byte PC advance and wrap tests
+      - complete 4096-bit GPR no-state-change test
+      - no-writeback and exact retirement PC and word trace tests
+      - independent Python NOP transition validation tests
+      - deterministic 260-state randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
+    commit: "self (milestone(M057): implement R5900 NOP)"
     notes: Treat NOP as the exact SLL zero zero zero encoding without a writeback.
   - id: M058
     title: Implement R5900 SLL
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M057]
     tests: [directed SLL boundaries, randomized SLL differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

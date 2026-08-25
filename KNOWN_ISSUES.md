@@ -10,18 +10,18 @@ executing CPU. This is not a claim of CPU compatibility.
 Instruction fetch request and response paths are independently implemented but
 not yet composed with control or RAM. Bus errors are retained as functional
 fetch status. Instruction fields are extracted and exact zero-word NOP is
-admitted, but no instruction is executed. Illegal words emit a functional
-diagnostic and are suppressed before execution, but do not enter an
-architectural exception; COP0 remains unimplemented.
+implemented with PC advance, GPR preservation, and retirement trace. No other
+instruction executes. Illegal words emit a functional diagnostic and are
+suppressed before execution, but do not enter an architectural exception; COP0
+remains unimplemented.
 
 GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-NOP is partial and the other 21 entries in the initial R5900 ISA coverage
-matrix remain pending. The matrix records planned encodings and ownership, not
-corroborated implementation semantics; each row must pass its instruction
-milestone before becoming complete.
+NOP is complete and the other 21 entries in the initial R5900 ISA coverage
+matrix remain pending. The matrix records planned encodings and ownership; each
+remaining row must pass its instruction milestone before becoming complete.
 
 No consulted public R5900 source defines the post-reset values of GPR 1 through
 31. The physical storage therefore has no reset input and tests initialize every

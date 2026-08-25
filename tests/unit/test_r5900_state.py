@@ -4,7 +4,13 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from reference.ee.r5900 import GPR_COUNT, GPR_MASK, PC_MASK, R5900State
+from reference.ee.r5900 import (
+    GPR_COUNT,
+    GPR_MASK,
+    PC_MASK,
+    R5900State,
+    UnsupportedInstructionError,
+)
 
 EE_PROGRAM_START = 0x0010_0000
 PRESERVED_GPR_VALUE = 0x55
@@ -133,3 +139,31 @@ def test_r5900_computed_pc_is_explicitly_32_bit(value: int, expected: int) -> No
     assert updated.gprs == initial.gprs
     if expected != initial.pc:
         assert initial.pc == PC_COPY_START
+
+
+@pytest.mark.unit
+def test_r5900_reference_nop_preserves_gprs_and_advances_pc() -> None:
+    """Model exact zero-word NOP as only a modulo-32-bit four-byte PC advance."""
+    seeded = R5900State.initial()
+    for index in range(1, GPR_COUNT):
+        seeded = seeded.write_gpr(index, (index << 120) | (1 << index) | index)
+
+    boundaries = ((0, 4), (4, 8), (0x0010_0000, 0x0010_0004), (PC_MASK - 3, 0))
+    for start_pc, expected_pc in boundaries:
+        state = R5900State(gprs=seeded.gprs, pc=start_pc)
+        updated = state.step(0)
+        assert updated.pc == expected_pc
+        assert updated.gprs == state.gprs
+        assert state.pc == start_pc
+
+
+@pytest.mark.unit
+def test_r5900_reference_step_rejects_unsupported_and_invalid_words() -> None:
+    """Keep unimplemented encodings and malformed instruction inputs outside the model."""
+    state = R5900State.initial()
+    for instruction in (1, 0x0000_0040, 0x3405_1234, PC_MASK):
+        with pytest.raises(UnsupportedInstructionError):
+            state.step(instruction)
+    for instruction, error in ((-1, ValueError), (PC_MASK + 1, ValueError), (True, TypeError)):
+        with pytest.raises(error):
+            state.step(instruction)  # type: ignore[arg-type]

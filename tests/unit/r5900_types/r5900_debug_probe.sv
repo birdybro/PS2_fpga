@@ -14,7 +14,10 @@ module r5900_debug_probe (
     output logic [127:0]  writeback_value_o,
     output logic          reserved_valid_o,
     output logic [31:0]   reserved_pc_o,
-    output logic [31:0]   reserved_instruction_o
+    output logic [31:0]   reserved_instruction_o,
+    output logic          retirement_valid_o,
+    output logic [31:0]   retirement_pc_o,
+    output logic [31:0]   retirement_instruction_o
 );
 
     timeunit 1ns;
@@ -31,6 +34,9 @@ module r5900_debug_probe (
     assign reserved_valid_o = debug_i.reserved_instruction.valid;
     assign reserved_pc_o = debug_i.reserved_instruction.pc;
     assign reserved_instruction_o = debug_i.reserved_instruction.instruction;
+    assign retirement_valid_o = debug_i.retirement.valid;
+    assign retirement_pc_o = debug_i.retirement.pc;
+    assign retirement_instruction_o = debug_i.retirement.instruction;
 
 endmodule
 

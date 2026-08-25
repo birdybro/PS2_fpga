@@ -12,6 +12,9 @@ module r5900_debug_driver (
     input logic          reserved_valid_i,
     input logic [31:0]   reserved_pc_i,
     input logic [31:0]   reserved_instruction_i,
+    input logic          retirement_valid_i,
+    input logic [31:0]   retirement_pc_i,
+    input logic [31:0]   retirement_instruction_i,
     r5900_debug_if.producer debug_o
 );
 
@@ -27,6 +30,9 @@ module r5900_debug_driver (
     assign debug_o.reserved_instruction.valid = reserved_valid_i;
     assign debug_o.reserved_instruction.pc = reserved_pc_i;
     assign debug_o.reserved_instruction.instruction = reserved_instruction_i;
+    assign debug_o.retirement.valid = retirement_valid_i;
+    assign debug_o.retirement.pc = retirement_pc_i;
+    assign debug_o.retirement.instruction = retirement_instruction_i;
 
 endmodule
 

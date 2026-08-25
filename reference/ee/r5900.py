@@ -5,8 +5,15 @@ from dataclasses import dataclass, field, replace
 GPR_COUNT = 32
 GPR_WIDTH = 128
 PC_WIDTH = 32
+INSTRUCTION_WIDTH = 32
 GPR_MASK = (1 << GPR_WIDTH) - 1
 PC_MASK = (1 << PC_WIDTH) - 1
+INSTRUCTION_MASK = (1 << INSTRUCTION_WIDTH) - 1
+NOP_INSTRUCTION = 0
+
+
+class UnsupportedInstructionError(ValueError):
+    """Report an instruction absent from the timing-free functional model."""
 
 
 def _zero_gprs() -> tuple[int, ...]:
@@ -87,3 +94,11 @@ class R5900State:
         if self.pc == normalized:
             return self
         return replace(self, pc=normalized)
+
+    def step(self, instruction: int) -> R5900State:
+        """Execute one supported instruction and return its architectural successor."""
+        word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
+        if word != NOP_INSTRUCTION:
+            msg = f"unsupported R5900 instruction: 0x{word:08x}"
+            raise UnsupportedInstructionError(msg)
+        return self.write_pc(self.pc + 4)

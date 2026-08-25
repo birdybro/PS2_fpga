@@ -12,6 +12,8 @@ TEST_INSTRUCTION = 0x012A_4020
 TEST_WRITEBACK = 0xFEDC_BA98_7654_3210_0123_4567_89AB_CDEF
 TEST_RESERVED_PC = 0x1357_9BDF
 TEST_RESERVED_INSTRUCTION = 0x2468_ACE0
+TEST_RETIREMENT_PC = 0x0010_0040
+TEST_RETIREMENT_INSTRUCTION = 0x3405_1234
 
 
 async def settle() -> None:
@@ -31,6 +33,9 @@ async def test_r5900_debug_fields_preserve_boundary_values(dut) -> None:
     dut.reserved_valid_i.value = 1
     dut.reserved_pc_i.value = TEST_RESERVED_PC
     dut.reserved_instruction_i.value = TEST_RESERVED_INSTRUCTION
+    dut.retirement_valid_i.value = 1
+    dut.retirement_pc_i.value = TEST_RETIREMENT_PC
+    dut.retirement_instruction_i.value = TEST_RETIREMENT_INSTRUCTION
 
     await settle()
 
@@ -43,6 +48,9 @@ async def test_r5900_debug_fields_preserve_boundary_values(dut) -> None:
     assert int(dut.reserved_valid_o.value) == 1
     assert int(dut.reserved_pc_o.value) == TEST_RESERVED_PC
     assert int(dut.reserved_instruction_o.value) == TEST_RESERVED_INSTRUCTION
+    assert int(dut.retirement_valid_o.value) == 1
+    assert int(dut.retirement_pc_o.value) == TEST_RETIREMENT_PC
+    assert int(dut.retirement_instruction_o.value) == TEST_RETIREMENT_INSTRUCTION
 
 
 @cocotb.test()

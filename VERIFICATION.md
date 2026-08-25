@@ -271,6 +271,21 @@ seeded commit cycles and compares the complete 4,096-bit snapshot after each
 edge. A fatal assertion independently prevents an emitted port write from ever
 targeting GPR zero.
 
+## R5900 exact zero-word NOP
+
+The first implemented operation is exact word `0x00000000`, decoded as the
+canonical `SLL r0, r0, 0` NOP alias. The functional executor completes it,
+advances the 32-bit PC by four with wrap, emits a typed retirement record using
+the pre-advance PC and exact word, and produces no writeback. Three directed
+cocotb cases reject nearby SPECIAL and primary encodings, cover PC boundaries,
+compare the complete initialized 4,096-bit GPR snapshot, and verify retirement
+field lifetime. The independent immutable Python model implements the same NOP
+as a PC-only successor and rejects every other word. A test marked in both the
+differential and randomized layers compares PC, all GPRs, writeback absence,
+and retirement over four boundary plus 256 seeded aligned-PC states. NOP is now
+complete in the machine-readable ISA coverage matrix; exception coverage is
+not applicable to this inert exact encoding.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

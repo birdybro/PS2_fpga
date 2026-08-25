@@ -146,6 +146,14 @@ destination and 128-bit value that drive the GPR file, giving traces and future
 differential tests one observation point. This functional episode protocol is
 not a claim about the eventual EE pipeline retirement timing.
 
+Exact word zero now has its full initial architectural transition. Decode and
+dispatch select NOP, execution completes immediately at the functional boundary,
+PC advances by four modulo 32 bits, and every GPR remains unchanged. No GPR
+commit or writeback event occurs. A separate typed retirement record captures
+the pre-advance PC and exact instruction for trace consumers. The Python model's
+`step` method independently implements only this word and rejects all other
+encodings, making NOP the first `complete` ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

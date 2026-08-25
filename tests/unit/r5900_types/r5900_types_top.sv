@@ -12,6 +12,9 @@ module r5900_types_top (
     input  logic          reserved_valid_i,
     input  logic [31:0]   reserved_pc_i,
     input  logic [31:0]   reserved_instruction_i,
+    input  logic          retirement_valid_i,
+    input  logic [31:0]   retirement_pc_i,
+    input  logic [31:0]   retirement_instruction_i,
     output logic [31:0]   pc_o,
     output logic [4095:0] gprs_o,
     output logic [127:0]  gpr_zero_o,
@@ -22,7 +25,10 @@ module r5900_types_top (
     output logic [127:0]  writeback_value_o,
     output logic          reserved_valid_o,
     output logic [31:0]   reserved_pc_o,
-    output logic [31:0]   reserved_instruction_o
+    output logic [31:0]   reserved_instruction_o,
+    output logic          retirement_valid_o,
+    output logic [31:0]   retirement_pc_o,
+    output logic [31:0]   retirement_instruction_o
 );
 
     timeunit 1ns;
@@ -42,6 +48,9 @@ module r5900_types_top (
         .reserved_valid_i,
         .reserved_pc_i,
         .reserved_instruction_i,
+        .retirement_valid_i,
+        .retirement_pc_i,
+        .retirement_instruction_i,
         .debug_o(debug)
     );
 
@@ -57,7 +66,10 @@ module r5900_types_top (
         .writeback_value_o,
         .reserved_valid_o,
         .reserved_pc_o,
-        .reserved_instruction_o
+        .reserved_instruction_o,
+        .retirement_valid_o,
+        .retirement_pc_o,
+        .retirement_instruction_o
     );
 
     initial begin
@@ -75,6 +87,9 @@ module r5900_types_top (
         end
         if ($bits(r5900_reserved_instruction_t) != 65) begin
             $fatal(1, "R5900_TYPE_RESERVED_WIDTH");
+        end
+        if ($bits(r5900_retirement_t) != 65) begin
+            $fatal(1, "R5900_TYPE_RETIREMENT_WIDTH");
         end
     end
 
