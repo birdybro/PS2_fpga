@@ -50,6 +50,20 @@ interface memory_bus_if #(
         output rsp_error
     );
 
+    modport monitor (
+        input req_valid,
+        input req_ready,
+        input req_write,
+        input req_addr,
+        input req_size,
+        input req_wdata,
+        input req_wstrb,
+        input rsp_valid,
+        input rsp_ready,
+        input rsp_rdata,
+        input rsp_error
+    );
+
 endinterface
 
 `default_nettype wire

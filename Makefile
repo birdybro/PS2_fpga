@@ -10,6 +10,7 @@ VENV ?= .venv
 SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
 RTL_SOURCES := $(shell find rtl -type f -name '*.sv' -print | sort)
+MEMORY_BUS_PROTOCOL_LINT_TOP := tests/unit/memory_bus_protocol/memory_bus_protocol_top.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset
 VENV_PYTHON := $(VENV)/bin/python
@@ -42,7 +43,10 @@ $(SMOKE_MDIR)/Vregister_en__ALL.a: $(SMOKE_RTL)
 
 lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	@git diff HEAD --check -- .
-	$(VERILATOR) --lint-only -Wall $(VERILATOR_FLAGS) $(RTL_SOURCES)
+	$(VERILATOR) --lint-only -Wall --assert --top-module register_en \
+		$(VERILATOR_FLAGS) $(RTL_SOURCES)
+	$(VERILATOR) --lint-only -Wall --assert --top-module memory_bus_protocol_top \
+		$(VERILATOR_FLAGS) $(RTL_SOURCES) $(MEMORY_BUS_PROTOCOL_LINT_TOP)
 	@for top in $(SIM_LINT_TOPS); do \
 		$(VERILATOR) --lint-only -Wall --timing --top-module $$top \
 			$(VERILATOR_FLAGS) $(SIM_SOURCES); \

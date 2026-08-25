@@ -14,6 +14,9 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
   and remains released thereafter.
 - M017 provides the parameterized `memory_bus_if` ready/valid interface. Its
   default configuration carries 32-bit byte addresses and 128-bit payloads.
+- M018 provides `memory_bus_protocol_checker`. It asserts valid size encodings,
+  stable stalled payloads and valid signals, response causality, and at most one
+  outstanding request while allowing zero-latency and same-cycle replacement.
 
 ## Planned boundaries
 
@@ -53,7 +56,8 @@ Request payload remains stable from assertion of `req_valid` through the cycle
 where `req_ready` is also asserted. Response payload follows the equivalent
 rule. Only one request may be outstanding, and every response follows one
 accepted request. Zero-latency response is permitted. Read strobes and write
-response data are ignored. M018 adds executable assertions for these rules.
+response data are ignored. M018 enforces these rules with fatal simulation
+assertions and exposes outstanding state for verification and debug.
 
 Behavioral system RAM is little-endian and byte-addressed. Byte lane zero maps
 to the lowest address. The roadmap adds 32-, 64-, and 128-bit aligned accesses

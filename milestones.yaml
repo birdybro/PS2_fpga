@@ -182,21 +182,21 @@ milestones:
     dependencies: [M016]
     tests: [both-modport elaboration payload connectivity and backpressure test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M017): define internal memory transaction interface)"
+    commit: 8fff7ae
     notes: Define one explicit request and response ready-valid contract.
   - id: M018
     title: Assert memory transaction protocol invariants
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M017]
-    tests: [protocol assertion positive and negative tests]
+    tests: [legal protocol transition test, seven fatal protocol violation tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M018): assert memory transaction invariants)"
     notes: Assert payload stability, supported sizes, and response causality.
   - id: M019
     title: Add behavioral byte-addressed system RAM
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M018]
     tests: [RAM bounds and reset-independent storage tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

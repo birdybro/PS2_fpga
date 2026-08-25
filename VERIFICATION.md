@@ -145,3 +145,13 @@ modports. A test-only pair of bridges proves all request and response payload
 bits cross in the intended direction, including 128-bit data, byte strobes,
 size, error, and independent ready backpressure. This milestone defines
 connectivity only; protocol assertions are the next independently gated step.
+
+## Memory transaction protocol assertions
+
+`memory_bus_protocol_checker` tracks the single outstanding transaction and
+asserts supported size, request/response stability under backpressure, valid
+retention, response causality, and no second outstanding request. The legal
+traffic test covers stalls, encodings for 1 through 16 bytes, zero-latency
+completion, and simultaneous response/new-request replacement. Seven negative
+simulations each inject one violation, require a fatal simulator exit, and
+check the unique assertion marker in the captured log.
