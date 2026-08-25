@@ -320,21 +320,24 @@ milestones:
       - magic class encoding version size and truncation rejection tests
       - reserved-padding trailing-data and input-domain tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: "self (milestone(M029): parse ELF32 identification and header)"
+    commit: 2bd4c42
     notes: Parse header fields without mutating simulated memory.
   - id: M030
     title: Validate EE ELF machine and endianness
     subsystem: loader
-    status: active
+    status: complete
     dependencies: [M029]
-    tests: [ELF target and endian rejection tests]
+    tests:
+      - little-endian ET_EXEC EM_MIPS acceptance and identity tests
+      - object-type machine and big-endian rejection tests
+      - OS ABI version flags and validator input-domain policy tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M030): validate EE ELF machine and endianness)"
     notes: Accept only the explicitly supported EE test executable format.
   - id: M031
     title: Load ELF PT_LOAD segments
     subsystem: loader
-    status: pending
+    status: active
     dependencies: [M030]
     tests: [multi-segment ELF load and bounds tests]
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]

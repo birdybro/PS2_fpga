@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M029 — parse ELF32 identification and header
-- Next milestone: M030 — validate EE ELF machine and endianness
+- Last completed milestone: M030 — validate EE ELF machine and endianness
+- Next milestone: M031 — load ELF PT_LOAD segments
 - Current subsystem: simulation loaders
-- Current regression status: 128 tests pass with no skips; generic ELF32 headers decode in both declared byte orders
+- Current regression status: 143 tests pass with no skips; EE target policy accepts only little-endian MIPS executables
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M029 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M030 milestone commit (this commit)
 
 ## Resume note
 

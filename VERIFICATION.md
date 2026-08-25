@@ -261,5 +261,13 @@ big-endian headers with trailing data, verify reserved identification padding is
 ignored, and independently reject truncation before 16 and 52 bytes, corruption
 of each magic byte, non-ELF32 classes, invalid data encodings, invalid
 identification and header versions, incorrect declared header sizes, and
-non-bytes input. Target machine and EE byte-order acceptance are intentionally
-deferred to M030.
+non-bytes input.
+
+## EE ELF32 target validation
+
+Fifteen directed cases place a target-policy layer over the generic parser.
+They accept little-endian `ET_EXEC`/`EM_MIPS` images, verify validation preserves
+the immutable parsed record, and reject representative non-executable object
+types, non-MIPS machine values, big-endian MIPS headers, and an invalid API input
+domain. A separate case varies OS ABI, ABI version, and processor flags to
+ensure the validator does not silently impose undocumented restrictions.

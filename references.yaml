@@ -62,10 +62,10 @@ references:
     role: toolchain
     subsystems: [ee, iop, dmac, gif, gs, sif, spu2, software]
     license: Academic Free License 2.0
-    source_code_consulted: false
+    source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [README, public API documentation, license]
-    notes: Open-source homebrew SDK; implementation source has not guided RTL.
+    consulted_sections: [README, public API documentation, license, EE toolchain sample definitions]
+    notes: AFL-2.0 sample makefile corroborates the mips64r5900el-ps2-elf EE target prefix.
   - id: ps2tek
     title: PS2Tek PlayStation 2 technical documentation
     url: https://psi-rockin.github.io/ps2tek/index.html
@@ -97,7 +97,11 @@ references:
     license: Copyright Xinuos; public ABI specification, redistribution not assumed
     source_code_consulted: false
     redistribution: link-only
-    consulted_sections: [ELF32 header contents, ELF identification, data encoding]
+    consulted_sections:
+      - ELF32 header contents
+      - ELF identification
+      - data encoding
+      - assigned machine values
     notes: Primary format specification for generic ELF identification and header layout.
   - id: sgi-mips-iv-index
     title: SGI MIPS IV Instruction Set archive index

@@ -127,6 +127,13 @@ valid data encoding, current identification/header versions, and the declared
 ELF32 header size, and ignores reserved identification padding. It neither
 accepts an EE target nor changes memory; those are later milestones.
 
+M030 adds the deliberately narrow EE target policy above that generic parser.
+An accepted test image must be an executable object (`ET_EXEC`), identify the
+MIPS architecture (`EM_MIPS`, value 8), and declare little-endian data. The
+validator does not restrict OS ABI, ABI version, or processor flags without a
+documented requirement. This keeps generic ELF decoding distinct from target
+admission and avoids inventing toolchain policy. Memory remains untouched.
+
 Downloaded or user-supplied programs remain external unless a tiny purpose-built
 fixture is clearly licensed and intentionally reviewed for inclusion.
 

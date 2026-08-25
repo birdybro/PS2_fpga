@@ -72,8 +72,10 @@ evidence.
 ### PS2SDK
 
 The public PS2 homebrew SDK is licensed under the Academic Free License 2.0.
-Its README, API documentation, and license are approved inputs for software and
-register-interface planning. Its implementation source has not guided RTL.
+Its README, API documentation, license, and sample makefile EE toolchain prefix
+are approved inputs for software, loader, and register-interface planning. The
+consulted `mips64r5900el-ps2-elf-` prefix corroborates the little-endian native
+EE target; no PS2SDK implementation source has guided RTL.
 
 <!-- ref:binutils-r5900-review -->
 ### GNU Binutils R5900 support review

@@ -11,11 +11,17 @@ ELFCLASS32 = 1
 ELFDATA2LSB = 1
 ELFDATA2MSB = 2
 EV_CURRENT = 1
+ET_EXEC = 2
+EM_MIPS = 8
 ELF32_HEADER_FIELDS = "HHIIIIIHHHHHH"
 
 
 class ElfFormatError(ValueError):
     """Report a malformed or unsupported generic ELF container field."""
+
+
+class ElfTargetError(ElfFormatError):
+    """Report a well-formed ELF32 header that is not an accepted EE executable."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,3 +90,25 @@ def parse_elf32_header(image: bytes | bytearray | memoryview) -> Elf32Header:
         msg = f"ELF32 header size is invalid: {header.header_size}"
         raise ElfFormatError(msg)
     return header
+
+
+def validate_ee_elf32_header(header: Elf32Header) -> Elf32Header:
+    """Accept the documented native EE executable target without mutating state."""
+    if not isinstance(header, Elf32Header):
+        msg = "EE target validation requires an Elf32Header"
+        raise TypeError(msg)
+    if header.object_type != ET_EXEC:
+        msg = f"EE ELF object type is not ET_EXEC: {header.object_type}"
+        raise ElfTargetError(msg)
+    if header.machine != EM_MIPS:
+        msg = f"EE ELF machine is not EM_MIPS: {header.machine}"
+        raise ElfTargetError(msg)
+    if header.byte_order != "little":
+        msg = f"EE ELF data encoding is not little-endian: {header.byte_order}"
+        raise ElfTargetError(msg)
+    return header
+
+
+def parse_ee_elf32_header(image: bytes | bytearray | memoryview) -> Elf32Header:
+    """Parse generic ELF32 fields and apply the native EE target policy."""
+    return validate_ee_elf32_header(parse_elf32_header(image))
