@@ -725,21 +725,32 @@ milestones:
       - docs/R5900_FOUNDATION.md
       - coverage/r5900_isa.yaml
       - REFERENCES.md
-    commit: "self (milestone(M059): implement R5900 SRL)"
+    commit: 506ab78
     notes: Zero-fill the word shift before applying the shared EE scalar destination rule.
   - id: M060
     title: Implement R5900 SRA
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M059]
-    tests: [directed SRA signed boundaries, randomized SRA differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Make arithmetic signedness and destination extension explicit.
+    tests:
+      - canonical encoding and reserved rs rejection tests
+      - zero one thirty and thirty-one signed shift boundary tests
+      - positive and negative source sign-fill tests
+      - source high-bit independence and destination upper-lane preservation tests
+      - rd equals rt and GPR-zero suppression tests
+      - exact writeback and retirement event tests
+      - independent Python model validation tests
+      - deterministic 519-case sequential randomized differential test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - coverage/r5900_isa.yaml
+      - REFERENCES.md
+    commit: "self (milestone(M060): implement R5900 SRA)"
+    notes: Treat rt low word as signed before shifting and apply the shared scalar merge rule.
   - id: M061
     title: Implement R5900 SLLV
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M060]
     tests: [directed SLLV masked counts, randomized SLLV differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

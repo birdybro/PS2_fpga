@@ -24,9 +24,13 @@ module r5900_execute (
 
     logic [31:0] sll_word;
     logic [31:0] srl_word;
+    logic signed [31:0] sra_source_word;
+    logic [31:0] sra_word;
 
     assign sll_word = source_rt_word_i << instruction_i[10:6];
     assign srl_word = source_rt_word_i >> instruction_i[10:6];
+    assign sra_source_word = $signed(source_rt_word_i);
+    assign sra_word = sra_source_word >>> instruction_i[10:6];
 
     always_comb begin
         complete_o = 1'b0;
@@ -82,6 +86,26 @@ module r5900_execute (
                             destination_upper_i,
                             {32{srl_word[31]}},
                             srl_word
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_SRA: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[25:21] == 5'h00)
+                        && (instruction_i[5:0] == 6'h03)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            {32{sra_word[31]}},
+                            sra_word
                         };
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;

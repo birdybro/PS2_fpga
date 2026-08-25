@@ -315,6 +315,20 @@ in both differential and randomized layers executes seven boundary plus 512
 seeded SRL instructions sequentially and compares the PC, complete GPR state,
 writeback, and retirement after every instruction.
 
+## R5900 SRA
+
+Canonical SPECIAL function-three words with reserved `rs` equal to zero now
+execute as 32-bit SRA. Five directed cocotb cases cover counts 0, 1, 30, and
+31; positive and negative sources; arithmetic sign fill; ignored source high
+bits; preserved destination bits 127:64; `rd == rt`; GPR-zero suppression;
+SRL/SRA operation separation; reserved-field rejection; PC wrap; and exact
+writeback and retirement events. The RTL declares its word operand signed,
+while the independent Python transition explicitly converts an unsigned word
+to a negative integer before shifting. A deterministic test marked in both
+differential and randomized layers executes seven boundary plus 512 seeded SRA
+instructions sequentially and compares the PC, complete GPR state, writeback,
+and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

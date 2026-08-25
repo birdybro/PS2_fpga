@@ -34,6 +34,13 @@ module r5900_decode (
         ) begin
             legal_o = 1'b1;
             operation_o = R5900_OPERATION_SRL;
+        end else if (
+            (instruction_i[31:26] == 6'h00)
+            && (instruction_i[25:21] == 5'h00)
+            && (instruction_i[5:0] == 6'h03)
+        ) begin
+            legal_o = 1'b1;
+            operation_o = R5900_OPERATION_SRA;
         end
     end
 

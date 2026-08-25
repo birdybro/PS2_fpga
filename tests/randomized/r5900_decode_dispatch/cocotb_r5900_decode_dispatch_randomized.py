@@ -8,10 +8,11 @@ from cocotb.triggers import Timer
 
 RANDOM_CASES = 1024
 SRL_FUNCTION = 2
+SRA_FUNCTION = 3
 
 
 def decoded_operation(word: int) -> int:
-    """Model admitted NOP/SLL/SRL operations without using RTL decoder outputs."""
+    """Model admitted NOP/SLL/SRL/SRA operations independently from the RTL."""
     if word == 0:
         return 1
     opcode = word >> 26
@@ -19,7 +20,9 @@ def decoded_operation(word: int) -> int:
     function = word & 0x3F
     if opcode == 0 and reserved_rs == 0 and function == 0:
         return 2
-    return 3 if opcode == 0 and reserved_rs == 0 and function == SRL_FUNCTION else 0
+    if opcode == 0 and reserved_rs == 0 and function == SRL_FUNCTION:
+        return 3
+    return 4 if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION else 0
 
 
 @cocotb.test()
@@ -34,6 +37,8 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 8, 0x001F_FFC0),
         (True, 12, 0x0000_0002),
         (True, 16, 0x001F_FFC2),
+        (True, 20, 0x0000_0003),
+        (True, 24, 0x001F_FFC3),
         (True, 4, 1),
         (True, 0x0010_0000, 0x3405_1234),
         (True, 0xFFFF_FFFC, 0xFFFF_FFFF),

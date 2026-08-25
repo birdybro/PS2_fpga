@@ -7,6 +7,7 @@ OPERATION_NONE = 0
 OPERATION_NOP = 1
 OPERATION_SLL = 2
 OPERATION_SRL = 3
+OPERATION_SRA = 4
 
 
 async def check_dispatch(
@@ -69,6 +70,17 @@ async def test_r5900_decode_dispatch_sends_canonical_srl_to_execute(dut) -> None
         (0x0010_0000, 0x001F_FFC2),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SRL, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_sra_to_execute(dut) -> None:
+    """Dispatch SRA variable fields without a reserved diagnostic."""
+    for pc, instruction in (
+        (0, 0x0000_0003),
+        (4, 0x0001_0003),
+        (0x0010_0000, 0x001F_FFC3),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SRA, False))
 
 
 @cocotb.test()

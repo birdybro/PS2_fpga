@@ -13,6 +13,7 @@ NOP_INSTRUCTION = 0
 SPECIAL_OPCODE = 0
 SLL_FUNCTION = 0
 SRL_FUNCTION = 2
+SRA_FUNCTION = 3
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -77,6 +78,14 @@ def encode_srl(destination: int, source: int, shift_amount: int) -> int:
     rt = _require_gpr_index(source)
     sa = _require_shift_amount(shift_amount)
     return (rt << 16) | (rd << 11) | (sa << 6) | SRL_FUNCTION
+
+
+def encode_sra(destination: int, source: int, shift_amount: int) -> int:
+    """Encode one canonical SPECIAL SRA word with its reserved field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    sa = _require_shift_amount(shift_amount)
+    return (rt << 16) | (rd << 11) | (sa << 6) | SRA_FUNCTION
 
 
 def _merge_scalar_word(old_destination: int, word: int) -> int:
@@ -160,6 +169,18 @@ class R5900State:
             shift_amount = (word >> 6) & 0x1F
             old_destination = self.read_gpr(rd)
             shifted_word = (self.read_gpr(rt) & WORD_MASK) >> shift_amount
+            result = _merge_scalar_word(old_destination, shifted_word)
+            return self.write_gpr(rd, result).write_pc(self.pc + 4)
+
+        if opcode == SPECIAL_OPCODE and reserved_rs == 0 and function == SRA_FUNCTION:
+            rt = (word >> 16) & 0x1F
+            rd = (word >> 11) & 0x1F
+            shift_amount = (word >> 6) & 0x1F
+            old_destination = self.read_gpr(rd)
+            source_word = self.read_gpr(rt) & WORD_MASK
+            if source_word & (1 << (WORD_WIDTH - 1)):
+                source_word -= 1 << WORD_WIDTH
+            shifted_word = source_word >> shift_amount
             result = _merge_scalar_word(old_destination, shifted_word)
             return self.write_gpr(rd, result).write_pc(self.pc + 4)
 

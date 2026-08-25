@@ -53,14 +53,18 @@ instructions:
     category: 32-bit shift immediate
     encoding: SPECIAL opcode 0x00, function 0x03
     milestone: M060
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, binutils-r5900-review]
-    notes: Exact R5900 destination extension and encoding legality remain milestone evidence gates.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references:
+      - mips-iv-instruction-set
+      - ps2tek
+      - qemu-r5900-overview
+      - pcsx2-r5900-interpreter
+    notes: Arithmetically shifts signed rt word, sign-extends it, and preserves rd bits 127:64.
   - mnemonic: SLLV
     category: 32-bit shift variable
     encoding: SPECIAL opcode 0x00, function 0x04
