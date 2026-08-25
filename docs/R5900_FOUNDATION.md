@@ -91,16 +91,25 @@ reset claim. Direct snapshots require already normalized unsigned values, while
 the four computed-result methods mask unlimited Python integers to 64 bits.
 Every existing GPR, PC, and instruction successor preserves all four registers.
 
-The functional RTL will separately expose the current 32-bit instruction,
+The synthesizable `r5900_hilo_state` block mirrors those four 64-bit fields with
+independent synchronous write enables and individual plus packed observation
+outputs. It intentionally has no reset input or initialization construct. The
+testbench writes all four registers before reading any of them, so deterministic
+simulation does not become an unsupported hardware-reset claim. All four writes
+may commit on the same edge, while disabled fields retain their prior value.
+The block is standalone until multiply/divide operations connect it to the core.
+
+The functional RTL separately exposes the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
 writeback event as those milestones arrive. Its type package already fixes a
 4096-bit packed GPR file, a 32-bit PC, a five-bit destination, and packed
 writeback and reserved-instruction records. The debug interface exposes these
 types through producer and monitor views, but does not implement storage. Those
 timing and diagnostic fields do not belong in the reference model's
-architectural snapshot. RTL HI/LO-family state begins with M084; COP0, exception
-entry, branches and delay slots, data-memory operations, FPU, and the remaining
-MMI state are added only by later granular roadmaps.
+architectural snapshot. The RTL type package now includes a 256-bit packed
+HI/LO-family state inside the architectural snapshot; COP0, exception entry,
+branches and delay slots, data-memory operations, FPU, and the remaining MMI
+state are added only by later granular roadmaps.
 
 The first physical GPR storage block has two combinational read ports, one
 synchronous write port, and a packed debug snapshot. It deliberately does not

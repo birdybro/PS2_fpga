@@ -153,14 +153,28 @@ defaults are a deterministic model input, not an architectural reset assertion.
 
 The synthesizable package fixes GPR values at 128 bits, the packed 32-register
 file at 4096 bits, GPR selectors at five bits, and PC/instruction values at 32
+bits. M084 adds a 64-bit HI/LO scalar type and a 256-bit packed state containing
+`HI`, `LO`, `HI1`, and `LO1`; the complete architectural record is now 4,384
 bits. Packed architectural-state, writeback, and reserved-instruction records
 feed a debug interface with producer and monitor modports. Compile-time `$bits`
 checks and two cocotb cases carry maximum-width asymmetric values through both
-modports and lock GPR index zero to the low packed 128-bit lane. This verifies
-types and observation only; no sequential storage behavior exists in M046.
+modports, lock GPR index zero to the low packed 128-bit lane, and distinguish
+all four multiply/divide fields.
 
 RTL packages are ordered before other design units in the shared source list so
 all top-level lint builds resolve imported types deterministically.
+
+## R5900 HI/LO state storage
+
+The standalone synthesizable state block contains four independent 64-bit
+registers with one synchronous write enable per field, individual observation
+ports, and the package-defined packed state output. It has no reset or initial
+value. Four cocotb cases explicitly seed every field before observation, verify
+asymmetric zero, all-one, sign-boundary, and alternating patterns, lock the
+packed structure order, update each field without cross-coupling, compare old
+and new values around one simultaneous write edge, and prove disabled-write
+hold across three clocks. The runner also requires exactly four executed inner
+tests with no failures or skips.
 
 ## R5900 physical GPR storage
 

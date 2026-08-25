@@ -12,17 +12,26 @@ package r5900_types_pkg;
     localparam int unsigned R5900_GPR_INDEX_WIDTH = 5;
     localparam int unsigned R5900_PC_WIDTH = 32;
     localparam int unsigned R5900_INSTRUCTION_WIDTH = 32;
+    localparam int unsigned R5900_HILO_WIDTH = 64;
 
     typedef logic [R5900_GPR_WIDTH-1:0] r5900_gpr_t;
     typedef logic [R5900_GPR_INDEX_WIDTH-1:0] r5900_gpr_index_t;
     typedef logic [R5900_PC_WIDTH-1:0] r5900_pc_t;
     typedef logic [R5900_INSTRUCTION_WIDTH-1:0] r5900_instruction_t;
+    typedef logic [R5900_HILO_WIDTH-1:0] r5900_hilo_t;
     typedef logic [5:0] r5900_opcode_t;
     typedef logic [4:0] r5900_shift_amount_t;
     typedef logic [5:0] r5900_function_t;
     typedef logic [15:0] r5900_immediate_t;
     typedef logic [25:0] r5900_target_t;
     typedef logic [R5900_GPR_COUNT-1:0][R5900_GPR_WIDTH-1:0] r5900_gpr_file_t;
+
+    typedef struct packed {
+        r5900_hilo_t hi;
+        r5900_hilo_t lo;
+        r5900_hilo_t hi1;
+        r5900_hilo_t lo1;
+    } r5900_hilo_state_t;
 
     typedef enum logic [2:0] {
         R5900_FETCH_REQUEST  = 3'd0,
@@ -59,8 +68,9 @@ package r5900_types_pkg;
     } r5900_operation_t;
 
     typedef struct packed {
-        r5900_gpr_file_t gprs;
-        r5900_pc_t       pc;
+        r5900_gpr_file_t   gprs;
+        r5900_pc_t         pc;
+        r5900_hilo_state_t hilo;
     } r5900_arch_state_t;
 
     typedef struct packed {

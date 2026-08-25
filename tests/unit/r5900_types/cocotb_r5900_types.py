@@ -8,6 +8,10 @@ GPR_WIDTH = 128
 GPR_MASK = (1 << GPR_WIDTH) - 1
 GPR_FILE_MASK = (1 << (GPR_COUNT * GPR_WIDTH)) - 1
 TEST_PC = 0x89AB_CDEF
+TEST_HI = 0x0123_4567_89AB_CDEF
+TEST_LO = 0xFEDC_BA98_7654_3210
+TEST_HI1 = 0x8000_0000_0000_0001
+TEST_LO1 = 0x7FFF_FFFF_FFFF_FFFE
 TEST_INSTRUCTION = 0x012A_4020
 TEST_WRITEBACK = 0xFEDC_BA98_7654_3210_0123_4567_89AB_CDEF
 TEST_RESERVED_PC = 0x1357_9BDF
@@ -26,6 +30,10 @@ async def test_r5900_debug_fields_preserve_boundary_values(dut) -> None:
     """Pass asymmetric maximum-width values through every typed interface field."""
     dut.pc_i.value = TEST_PC
     dut.gprs_i.value = GPR_FILE_MASK
+    dut.hi_i.value = TEST_HI
+    dut.lo_i.value = TEST_LO
+    dut.hi1_i.value = TEST_HI1
+    dut.lo1_i.value = TEST_LO1
     dut.instruction_i.value = TEST_INSTRUCTION
     dut.writeback_valid_i.value = 1
     dut.writeback_destination_i.value = GPR_COUNT - 1
@@ -41,6 +49,10 @@ async def test_r5900_debug_fields_preserve_boundary_values(dut) -> None:
 
     assert int(dut.pc_o.value) == TEST_PC
     assert int(dut.gprs_o.value) == GPR_FILE_MASK
+    assert int(dut.hi_o.value) == TEST_HI
+    assert int(dut.lo_o.value) == TEST_LO
+    assert int(dut.hi1_o.value) == TEST_HI1
+    assert int(dut.lo1_o.value) == TEST_LO1
     assert int(dut.instruction_o.value) == TEST_INSTRUCTION
     assert int(dut.writeback_valid_o.value) == 1
     assert int(dut.writeback_destination_o.value) == GPR_COUNT - 1

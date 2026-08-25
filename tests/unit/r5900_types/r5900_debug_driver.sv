@@ -5,6 +5,10 @@
 module r5900_debug_driver (
     input logic [31:0]   pc_i,
     input logic [4095:0] gprs_i,
+    input logic [63:0]   hi_i,
+    input logic [63:0]   lo_i,
+    input logic [63:0]   hi1_i,
+    input logic [63:0]   lo1_i,
     input logic [31:0]   instruction_i,
     input logic          writeback_valid_i,
     input logic [4:0]    writeback_destination_i,
@@ -23,6 +27,10 @@ module r5900_debug_driver (
 
     assign debug_o.arch_state.pc = pc_i;
     assign debug_o.arch_state.gprs = gprs_i;
+    assign debug_o.arch_state.hilo.hi = hi_i;
+    assign debug_o.arch_state.hilo.lo = lo_i;
+    assign debug_o.arch_state.hilo.hi1 = hi1_i;
+    assign debug_o.arch_state.hilo.lo1 = lo1_i;
     assign debug_o.instruction = instruction_i;
     assign debug_o.writeback.valid = writeback_valid_i;
     assign debug_o.writeback.destination = writeback_destination_i;

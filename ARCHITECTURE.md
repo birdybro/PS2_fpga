@@ -19,6 +19,10 @@ widths and packed observation records without implementing state storage.
 one-write array. `rtl/ee/r5900/r5900_gpr_file.sv` layers architectural
 write suppression, read forcing, debug masking, and an invariant assertion for
 all 128 bits of GPR zero above that storage.
+`rtl/ee/r5900/r5900_hilo_state.sv` holds independent 64-bit `HI`, `LO`, `HI1`,
+and `LO1` values behind four synchronous write enables. It has no reset input;
+verification explicitly seeds every field before observation because public
+sources do not establish hardware reset contents.
 `rtl/ee/r5900/r5900_pc.sv` holds the functional 32-bit PC and accepts an
 external simulation start address; physical reset-vector policy remains outside
 this early CPU boundary.
@@ -138,6 +142,7 @@ It cannot appear on the eventual synthesizable `rtl/ps2_top.sv` boundary.
 - Functional accuracy: the 22-instruction straight-line scalar foundation runs
   from loaded RAM through the composed multi-cycle core.
 - Architectural accuracy: verified for the implemented scalar results, PC,
-  GPR zero, entry point, retirement, and writeback behavior only.
+  GPR zero, entry point, retirement, writeback behavior, and standalone
+  dual-HI/LO state storage only.
 - Timing accuracy: not yet implemented.
 - FPGA readiness: not yet assessed.

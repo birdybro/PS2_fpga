@@ -1119,21 +1119,27 @@ milestones:
       - non-integer computed-result rejection tests
       - GPR PC and NOP successor preservation test
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
-    commit: "self (milestone(M083): define Python R5900 HI LO state)"
+    commit: 6b12a96
     notes: Add independent 64-bit HI LO HI1 and LO1 architectural state to the Python model.
   - id: M084
     title: Define RTL R5900 HI LO state
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M083]
-    tests: [four-register width storage hold and simulation-initialization tests]
+    tests:
+      - 64-bit and 256-bit packed type width checks
+      - debug-interface mapping test for all four state fields
+      - explicit four-register simulation seeding and packed-order test
+      - independent field write and cross-coupling test
+      - simultaneous pre-edge and post-edge update test
+      - disabled-write three-clock hold test
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M084): define RTL R5900 HI LO state)"
     notes: Add synthesizable state for both documented multiply/divide pipelines without inventing reset values.
   - id: M085
     title: Implement R5900 DSLL
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M084]
     tests: [decode boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

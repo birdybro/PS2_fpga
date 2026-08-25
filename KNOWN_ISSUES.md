@@ -29,9 +29,9 @@ manual. Trapping `DADDI`, `DADD`, and `DSUB` remain deferred until architectural
 integer-overflow exception entry exists.
 
 Public sources establish four 64-bit multiply/divide registers (`HI`, `LO`,
-`HI1`, and `LO1`) but not their post-reset values. M084 must preserve that
-unknown boundary rather than zero-initializing architectural state without
-evidence.
+`HI1`, and `LO1`) but not their post-reset values. The standalone RTL storage
+therefore has no reset or initialization construct, and tests seed every field
+before observation. It is not yet connected to the functional core.
 
 R5900 optional-`rd` results for `MULT`, `MULTU`, `MADD`, `MADDU`, and their
 pipeline-1 forms require semantic and destination-width corroboration before
