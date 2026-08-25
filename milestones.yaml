@@ -766,21 +766,33 @@ milestones:
       - docs/R5900_FOUNDATION.md
       - coverage/r5900_isa.yaml
       - REFERENCES.md
-    commit: "self (milestone(M061): implement R5900 SLLV)"
+    commit: 7c030af
     notes: Select the runtime count from rs bits 4:0 before shifting the rt low word.
   - id: M062
     title: Implement R5900 SRLV
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M061]
-    tests: [directed SRLV masked counts, randomized SRLV differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Include counts at and beyond the word width to prove masking.
+    tests:
+      - canonical encoding and reserved sa rejection tests
+      - effective zero one thirty and thirty-one shift boundary tests
+      - count values thirty-two thirty-three and all-ones masking tests
+      - logical zero-fill and zero-count scalar sign-extension tests
+      - source and count high-bit independence tests
+      - destination upper-lane preservation and alias tests
+      - GPR-zero suppression and exact event tests
+      - independent Python model validation tests
+      - deterministic 521-case sequential randomized differential test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - coverage/r5900_isa.yaml
+      - REFERENCES.md
+    commit: "self (milestone(M062): implement R5900 SRLV)"
+    notes: Zero-fill the runtime word shift before applying the shared scalar destination merge.
   - id: M063
     title: Implement R5900 SRAV
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M062]
     tests: [directed SRAV signed masked counts, randomized SRAV differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

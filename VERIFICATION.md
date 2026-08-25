@@ -343,6 +343,19 @@ deterministic differential/randomized test executes nine boundary plus 512
 seeded instructions sequentially and compares PC, the complete GPR state,
 operand selection, writeback, and retirement after every instruction.
 
+## R5900 SRLV
+
+Canonical SPECIAL function-six words with reserved `sa` equal to zero now
+execute as 32-bit SRLV. Five directed cocotb cases cover effective counts 0, 1,
+30, and 31 plus raw count values 32, 33, and all ones. They distinguish logical
+zero fill from the shared post-shift scalar sign extension, including a
+zero-count negative word; ignore high count and source bits; preserve destination
+bits 127:64; cover `rd == rt` and `rd == rs`; suppress GPR-zero writes; reject
+reserved `sa`; wrap PC; and verify exact writeback and retirement. A
+deterministic differential/randomized test executes nine boundary plus 512
+seeded instructions sequentially and compares PC, complete GPR state, operand
+selection, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

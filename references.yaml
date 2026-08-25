@@ -151,7 +151,7 @@ references:
       - CPU architecture overview and functional instruction groups
       - instruction description notation operations and exceptions
       - CPU instruction formats and encoding tables
-      - SLLV instruction description
+      - SLLV and SRLV instruction descriptions
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual

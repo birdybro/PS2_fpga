@@ -10,6 +10,7 @@ RANDOM_CASES = 1024
 SRL_FUNCTION = 2
 SRA_FUNCTION = 3
 SLLV_FUNCTION = 4
+SRLV_FUNCTION = 6
 
 
 def decoded_operation(word: int) -> int:
@@ -26,7 +27,9 @@ def decoded_operation(word: int) -> int:
         return 3
     if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION:
         return 4
-    return 5 if opcode == 0 and reserved_shift == 0 and function == SLLV_FUNCTION else 0
+    if opcode == 0 and reserved_shift == 0 and function == SLLV_FUNCTION:
+        return 5
+    return 6 if opcode == 0 and reserved_shift == 0 and function == SRLV_FUNCTION else 0
 
 
 @cocotb.test()
@@ -46,6 +49,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 28, 0x0000_0004),
         (True, 32, 0x023F_F804),
         (True, 36, 0x0000_0044),
+        (True, 40, 0x0000_0006),
+        (True, 44, 0x023F_F806),
+        (True, 48, 0x0000_0046),
         (True, 4, 1),
         (True, 0x0010_0000, 0x3405_1234),
         (True, 0xFFFF_FFFC, 0xFFFF_FFFF),

@@ -15,6 +15,7 @@ SLL_FUNCTION = 0
 SRL_FUNCTION = 2
 SRA_FUNCTION = 3
 SLLV_FUNCTION = 4
+SRLV_FUNCTION = 6
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -95,6 +96,14 @@ def encode_sllv(destination: int, source: int, shift_register: int) -> int:
     rt = _require_gpr_index(source)
     rs = _require_gpr_index(shift_register)
     return (rs << 21) | (rt << 16) | (rd << 11) | SLLV_FUNCTION
+
+
+def encode_srlv(destination: int, source: int, shift_register: int) -> int:
+    """Encode canonical SPECIAL SRLV with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    rs = _require_gpr_index(shift_register)
+    return (rs << 21) | (rt << 16) | (rd << 11) | SRLV_FUNCTION
 
 
 def _merge_scalar_word(old_destination: int, word: int) -> int:
@@ -201,6 +210,16 @@ class R5900State:
             shift_amount = self.read_gpr(rs) & 0x1F
             old_destination = self.read_gpr(rd)
             shifted_word = (self.read_gpr(rt) & WORD_MASK) << shift_amount
+            result = _merge_scalar_word(old_destination, shifted_word)
+            return self.write_gpr(rd, result).write_pc(self.pc + 4)
+
+        if opcode == SPECIAL_OPCODE and reserved_shift == 0 and function == SRLV_FUNCTION:
+            rs = (word >> 21) & 0x1F
+            rt = (word >> 16) & 0x1F
+            rd = (word >> 11) & 0x1F
+            shift_amount = self.read_gpr(rs) & 0x1F
+            old_destination = self.read_gpr(rd)
+            shifted_word = (self.read_gpr(rt) & WORD_MASK) >> shift_amount
             result = _merge_scalar_word(old_destination, shifted_word)
             return self.write_gpr(rd, result).write_pc(self.pc + 4)
 

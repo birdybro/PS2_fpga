@@ -131,11 +131,12 @@ the machine-readable ISA coverage therefore remains pending until instruction
 admission and semantics pass their own milestones.
 
 Decode admission is explicit and closed by default. The five-bit operation enum
-contains no-operation, NOP, SLL, SRL, SRA, and SLLV. Exact word zero selects the canonical
+contains no-operation, NOP, SLL, SRL, SRA, SLLV, and SRLV. Exact word zero selects the canonical
 NOP alias; other SPECIAL function-zero words select SLL, while SPECIAL
 function-two words select SRL, and function-three words select SRA. Those
 immediate shifts require reserved `rs` to be zero. Function-four words select
-SLLV and require reserved `sa` to be zero. Every
+SLLV, while function-six words select SRLV; both require reserved `sa` to be
+zero. Every
 other primary and SPECIAL encoding remains illegal even if a later milestone
 plans it. This makes instruction support grow only through independently
 verified admissions.
@@ -196,6 +197,15 @@ bits 127:64. Counts 32, 33, and all ones explicitly prove modulo-32 masking.
 Tests also cover `rd == rt`, `rd == rs`, destination zero, reserved `sa`, PC
 wrap, and exact events. Nine boundary plus 512 sequential randomized cases make
 SLLV the fifth complete ISA coverage entry.
+
+Canonical SRLV uses the same masked runtime count and destination merge after
+logically shifting `rt[31:0]` right. A raw count of zero can leave word bit 31
+set, so the result is then sign-extended through bits 63:32. Any nonzero
+effective count zero-fills bit 31 and therefore produces a nonnegative scalar
+result. Tests separate these two stages while covering counts 0, 1, 30, and 31,
+raw values 32, 33, and all ones, both alias directions, reserved `sa`, and exact
+events. Nine boundary plus 512 randomized cases make SRLV the sixth complete
+ISA coverage entry.
 
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
