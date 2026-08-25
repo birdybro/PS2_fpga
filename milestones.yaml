@@ -439,21 +439,25 @@ milestones:
       - enabled VCD structure and signal transition test
       - make waves retained output test
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
-    commit: "self (milestone(M039): integrate simulation waveform controls)"
+    commit: deb317f
     notes: Reuse ignored waveform outputs for the composed platform.
   - id: M040
     title: Assemble simulation platform top
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M039]
-    tests: [platform elaboration and reset integration tests]
+    tests:
+      - complete platform hierarchy elaboration and assertion lint
+      - one-cycle and four-cycle reset fanout integration tests
+      - reset RAM gating and post-reset idle state test
+      - composed disabled observability silence test
     references: [docs/SIMULATION_PLATFORM.md, ARCHITECTURE.md]
-    commit: null
+    commit: "self (milestone(M040): assemble simulation platform top)"
     notes: Compose clock, reset, memory, termination, tracing, and waveform controls.
   - id: M041
     title: Add raw binary platform integration test
     subsystem: integration
-    status: pending
+    status: active
     dependencies: [M040]
     tests: [binary loader through RAM transaction readback]
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]

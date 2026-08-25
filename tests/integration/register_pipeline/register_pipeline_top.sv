@@ -8,6 +8,9 @@ module register_pipeline_top (
     output logic [31:0] q_o
 );
 
+    timeunit 1ns;
+    timeprecision 1ps;
+
     logic [31:0] stage_one;
 
     register_en #(

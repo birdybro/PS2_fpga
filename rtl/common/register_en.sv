@@ -13,6 +13,9 @@ module register_en #(
     output logic [WIDTH-1:0] q_o
 );
 
+    timeunit 1ns;
+    timeprecision 1ps;
+
     always_ff @(posedge clk_i) begin
         if (!rst_ni) begin
             q_o <= RESET_VALUE;

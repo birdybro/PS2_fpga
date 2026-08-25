@@ -12,6 +12,9 @@ module memory_bus_protocol_checker #(
     output logic outstanding_o
 );
 
+    timeunit 1ns;
+    timeprecision 1ps;
+
     localparam int unsigned STROBE_WIDTH = DATA_WIDTH / 8;
     localparam int unsigned REQUEST_PAYLOAD_WIDTH =
         1 + ADDR_WIDTH + 3 + DATA_WIDTH + STROBE_WIDTH;

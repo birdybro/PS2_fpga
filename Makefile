@@ -60,6 +60,9 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 		$(VERILATOR_FLAGS) sim/debug/architectural_trace_sink.sv $(ARCH_TRACE_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --timing --top-module sim_waveform_control_top \
 		$(VERILATOR_FLAGS) sim/debug/sim_waveform_control.sv $(WAVEFORM_LINT_TOP)
+	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
+		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
+		rtl/memory/memory_bus_protocol_checker.sv $(SIM_SOURCES)
 	@for top in $(SIM_LINT_TOPS); do \
 		$(VERILATOR) --lint-only -Wall --timing --top-module $$top \
 			$(VERILATOR_FLAGS) $(SIM_SOURCES); \

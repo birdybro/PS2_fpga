@@ -187,6 +187,18 @@ schema, including active-cycle numbers, zero-based contiguous sequence numbers,
 source and kind tags, PC, instruction, identifier, and full 128-bit value.
 Strict standalone Verilator lint covers the sink and its test wrapper.
 
+## Composed simulation platform
+
+The complete `ps2_sim_top` hierarchy is rebuilt with one-cycle and four-cycle
+reset parameters. Directed cocotb stimulus holds valid memory, PASS, FAIL, and
+architectural-event inputs throughout reset, then proves every reset-aware
+output remains clear, RAM request readiness stays gated, and protocol state is
+empty. Reset must release on the exact following falling edge; the valid RAM
+request then becomes ready combinationally before being withdrawn ahead of the
+first active rising edge. Three later edges remain idle. Disabled memory trace,
+architectural trace, and waveform paths must create no requested files. A
+dedicated whole-hierarchy Verilator lint invocation includes assertions.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit

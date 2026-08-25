@@ -19,6 +19,9 @@ module memory_bus_protocol_top (
     output logic         outstanding_o
 );
 
+    timeunit 1ns;
+    timeprecision 1ps;
+
     memory_bus_if #(
         .ADDR_WIDTH(32),
         .DATA_WIDTH(128)

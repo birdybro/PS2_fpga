@@ -21,6 +21,20 @@ are later, explicitly tracked work.
 - `docs/` contains detailed subsystem documentation as it is developed.
 - `.github/workflows/` contains continuous-integration definitions.
 
+## Simulation composition boundary
+
+`sim/ps2_sim_top.sv` is the first composed simulation platform. It owns the
+simulation clock and reset, behavioral RAM, the single-outstanding memory
+protocol checker, timeout and PASS/FAIL controls, memory and architectural trace
+sinks, and waveform control. Its temporary external memory-master and
+architectural-event ports let loaders and verification drive the platform
+before an EE core exists. Those ports are simulation harness boundaries, not
+PS2 architectural pins; later CPU integration will connect the same internal
+memory transaction interface without changing the RAM contract.
+
+The RAM byte backdoor is likewise exposed only for loaders and verification.
+It cannot appear on the eventual synthesizable `rtl/ps2_top.sv` boundary.
+
 ## Accuracy status
 
 - Functional accuracy: not yet implemented.

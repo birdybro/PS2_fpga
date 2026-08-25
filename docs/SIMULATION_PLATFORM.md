@@ -225,6 +225,19 @@ ordinary verification removes its temporary enabled self-test capture. Trace
 instrumentation remains a build concern, so enabling the RTL parameter still
 requires Verilator's `--trace` option.
 
+M040 assembles those controls as `ps2_sim_top`. The module owns clock and reset,
+one 32-bit-address/128-bit-data `memory_bus_if`, behavioral RAM, protocol
+checking, timeout, PASS/FAIL termination, both trace sinks, and waveform
+control. Its parameters preserve the established defaults while exposing clock
+period, reset length, RAM capacity and artificial response latency, timeout and
+terminal behavior, and each observability enable independently. The temporary
+external memory-master, RAM byte-backdoor, terminal request, and architectural
+event ports are simulation harness boundaries. They allow incremental loaders
+and CPU-independent verification; they do not claim to be console pins or
+synthesizable architecture. Reset fans out to every stateful component, and RAM
+request readiness remains low until the reset sequencer releases on a falling
+edge.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and
