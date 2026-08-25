@@ -31,6 +31,7 @@ module behavioral_system_ram #(
     logic read128_request;
     logic write32_request;
     logic write64_request;
+    logic write128_request;
     logic supported_request;
     logic response_slot_available;
     logic request_fire;
@@ -61,6 +62,10 @@ module behavioral_system_ram #(
     localparam logic [STROBE_WIDTH-1:0] WRITE64_LANE_MASK = {
         {(STROBE_WIDTH - 8) {1'b0}},
         8'hff
+    };
+    localparam logic [STROBE_WIDTH-1:0] WRITE128_LANE_MASK = {
+        {(STROBE_WIDTH - 16) {1'b0}},
+        16'hffff
     };
 
     initial begin
@@ -97,11 +102,17 @@ module behavioral_system_ram #(
         && (bus.req_addr[2:0] == 3'b000)
         && (bus.req_addr <= LAST_READ64_ADDR)
         && ((bus.req_wstrb & ~WRITE64_LANE_MASK) == '0);
+    assign write128_request = bus.req_write
+        && (bus.req_size == 3'd4)
+        && (bus.req_addr[3:0] == 4'b0000)
+        && (bus.req_addr <= LAST_READ128_ADDR)
+        && ((bus.req_wstrb & ~WRITE128_LANE_MASK) == '0);
     assign supported_request = read32_request
         || read64_request
         || read128_request
         || write32_request
-        || write64_request;
+        || write64_request
+        || write128_request;
     assign response_slot_available = !rsp_valid_q || bus.rsp_ready;
     assign bus.req_ready = rst_ni && response_slot_available && supported_request;
     assign request_fire = bus.req_valid && bus.req_ready;
@@ -160,7 +171,7 @@ module behavioral_system_ram #(
                         storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3]
                             <= bus.req_wdata[31:24];
                     end
-                    if (write64_request) begin
+                    if (write64_request || write128_request) begin
                         if (bus.req_wstrb[4]) begin
                             storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_4]
                                 <= bus.req_wdata[39:32];
@@ -176,6 +187,40 @@ module behavioral_system_ram #(
                         if (bus.req_wstrb[7]) begin
                             storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_7]
                                 <= bus.req_wdata[63:56];
+                        end
+                    end
+                    if (write128_request) begin
+                        if (bus.req_wstrb[8]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_8]
+                                <= bus.req_wdata[71:64];
+                        end
+                        if (bus.req_wstrb[9]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_9]
+                                <= bus.req_wdata[79:72];
+                        end
+                        if (bus.req_wstrb[10]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_10]
+                                <= bus.req_wdata[87:80];
+                        end
+                        if (bus.req_wstrb[11]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_11]
+                                <= bus.req_wdata[95:88];
+                        end
+                        if (bus.req_wstrb[12]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_12]
+                                <= bus.req_wdata[103:96];
+                        end
+                        if (bus.req_wstrb[13]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_13]
+                                <= bus.req_wdata[111:104];
+                        end
+                        if (bus.req_wstrb[14]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_14]
+                                <= bus.req_wdata[119:112];
+                        end
+                        if (bus.req_wstrb[15]) begin
+                            storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_15]
+                                <= bus.req_wdata[127:120];
                         end
                     end
                     rsp_rdata_q <= '0;

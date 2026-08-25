@@ -175,3 +175,65 @@ def test_byte_memory_model_rejects_invalid_read128(address: int) -> None:
     model = ByteMemoryModel(32)
     with pytest.raises(ValueError):
         model.read128(address)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_writes_little_endian_quadword() -> None:
+    """Decompose a quadword through Python's byte conversion semantics."""
+    model = ByteMemoryModel(32)
+    model.write128(16, EXPECTED_QUADWORD)
+    assert tuple(model.data[16:32]) == (
+        0x01,
+        0x23,
+        0x45,
+        0x67,
+        0x89,
+        0xAB,
+        0xCD,
+        0xEF,
+        0x10,
+        0x32,
+        0x54,
+        0x76,
+        0x98,
+        0xBA,
+        0xDC,
+        0xFE,
+    )
+    assert model.read128(16) == EXPECTED_QUADWORD
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "address,value",
+    ((-16, 0), (8, 0), (32, 0), (0, -1), (0, 1 << 128)),
+)
+def test_byte_memory_model_rejects_invalid_write128(address: int, value: int) -> None:
+    """Reject invalid quadword addresses and values outside 128 bits."""
+    model = ByteMemoryModel(32)
+    with pytest.raises(ValueError):
+        model.write128(address, value)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_applies_every_write128_strobe() -> None:
+    """Preserve disabled lanes for all 65,536 quadword strobe patterns."""
+    baseline = bytes(range(16))
+    replacement = bytes(range(0x80, 0x90))
+    value = int.from_bytes(replacement, byteorder="little", signed=False)
+    for strobe in range(1 << 16):
+        model = ByteMemoryModel(16)
+        model.data[:] = baseline
+        model.write128_masked(0, value, strobe)
+        expected = bytes(
+            replacement[lane] if strobe & (1 << lane) else baseline[lane] for lane in range(16)
+        )
+        assert model.data == expected
+
+
+@pytest.mark.unit
+def test_byte_memory_model_rejects_upper_write128_strobes() -> None:
+    """Keep the 128-bit model strobe domain to exactly sixteen byte lanes."""
+    model = ByteMemoryModel(16)
+    with pytest.raises(ValueError, match="strobe"):
+        model.write128_masked(0, 0, 1 << 16)

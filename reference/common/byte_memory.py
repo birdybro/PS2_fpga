@@ -9,6 +9,8 @@ MAX_WORD_VALUE = (1 << (WORD_BYTES * BYTE_WIDTH)) - 1
 MAX_WORD_STROBE = (1 << WORD_BYTES) - 1
 MAX_DOUBLEWORD_VALUE = (1 << (DOUBLEWORD_BYTES * BYTE_WIDTH)) - 1
 MAX_DOUBLEWORD_STROBE = (1 << DOUBLEWORD_BYTES) - 1
+MAX_QUADWORD_VALUE = (1 << (QUADWORD_BYTES * BYTE_WIDTH)) - 1
+MAX_QUADWORD_STROBE = (1 << QUADWORD_BYTES) - 1
 
 
 class ByteMemoryModel:
@@ -107,6 +109,30 @@ class ByteMemoryModel:
             msg = f"64-bit byte strobe out of range: {strobe}"
             raise ValueError(msg)
         write_bytes = value.to_bytes(DOUBLEWORD_BYTES, byteorder="little", signed=False)
+        for lane, byte_value in enumerate(write_bytes):
+            if strobe & (1 << lane):
+                self.data[address + lane] = byte_value
+
+    def write128(self, address: int, value: int) -> None:
+        """Write one aligned little-endian 128-bit quadword."""
+        self.write128_masked(address, value, MAX_QUADWORD_STROBE)
+
+    def write128_masked(self, address: int, value: int, strobe: int) -> None:
+        """Update enabled byte lanes of one aligned little-endian quadword."""
+        if address % QUADWORD_BYTES != 0:
+            msg = f"unaligned 128-bit address: {address}"
+            raise ValueError(msg)
+        end = address + QUADWORD_BYTES
+        if address < 0 or end > len(self.data):
+            msg = f"128-bit address out of range: {address}"
+            raise ValueError(msg)
+        if not 0 <= value <= MAX_QUADWORD_VALUE:
+            msg = f"128-bit value out of range: {value}"
+            raise ValueError(msg)
+        if not 0 <= strobe <= MAX_QUADWORD_STROBE:
+            msg = f"128-bit byte strobe out of range: {strobe}"
+            raise ValueError(msg)
+        write_bytes = value.to_bytes(QUADWORD_BYTES, byteorder="little", signed=False)
         for lane, byte_value in enumerate(write_bytes):
             if strobe & (1 << lane):
                 self.data[address + lane] = byte_value

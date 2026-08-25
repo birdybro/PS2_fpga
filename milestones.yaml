@@ -272,21 +272,24 @@ milestones:
       - exhaustive aligned-quadword Python differential test
       - byte-memory read128 boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M025): implement aligned 128-bit RAM reads)"
+    commit: "1047526"
     notes: Add aligned quadword reads required by the EE data path.
   - id: M026
     title: Implement aligned 128-bit RAM writes
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M025]
-    tests: [directed 128-bit RAM write and lane tests]
+    tests:
+      - directed one-hot one-cold boundary and backpressure lane tests
+      - exhaustive all-65536-strobes Python RTL differential test
+      - byte-memory write128 value address and exhaustive strobe tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M026): implement aligned 128-bit RAM writes)"
     notes: Add byte-enabled aligned quadword writes and preserve narrower transfers.
   - id: M027
     title: Add configurable RAM response latency
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M026]
     tests: [zero and multi-cycle response latency tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

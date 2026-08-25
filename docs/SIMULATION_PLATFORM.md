@@ -41,6 +41,9 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M025 adds aligned 128-bit reads for size encoding four. Sixteen consecutive
   bytes fill the response in little-endian byte-lane order while all previously
   implemented 32- and 64-bit transfers retain their behavior.
+- M026 completes aligned 128-bit writes. Every one of the 16 byte-enable lanes
+  independently controls its little-endian storage byte, including the valid
+  zero-strobe no-op, while narrower transfers remain supported.
 
 ## Planned boundaries
 

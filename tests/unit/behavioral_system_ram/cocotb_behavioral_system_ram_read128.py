@@ -160,7 +160,7 @@ async def aligned_read128_is_little_endian_bounded_and_backpressured(dut) -> Non
     invalid_requests = (
         (8, 0, 4),
         (RAM_SIZE, 0, 4),
-        (0, 1, 4),
+        (0, 1, 0),
         (0, 0, 0),
     )
     for address, write, size in invalid_requests:

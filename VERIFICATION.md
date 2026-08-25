@@ -222,3 +222,13 @@ stability under backpressure, alignment, bounds, and rejection of 128-bit writes
 reserved for M026. The Python model independently forms bounded 16-byte slices
 with `int.from_bytes`; differential simulation compares every aligned quadword
 after initializing the complete RAM image.
+
+## Behavioral RAM aligned 128-bit writes
+
+The directed test covers every one-hot and one-cold lane mask, zero/full and
+alternating interactions, both RAM boundaries, malformed addresses, and a
+stalled completion response. The Python model independently validates address,
+value, and strobe domains and exhaustively checks all 65,536 masks against byte
+selection. Differential simulation uses same-cycle response consumption to
+efficiently issue every 16-bit strobe pattern through the RTL, then compares the
+complete RAM image through 128-bit reads.
