@@ -25,6 +25,7 @@ ADDIU_OPCODE = 9
 ADDU_FUNCTION = 33
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
+OR_FUNCTION = 37
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -184,6 +185,14 @@ def encode_and(destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | AND_FUNCTION
+
+
+def encode_or(destination: int, source_a: int, source_b: int) -> int:
+    """Encode canonical SPECIAL OR with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(source_a)
+    rt = _require_gpr_index(source_b)
+    return (rs << 21) | (rt << 16) | (rd << 11) | OR_FUNCTION
 
 
 def _merge_scalar(old_destination: int, scalar: int) -> int:
@@ -352,13 +361,23 @@ class R5900State:
         result = _merge_scalar(self.read_gpr(rd), self.read_gpr(rs) & self.read_gpr(rt))
         return self.write_gpr(rd, result)
 
+    def _step_or(self, word: int) -> R5900State:
+        """OR the low 64-bit scalar lanes and preserve the destination upper lane."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        result = _merge_scalar(self.read_gpr(rd), self.read_gpr(rs) | self.read_gpr(rt))
+        return self.write_gpr(rd, result)
+
     def _step_register_alu(self, word: int, function: int) -> R5900State:
         """Dispatch one admitted SPECIAL register ALU operation."""
         if function == ADDU_FUNCTION:
             return self._step_addu(word)
         if function == SUBU_FUNCTION:
             return self._step_subu(word)
-        return self._step_and(word)
+        if function == AND_FUNCTION:
+            return self._step_and(word)
+        return self._step_or(word)
 
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
@@ -374,7 +393,12 @@ class R5900State:
             variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
             if opcode == ADDIU_OPCODE:
                 updated = self._step_addiu(word)
-            elif variable and function in (ADDU_FUNCTION, SUBU_FUNCTION, AND_FUNCTION):
+            elif variable and function in (
+                ADDU_FUNCTION,
+                SUBU_FUNCTION,
+                AND_FUNCTION,
+                OR_FUNCTION,
+            ):
                 updated = self._step_register_alu(word, function)
             elif opcode == ANDI_OPCODE:
                 updated = self._step_andi(word)
