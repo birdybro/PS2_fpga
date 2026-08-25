@@ -17,3 +17,10 @@ routine gate and `make regression` is the authoritative pre-commit gate.
 `make integration`, `make software`, and `make waves` remain distinct so each
 verification layer can run independently. Pending layers fail explicitly until
 their implementation milestone completes.
+
+## HDL compilation smoke test
+
+`make build` uses Verilator to translate and compile `register_en` into a C++
+model archive under ignored `build/`. Warnings are errors. The tiny common
+module gives later cocotb and lint milestones a synthesis-oriented DUT without
+claiming that any PS2 architectural behavior is implemented.

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M002 — establish build configuration
-- Next milestone: M003 — add Verilator compilation smoke test
+- Last completed milestone: M003 — add Verilator compilation smoke test
+- Next milestone: M004 — add cocotb smoke test
 - Current subsystem: repository infrastructure
-- Current regression status: `make test`, `make regression`, and bootstrap `make lint` pass; no HDL test exists yet
+- Current regression status: Verilator build, `make test`, `make regression`, and bootstrap `make lint` pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M002 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M003 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

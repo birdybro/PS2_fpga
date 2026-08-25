@@ -2,8 +2,12 @@
 
 PYTHON ?= python3
 VERILATOR ?= verilator
+VERILATOR_FLAGS ?=
 BUILD_DIR ?= build
 RANDOM_SEED ?= 1
+
+SMOKE_RTL := rtl/common/register_en.sv
+SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
 
 .PHONY: help structure build lint test unit differential randomized integration regression software waves clean
 
@@ -13,14 +17,18 @@ help: ## Show available development commands.
 structure: ## Verify required repository subsystem boundaries.
 	@$(PYTHON) scripts/check_structure.py
 
-build: ## Compile synthesizable RTL (introduced by M003).
-	@echo "build is not available until milestone M003" >&2
-	@exit 2
+build: $(SMOKE_MDIR)/Vregister_en__ALL.a ## Compile the current synthesizable RTL smoke model.
+
+$(SMOKE_MDIR)/Vregister_en__ALL.a: $(SMOKE_RTL)
+	@mkdir -p $(SMOKE_MDIR)
+	$(VERILATOR) --cc --build --Mdir $(SMOKE_MDIR) \
+		--top-module register_en --prefix Vregister_en \
+		-Wall $(VERILATOR_FLAGS) $(SMOKE_RTL)
 
 lint: structure ## Run the currently available static repository checks.
 	@git diff HEAD --check -- .
 
-test: structure ## Run the routine test gate currently available.
+test: structure build ## Run the routine test gate currently available.
 	@echo "bootstrap tests: PASS"
 
 unit: ## Run directed unit tests (introduced by M004).

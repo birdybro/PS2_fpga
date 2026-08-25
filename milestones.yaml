@@ -29,21 +29,21 @@ milestones:
     dependencies: [M001]
     tests: [make help]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M002): establish build configuration)"
+    commit: 532227d
     notes: Provide stable top-level command contracts before tool-specific tests.
   - id: M003
     title: Add Verilator compilation smoke test
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M002]
     tests: [make build]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M003): add Verilator compilation smoke test)"
     notes: Compile the smallest synthesizable SystemVerilog design.
   - id: M004
     title: Add cocotb smoke test
     subsystem: verification
-    status: pending
+    status: active
     dependencies: [M003]
     tests: [make unit]
     references: [VERIFICATION.md]
