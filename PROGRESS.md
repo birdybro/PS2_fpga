@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M084 — define RTL R5900 HI LO state
-- Next milestone: M085 — implement R5900 DSLL
+- Last completed milestone: M085 — implement R5900 DSLL
+- Next milestone: M086 — implement R5900 DSRL
 - Current subsystem: R5900 64-bit shift execution
-- Current regression status: 504 tests pass with no skips; independent reset-free 64-bit RTL HI/LO-family storage, packed mapping, and all prior behavior are green
-- Known architectural inaccuracies: only the 22-instruction straight-line scalar foundation executes; 32 doubleword and dual-HI/LO operations are planned but pending, and branches, data memory, exceptions, and compiled C are absent
+- Current regression status: 513 tests pass with no skips; DSLL directed, randomized differential, decode, integration, and all prior behavior are green
+- Known architectural inaccuracies: only the 22-instruction straight-line scalar foundation plus DSLL execute; 31 doubleword and dual-HI/LO operations are planned but pending, and branches, data memory, exceptions, and compiled C are absent
 - Known timing inaccuracies: the core uses a deliberately functional five-state sequence, registered request handoff, and one-entry fetch buffer; pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M084 milestone commit (this commit)
+- Most recent pushed commit: M085 milestone commit (this commit)
 
 ## Resume note
 
@@ -22,5 +22,5 @@ GPR blocks now form a functional core. A generated native EE ELF loads into
 behavioral RAM, begins at its published entry, executes 13 straight-line words,
 matches exact retirement, writeback, final GPR, and architectural trace state,
 then reaches the simulator PASS latch. Resume with the single active milestone
-in `milestones.yaml` to implement the first 64-bit shift, `DSLL`, with directed
+in `milestones.yaml` to implement the next 64-bit shift, `DSRL`, with directed
 and randomized differential verification.

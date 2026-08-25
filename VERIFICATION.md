@@ -439,6 +439,19 @@ differential/randomized test executes nine boundary plus 512 seeded instructions
 and compares PC, complete GPR state, operand selection, writeback, and retirement
 after every instruction.
 
+## R5900 DSLL
+
+Canonical SPECIAL function `0x38` with reserved `rs` equal to zero now executes
+as 64-bit DSLL. Five directed cocotb cases cover counts 0, 1, 30, and 31;
+bit-63 generation and shifted-out high bits; ignored source bits 127:64;
+preserved destination bits 127:64; `rd == rt`; GPR-zero suppression; reserved
+`rs`; PC wrap; and exact writeback and retirement events. The RTL uses one
+64-bit shift result, while the independent Python transition explicitly masks
+the source and merges the result into an immutable destination snapshot. A
+deterministic differential/randomized test executes twelve boundary plus 512
+seeded instructions sequentially and compares PC, the complete 4,096-bit GPR
+state, writeback, and retirement after every instruction.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.

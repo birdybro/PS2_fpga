@@ -1134,21 +1134,26 @@ milestones:
       - simultaneous pre-edge and post-edge update test
       - disabled-write three-clock hold test
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
-    commit: "self (milestone(M084): define RTL R5900 HI LO state)"
+    commit: "2144217"
     notes: Add synthesizable state for both documented multiply/divide pipelines without inventing reset values.
   - id: M085
     title: Implement R5900 DSLL
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M084]
-    tests: [decode boundaries aliases upper-lane preservation and randomized differential tests]
+    tests:
+      - exact SPECIAL function 0x38 decode and reserved rs rejection tests
+      - low-64-bit shift and destination upper-lane preservation tests
+      - shift-count 0 1 30 and 31 boundary and overflow tests
+      - source-destination alias GPR-zero PC-wrap and exact-event tests
+      - 524-case sequential randomized differential test comparing every GPR and PC
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
-    notes: Implement one immediate low-range doubleword left shift.
+    commit: "self (milestone(M085): implement R5900 DSLL)"
+    notes: Implement the immediate low-range doubleword left shift without changing the 128-bit upper destination lane.
   - id: M086
     title: Implement R5900 DSRL
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M085]
     tests: [decode boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

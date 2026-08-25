@@ -297,14 +297,14 @@ instructions:
     category: 64-bit shift immediate
     encoding: SPECIAL opcode 0x00, function 0x38
     milestone: M085
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
-    notes: Planned low-64-bit logical left shift with the immediate shift-count range resolved by its milestone.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
+    notes: Shifts rt bits 63:0 left by sa 0 through 31, truncates to 64 bits, and preserves rd bits 127:64.
   - mnemonic: DSRL
     category: 64-bit shift immediate
     encoding: SPECIAL opcode 0x00, function 0x3a

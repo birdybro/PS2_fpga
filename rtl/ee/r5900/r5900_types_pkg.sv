@@ -64,7 +64,8 @@ package r5900_types_pkg;
         R5900_OPERATION_SLT   = 5'd19,
         R5900_OPERATION_SLTU  = 5'd20,
         R5900_OPERATION_SLTI  = 5'd21,
-        R5900_OPERATION_SLTIU = 5'd22
+        R5900_OPERATION_SLTIU = 5'd22,
+        R5900_OPERATION_DSLL  = 5'd23
     } r5900_operation_t;
 
     typedef struct packed {

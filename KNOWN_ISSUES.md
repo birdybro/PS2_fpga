@@ -9,9 +9,9 @@ writeback RTL into a functional single-issue core. A generated EE ELF executes
 a claim of general CPU compatibility.
 
 Bus errors are retained as functional fetch status. Exact zero-word NOP, all
-six canonical 32-bit shifts, LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU, AND, OR,
-XOR, NOR, SLT, SLTU, SLTI, and SLTIU execute with PC advance, retirement trace,
-and centralized writeback. No other instruction executes. Illegal words emit a
+six canonical 32-bit shifts, DSLL, LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU,
+AND, OR, XOR, NOR, SLT, SLTU, SLTI, and SLTIU execute with PC advance,
+retirement trace, and centralized writeback. No other instruction executes. Illegal words emit a
 functional diagnostic and are suppressed before execution, but do not enter an
 architectural exception; COP0 remains unimplemented.
 
@@ -19,8 +19,9 @@ GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-All 22 entries in the initial scalar foundation are complete. The 32 rows added
-by the doubleword and dual-HI/LO roadmap are pending; each must pass its own
+All 22 entries in the initial scalar foundation are complete. One of the 32
+rows added by the doubleword and dual-HI/LO roadmap is complete; the other 31
+are pending and each must pass its own
 instruction milestone before becoming complete.
 
 The R5900-specific tables omit generic MIPS `DMULT`, `DMULTU`, `DDIV`, and

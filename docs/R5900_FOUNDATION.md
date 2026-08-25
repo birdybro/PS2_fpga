@@ -219,7 +219,8 @@ admission and semantics pass their own milestones.
 Decode admission is explicit and closed by default. The five-bit operation enum
 contains no-operation, NOP, and all six 32-bit shift operations. Exact word zero selects the canonical
 NOP alias; other SPECIAL function-zero words select SLL, while SPECIAL
-function-two words select SRL, and function-three words select SRA. Those
+function-two words select SRL, function-three words select SRA, and
+function-`0x38` words select DSLL. Those
 immediate shifts require reserved `rs` to be zero. Function-four words select
 SLLV, function-six words select SRLV, and function-seven words select SRAV; all
 require reserved `sa` to be zero. Every
@@ -301,6 +302,15 @@ and all ones prove count masking. Alias, destination-zero, reserved-field, PC,
 and event checks complete the directed layer. Nine boundary plus 512 randomized
 cases make SRAV the seventh complete ISA coverage entry and complete the initial
 32-bit shift family.
+
+Canonical DSLL is the first implemented 64-bit shift. SPECIAL function `0x38`
+requires reserved `rs` to be zero, reads only `rt[63:0]`, shifts left by the
+encoded count from 0 through 31, and truncates the result to 64 bits. It does
+not sign-extend a word: old destination bits 127:64 remain intact around the
+new low doubleword. Directed checks cover counts 0, 1, 30, and 31, bit-63
+generation and overflow, ignored source high bits, `rd == rt`, GPR zero,
+reserved `rs`, PC wrap, and exact events. Twelve boundary plus 512 sequential
+randomized cases make DSLL the twenty-third complete ISA coverage entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
