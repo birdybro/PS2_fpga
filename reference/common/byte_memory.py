@@ -2,6 +2,7 @@
 
 WORD_BYTES = 4
 DOUBLEWORD_BYTES = 8
+QUADWORD_BYTES = 16
 BYTE_WIDTH = 8
 MAX_BYTE_VALUE = (1 << BYTE_WIDTH) - 1
 MAX_WORD_VALUE = (1 << (WORD_BYTES * BYTE_WIDTH)) - 1
@@ -48,6 +49,17 @@ class ByteMemoryModel:
         end = address + DOUBLEWORD_BYTES
         if address < 0 or end > len(self.data):
             msg = f"64-bit address out of range: {address}"
+            raise ValueError(msg)
+        return int.from_bytes(self.data[address:end], byteorder="little", signed=False)
+
+    def read128(self, address: int) -> int:
+        """Read one aligned little-endian 128-bit quadword."""
+        if address % QUADWORD_BYTES != 0:
+            msg = f"unaligned 128-bit address: {address}"
+            raise ValueError(msg)
+        end = address + QUADWORD_BYTES
+        if address < 0 or end > len(self.data):
+            msg = f"128-bit address out of range: {address}"
             raise ValueError(msg)
         return int.from_bytes(self.data[address:end], byteorder="little", signed=False)
 

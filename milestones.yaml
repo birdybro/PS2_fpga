@@ -260,21 +260,24 @@ milestones:
       - full-image Python write64 differential test covering every strobe
       - byte-memory write64 value address and strobe-domain tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M024): implement aligned 64-bit RAM writes)"
+    commit: "9192967"
     notes: Extend byte-enabled writes to aligned 64-bit transfers.
   - id: M025
     title: Implement aligned 128-bit RAM reads
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M024]
-    tests: [directed 128-bit RAM read and endian tests]
+    tests:
+      - directed 128-bit endian alignment bounds and backpressure test
+      - exhaustive aligned-quadword Python differential test
+      - byte-memory read128 boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M025): implement aligned 128-bit RAM reads)"
     notes: Add aligned quadword reads required by the EE data path.
   - id: M026
     title: Implement aligned 128-bit RAM writes
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M025]
     tests: [directed 128-bit RAM write and lane tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

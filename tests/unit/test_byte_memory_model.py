@@ -6,6 +6,7 @@ from reference.common.byte_memory import ByteMemoryModel
 
 EXPECTED_WORD = 0x6745_2301
 EXPECTED_DOUBLEWORD = 0xEFCD_AB89_6745_2301
+EXPECTED_QUADWORD = 0xFEDC_BA98_7654_3210_EFCD_AB89_6745_2301
 
 
 @pytest.mark.unit
@@ -138,3 +139,39 @@ def test_byte_memory_model_rejects_upper_write64_strobes() -> None:
     model = ByteMemoryModel(8)
     with pytest.raises(ValueError, match="strobe"):
         model.write64_masked(0, 0, 0x100)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_reads_little_endian_quadword() -> None:
+    """Form a quadword through Python's byte conversion semantics."""
+    model = ByteMemoryModel(32)
+    values = (
+        0x01,
+        0x23,
+        0x45,
+        0x67,
+        0x89,
+        0xAB,
+        0xCD,
+        0xEF,
+        0x10,
+        0x32,
+        0x54,
+        0x76,
+        0x98,
+        0xBA,
+        0xDC,
+        0xFE,
+    )
+    for address, value in enumerate(values, start=16):
+        model.write_byte(address, value)
+    assert model.read128(16) == EXPECTED_QUADWORD
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("address", (-16, 8, 32))
+def test_byte_memory_model_rejects_invalid_read128(address: int) -> None:
+    """Reject negative, unaligned, and out-of-range quadword addresses."""
+    model = ByteMemoryModel(32)
+    with pytest.raises(ValueError):
+        model.read128(address)

@@ -38,6 +38,9 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
 - M024 adds aligned 64-bit writes with every lower-eight-lane byte-enable
   pattern, including a zero-strobe no-op. Disabled bytes remain unchanged,
   upper strobe lanes are rejected, and narrower accesses remain supported.
+- M025 adds aligned 128-bit reads for size encoding four. Sixteen consecutive
+  bytes fill the response in little-endian byte-lane order while all previously
+  implemented 32- and 64-bit transfers retain their behavior.
 
 ## Planned boundaries
 

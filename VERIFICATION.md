@@ -213,3 +213,12 @@ Python model independently updates a bytearray from `int.to_bytes` and validates
 address, value, and strobe domains. Differential simulation distributes every
 mask over repeated writes to all aligned doublewords, then compares the complete
 RAM image through 64-bit bus reads.
+
+## Behavioral RAM aligned 128-bit reads
+
+The directed test reads the first, an interior, and the final legal aligned
+quadword using hardcoded asymmetric endian vectors. It checks full-width response
+stability under backpressure, alignment, bounds, and rejection of 128-bit writes
+reserved for M026. The Python model independently forms bounded 16-byte slices
+with `int.from_bytes`; differential simulation compares every aligned quadword
+after initializing the complete RAM image.
