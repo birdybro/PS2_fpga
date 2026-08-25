@@ -48,6 +48,7 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VENV_PYTHON) scripts/check_ci_workflow.py
 	$(VENV_PYTHON) scripts/check_milestones.py
 	$(VENV_PYTHON) scripts/check_references.py
+	$(VENV_PYTHON) scripts/check_conventions.py
 
 test: structure build venv ## Run the routine pytest gate.
 	$(TEST_RUNNER) test --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"

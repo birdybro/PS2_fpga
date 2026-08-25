@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M012 — establish references and provenance infrastructure
-- Next milestone: M013 — establish coding and verification conventions
-- Current subsystem: repository infrastructure
-- Current regression status: 13 tests pass with no skips; strict lint and provenance policy validation pass
+- Last completed milestone: M013 — establish coding and verification conventions
+- Next milestone: M014 — expand Phase 1 simulation-platform roadmap
+- Current subsystem: simulation-platform planning
+- Current regression status: 17 tests pass with no skips; strict lint and convention enforcement pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M012 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M013 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

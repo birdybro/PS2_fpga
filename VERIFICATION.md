@@ -113,3 +113,12 @@ machine-readable source against a unique marker in `REFERENCES.md`. Directed
 unit tests prove duplicate IDs, weakened prohibited-material policy, unsafe
 URLs, and stale human documentation are rejected. Uncertain-license documents
 remain link-only, while any future local cache is ignored by Git.
+
+## Convention enforcement
+
+`docs/CONVENTIONS.md` assigns stable identifiers to RTL, interface, arithmetic,
+assertion, reference-model, verification, and milestone-gate rules. Lint checks
+that contract, requires implicit nets to be disabled in RTL, rejects source-level
+skip and expected-failure mechanisms, and cross-checks every implementation
+`TODO-ACCURACY` marker against `KNOWN_ISSUES.md`. Directed tests prove each
+failure mode remains fatal.

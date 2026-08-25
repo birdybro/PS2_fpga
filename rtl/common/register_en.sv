@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 
+`default_nettype none
+
 module register_en #(
     parameter int unsigned WIDTH = 32,
     parameter logic [WIDTH-1:0] RESET_VALUE = '0
@@ -20,3 +22,5 @@ module register_en #(
     end
 
 endmodule
+
+`default_nettype wire
