@@ -167,6 +167,16 @@ PASS-then-FAIL and FAIL-then-PASS orderings. A standalone Verilator binary drive
 simultaneous requests through the default path and requires nonzero exit, one
 coded `SIM_FAIL` marker, no `SIM_PASS`, and no fallback diagnostic.
 
+## Memory transaction trace
+
+Two Verilator/cocotb configurations run identical reset, stall, request,
+response, simultaneous-handshake, and error stimulus. Disabled mode must not
+create the requested file. Enabled mode is compared byte-for-byte against a
+versioned five-line record: reset and stalls are absent, accepted operations
+carry exact fixed-width payloads and active-cycle numbers, and the same-cycle
+request precedes its response. The trace module also has its own strict
+interface-aware Verilator lint top.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit

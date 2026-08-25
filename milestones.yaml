@@ -403,21 +403,24 @@ milestones:
       - simultaneous FAIL priority and first-terminal-result ordering tests
       - default standalone nonzero-exit coded SIM_FAIL test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M036): add simulation FAIL termination)"
+    commit: 67b7ecf
     notes: Report program failure distinctly from timeout and infrastructure errors.
   - id: M037
     title: Add memory transaction trace
     subsystem: debug
-    status: active
+    status: complete
     dependencies: [M036]
-    tests: [trace disabled and deterministic record tests]
+    tests:
+      - disabled no-file trace test
+      - exact versioned reset stall request response payload trace test
+      - deterministic same-cycle request-before-response ordering test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M037): add memory transaction trace)"
     notes: Record accepted requests and responses only when explicitly enabled.
   - id: M038
     title: Add architectural trace sink
     subsystem: debug
-    status: pending
+    status: active
     dependencies: [M037]
     tests: [trace sink disabled and schema tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

@@ -193,6 +193,16 @@ the same edge, FAIL has explicit priority and no PASS marker or state is emitted
 Synchronous reset clears both result classes and the captured code. This keeps
 software failure distinct from watchdog `SIM_TIMEOUT` and infrastructure errors.
 
+M037 adds a passive memory transaction trace sink. Its compile-time default is
+disabled and opens no file. When enabled, `+MEM_TRACE_FILE=<path>` selects an
+external ignored output (with a local fallback name), and the sink writes one
+versioned header followed only by accepted ready/valid handshakes. Active cycles
+start at 1 after reset. Request records contain write, 32-bit address, size,
+128-bit write data, and 16 strobes; response records contain 128-bit read data
+and error. Stalls and reset-time signals are silent. If request and response
+complete together, the request record is written first. The monitor observes but
+never drives the transaction interface or architectural state.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and
