@@ -122,7 +122,7 @@ references:
     redistribution: link-only
     consulted_sections:
       - scalar shift and immediate interpreter operations
-      - ADDU SUBU AND OR XOR NOR SLT and SLTU interpreter operations
+      - ADDU SUBU AND OR XOR NOR SLT SLTU and SLTI interpreter operations
     notes: >-
       Corroborates R5900 scalar result widths and immediate or register arithmetic handling;
       no source structure was copied.
@@ -169,6 +169,7 @@ references:
       - NOR instruction description
       - SLT instruction description
       - SLTU instruction description
+      - SLTI instruction description
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual

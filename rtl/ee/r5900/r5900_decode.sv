@@ -136,6 +136,9 @@ module r5900_decode (
         end else if (instruction_i[31:26] == 6'h09) begin
             legal_o = 1'b1;
             operation_o = R5900_OPERATION_ADDIU;
+        end else if (instruction_i[31:26] == 6'h0a) begin
+            legal_o = 1'b1;
+            operation_o = R5900_OPERATION_SLTI;
         end
     end
 

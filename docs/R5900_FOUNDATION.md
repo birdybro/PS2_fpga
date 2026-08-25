@@ -324,6 +324,16 @@ aliases; register zero; PC wrap; exact events; and reserved-field rejection.
 Twelve boundary plus 512 randomized cases make SLTU the twentieth complete ISA
 coverage entry.
 
+Canonical SLTI admits every `rs`, `rt`, and 16-bit immediate under primary
+opcode `0x0a`. It sign-extends the immediate through 64 bits, compares it with
+the signed low 64-bit source scalar lane, writes exactly zero or one to the
+destination scalar lane, and retains old destination bits 127:64. Directed
+checks cover signed scalar and immediate extrema, equality, sign-extension
+boundaries, and values whose 32-bit and 64-bit signs conflict; ignored source
+upper lanes; source/destination aliasing; register zero; PC wrap; and exact
+events. Twelve boundary plus 512 randomized cases make SLTI the twenty-first
+complete ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

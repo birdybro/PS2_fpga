@@ -517,6 +517,19 @@ and reserved-field rejection. A deterministic differential/randomized test
 executes twelve boundary plus 512 seeded instructions and compares PC,
 complete GPR state, writeback, and retirement after every instruction.
 
+## R5900 SLTI
+
+Primary opcode `0x0a` now executes SLTI for every source, destination, and
+16-bit immediate field. Three directed cocotb cases cover zero, one, negative
+one, signed scalar minimum and maximum, immediate minimum and maximum,
+sign-extension equality, and deliberately conflicting 32-bit-versus-64-bit
+source signs; ignored source bits 127:64; preserved destination bits 127:64;
+exact zero-or-one scalar results; source/destination aliasing; source and
+destination zero; PC wrap; and exact events. A deterministic
+differential/randomized test executes twelve boundary plus 512 seeded
+instructions and compares PC, complete GPR state, writeback, and retirement
+after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

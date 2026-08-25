@@ -24,6 +24,7 @@ OPERATION_XOR = 17
 OPERATION_NOR = 18
 OPERATION_SLT = 19
 OPERATION_SLTU = 20
+OPERATION_SLTI = 21
 
 
 async def check_dispatch(
@@ -185,6 +186,17 @@ async def test_r5900_decode_dispatch_sends_canonical_addiu_to_execute(dut) -> No
         (0x0010_0000, 0x27FF_FFFF),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_ADDIU, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_slti_to_execute(dut) -> None:
+    """Dispatch SLTI source, destination, and immediate fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x2800_0000),
+        (4, 0x2821_8000),
+        (0x0010_0000, 0x2BFF_FFFF),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SLTI, False))
 
 
 @cocotb.test()

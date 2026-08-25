@@ -22,6 +22,7 @@ ORI_OPCODE = 13
 ANDI_OPCODE = 12
 XORI_OPCODE = 14
 ADDIU_OPCODE = 9
+SLTI_OPCODE = 10
 ADDU_FUNCTION = 33
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
@@ -165,6 +166,14 @@ def encode_addiu(destination: int, source: int, immediate: int) -> int:
     rs = _require_gpr_index(source)
     value = _require_unsigned("immediate", immediate, 0xFFFF)
     return (ADDIU_OPCODE << 26) | (rs << 21) | (rt << 16) | value
+
+
+def encode_slti(destination: int, source: int, immediate: int) -> int:
+    """Encode SLTI with its architectural unsigned 16-bit field."""
+    rt = _require_gpr_index(destination)
+    rs = _require_gpr_index(source)
+    value = _require_unsigned("immediate", immediate, 0xFFFF)
+    return (SLTI_OPCODE << 26) | (rs << 21) | (rt << 16) | value
 
 
 def encode_addu(destination: int, source_a: int, source_b: int) -> int:
@@ -377,6 +386,19 @@ class R5900State:
         result = _merge_scalar_word(self.read_gpr(rt), result_word)
         return self.write_gpr(rt, result)
 
+    def _step_slti(self, word: int) -> R5900State:
+        """Compare a signed scalar source against a sign-extended immediate."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        immediate = word & 0xFFFF
+        if immediate & 0x8000:
+            immediate -= 1 << 16
+        result = _merge_scalar(
+            self.read_gpr(rt),
+            int(_as_signed_scalar(self.read_gpr(rs)) < immediate),
+        )
+        return self.write_gpr(rt, result)
+
     def _step_addu(self, word: int) -> R5900State:
         """Add two source words modulo 32 bits without an overflow exception."""
         rs = (word >> 21) & 0x1F
@@ -486,6 +508,8 @@ class R5900State:
             variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
             if opcode == ADDIU_OPCODE:
                 updated = self._step_addiu(word)
+            elif opcode == SLTI_OPCODE:
+                updated = self._step_slti(word)
             elif variable and function in (
                 ADDU_FUNCTION,
                 SUBU_FUNCTION,
