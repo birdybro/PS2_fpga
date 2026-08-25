@@ -40,6 +40,8 @@ module r5900_execute (
     logic sltu_result;
     logic signed [63:0] slti_immediate;
     logic slti_result;
+    logic [63:0] sltiu_immediate;
+    logic sltiu_result;
 
     assign sll_word = source_rt_scalar_i[31:0] << instruction_i[10:6];
     assign srl_word = source_rt_scalar_i[31:0] >> instruction_i[10:6];
@@ -58,6 +60,8 @@ module r5900_execute (
     assign sltu_result = source_rs_scalar_i < source_rt_scalar_i;
     assign slti_immediate = $signed({{48{instruction_i[15]}}, instruction_i[15:0]});
     assign slti_result = slt_source_rs_scalar < slti_immediate;
+    assign sltiu_immediate = {{48{instruction_i[15]}}, instruction_i[15:0]};
+    assign sltiu_result = source_rs_scalar_i < sltiu_immediate;
 
     always_comb begin
         complete_o = 1'b0;
@@ -446,6 +450,22 @@ module r5900_execute (
                             destination_upper_i,
                             63'd0,
                             slti_result
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_SLTIU: begin
+                    if (instruction_i[31:26] == 6'h0b) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[20:16];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            63'd0,
+                            sltiu_result
                         };
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;

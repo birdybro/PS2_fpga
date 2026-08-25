@@ -334,6 +334,17 @@ upper lanes; source/destination aliasing; register zero; PC wrap; and exact
 events. Twelve boundary plus 512 randomized cases make SLTI the twenty-first
 complete ISA coverage entry.
 
+Canonical SLTIU admits every `rs`, `rt`, and 16-bit immediate under primary
+opcode `0x0b`. It sign-extends the immediate through 64 bits, compares the
+resulting bit pattern with the unsigned low 64-bit source scalar lane, writes
+exactly zero or one to the destination scalar lane, and retains old destination
+bits 127:64. Directed checks cover positive and negative immediate boundaries,
+equality at both sign-extended extrema, adjacent unsigned values, ignored
+source upper lanes, source/destination aliasing, register zero, PC wrap, and
+exact events. Twelve boundary plus 512 randomized cases make SLTIU the
+twenty-second complete ISA coverage entry and finish the functional foundation
+matrix.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.
@@ -349,10 +360,11 @@ borrow, and immediate-extension boundaries.
 
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
-directed, randomized-differential, and exception coverage separately. Its 22
-foundation entries start pending: an encoding string and milestone owner are a
-plan, not an implementation claim. A validator cross-checks exact inventory,
-roadmap ownership, reference provenance, and summary-state consistency. The
+directed, randomized-differential, and exception coverage separately. All 22
+foundation entries are complete; they began pending because an encoding string
+and milestone owner are a plan, not an implementation claim. A validator
+cross-checks exact inventory, roadmap ownership, reference provenance, and
+summary-state consistency. The
 first integration gates fetch from the behavioral RAM, execute a sequential NOP
 image, and then execute a generated EE ELF arithmetic stream from its published
 entry point.

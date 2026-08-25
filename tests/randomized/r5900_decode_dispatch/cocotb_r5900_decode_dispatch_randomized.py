@@ -18,6 +18,7 @@ ANDI_OPCODE = 12
 XORI_OPCODE = 14
 ADDIU_OPCODE = 9
 SLTI_OPCODE = 10
+SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
@@ -57,6 +58,8 @@ def decoded_operation(word: int) -> int:
         operation = 12
     elif word >> 26 == SLTI_OPCODE:
         operation = 21
+    elif word >> 26 == SLTIU_OPCODE:
+        operation = 22
     elif word >> 26 == ANDI_OPCODE:
         operation = 10
     elif word >> 26 == XORI_OPCODE:
@@ -109,6 +112,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 121, 0x2800_0000),
         (True, 122, 0x2821_8000),
         (True, 123, 0x2BFF_FFFF),
+        (True, 124, 0x2C00_0000),
+        (True, 125, 0x2C21_8000),
+        (True, 126, 0x2FFF_FFFF),
         (True, 124, 0x0000_0021),
         (True, 128, 0x023F_F821),
         (True, 132, 0x0000_0061),

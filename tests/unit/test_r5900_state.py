@@ -22,6 +22,7 @@ from reference.ee.r5900 import (
     encode_sllv,
     encode_slt,
     encode_slti,
+    encode_sltiu,
     encode_sltu,
     encode_sra,
     encode_srav,
@@ -67,6 +68,7 @@ ENCODED_NOR_EXAMPLE = 0x02F1_F827
 ENCODED_SLT_EXAMPLE = 0x02F1_F82A
 ENCODED_SLTU_EXAMPLE = 0x02F1_F82B
 ENCODED_SLTI_EXAMPLE = 0x2AFF_1234
+ENCODED_SLTIU_EXAMPLE = 0x2EFF_1234
 
 
 @pytest.mark.unit
@@ -1283,6 +1285,62 @@ def test_r5900_reference_slti_handles_aliases_zero_and_encoder_validation() -> N
     ):
         with pytest.raises(error):
             encode_slti(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("source_scalar", "immediate", "expected_scalar"),
+    [
+        (0x0000_0000_0000_0000, 0x0000, 0),
+        (0x0000_0000_0000_0000, 0x0001, 1),
+        (0x0000_0000_0000_0001, 0x0000, 0),
+        (0x0000_0000_0000_7FFF, 0x7FFF, 0),
+        (0x0000_0000_0000_8000, 0x8000, 1),
+        (0x0000_0000_0001_0000, 0xFFFF, 1),
+        (0xFFFF_FFFF_FFFF_7FFF, 0x8000, 1),
+        (0xFFFF_FFFF_FFFF_8000, 0x8000, 0),
+        (0xFFFF_FFFF_FFFF_FFFE, 0xFFFF, 1),
+        (0xFFFF_FFFF_FFFF_FFFF, 0xFFFF, 0),
+    ],
+)
+def test_r5900_reference_sltiu_sign_extends_immediate_before_unsigned_comparison(
+    source_scalar: int,
+    immediate: int,
+    expected_scalar: int,
+) -> None:
+    """Compare unsigned 64-bit bit patterns after sign-extending the immediate."""
+    source = 0xFFFF_FFFF_FFFF_FFFF_0000_0000_0000_0000 | source_scalar
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source).write_gpr(5, destination)
+    updated = state.step(encode_sltiu(5, 3, immediate))
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_sltiu_handles_aliases_zero_and_encoder_validation() -> None:
+    """Cover source/destination aliasing, both zero roles, and exact SLTIU encoding."""
+    aliased = 0xCAFE_BABE_1234_5678_0000_0000_0000_8000
+    upper_mask = GPR_MASK ^ ((1 << 64) - 1)
+    state = R5900State.initial().write_gpr(31, aliased)
+    updated = state.step(encode_sltiu(31, 31, 0x8000))
+    assert updated.read_gpr(31) == (aliased & upper_mask) | 1
+    zero_source = state.step(encode_sltiu(30, 0, 0xFFFF))
+    assert zero_source.read_gpr(30) == 1
+    discarded = state.step(encode_sltiu(0, 31, 0x8000))
+    assert discarded.gprs == state.gprs
+    assert encode_sltiu(31, 23, 0x1234) == ENCODED_SLTIU_EXAMPLE
+    for fields, error in (
+        ((-1, 0, 0), IndexError),
+        ((0, GPR_COUNT, 0), IndexError),
+        ((0, 0, True), TypeError),
+        ((0, 0, 1 << 16), ValueError),
+    ):
+        with pytest.raises(error):
+            encode_sltiu(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

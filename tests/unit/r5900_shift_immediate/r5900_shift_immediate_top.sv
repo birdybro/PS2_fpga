@@ -131,6 +131,7 @@ module r5900_shift_immediate_top (
         .read_index_b_i(
             (instruction_i[31:26] == 6'h09)
                 || (instruction_i[31:26] == 6'h0a)
+                || (instruction_i[31:26] == 6'h0b)
                 || (instruction_i[31:26] == 6'h0c)
                 || (instruction_i[31:26] == 6'h0d)
                 || (instruction_i[31:26] == 6'h0e)

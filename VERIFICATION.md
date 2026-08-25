@@ -530,6 +530,18 @@ differential/randomized test executes twelve boundary plus 512 seeded
 instructions and compares PC, complete GPR state, writeback, and retirement
 after every instruction.
 
+## R5900 SLTIU
+
+Primary opcode `0x0b` now executes SLTIU for every source, destination, and
+16-bit immediate field. Three directed cocotb cases cover zero, one, positive
+immediate maximum, negative-immediate sign extension, equality at
+`0xffffffffffff8000` and `0xffffffffffffffff`, and nearby unsigned boundaries;
+ignored source bits 127:64; preserved destination bits 127:64; exact
+zero-or-one scalar results; source/destination aliasing; source and destination
+zero; PC wrap; and exact events. A deterministic differential/randomized test
+executes twelve boundary plus 512 seeded instructions and compares PC,
+complete GPR state, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M077 — implement R5900 SLTI
-- Next milestone: M078 — implement R5900 SLTIU
-- Current subsystem: R5900 scalar register execution
-- Current regression status: 467 tests pass with no skips; SLTI directed/reference checks and 524-case sequential randomized differential coverage are green
-- Known architectural inaccuracies: only NOP, six 32-bit shifts, LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU, and SLTI execute; reserved words emit diagnostics but do not enter COP0 exceptions
+- Last completed milestone: M078 — implement R5900 SLTIU
+- Next milestone: M079 — integrate R5900 fetch with simulation RAM
+- Current subsystem: R5900 fetch and simulation-RAM integration
+- Current regression status: 480 tests pass with no skips; SLTIU directed/reference checks and 524-case sequential randomized differential coverage are green
+- Known architectural inaccuracies: only the 22-instruction scalar foundation executes; reserved words emit diagnostics but do not enter COP0 exceptions
 - Known timing inaccuracies: fetch uses functional ready/valid handshakes and a one-entry buffer; CPU pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M077 milestone commit (this commit)
+- Most recent pushed commit: M078 milestone commit (this commit)
 
 ## Resume note
 
@@ -18,6 +18,6 @@ local verification gate. Architectural GPR, PC, functional control state, and
 independently tested fetch request and response blocks now exist. Instruction
 fields are extracted, exact zero-word NOP is admitted, and unsupported words are
 blocked with diagnostic context. Exact zero-word NOP plus all six canonical
-32-bit shift instructions plus LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU, and SLTI now execute,
+all 22 instructions in the scalar foundation now execute,
 advance PC, and emit exact retirement records; resume with the single active
 milestone in `milestones.yaml`.

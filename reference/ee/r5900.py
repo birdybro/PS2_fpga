@@ -23,6 +23,7 @@ ANDI_OPCODE = 12
 XORI_OPCODE = 14
 ADDIU_OPCODE = 9
 SLTI_OPCODE = 10
+SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
@@ -174,6 +175,14 @@ def encode_slti(destination: int, source: int, immediate: int) -> int:
     rs = _require_gpr_index(source)
     value = _require_unsigned("immediate", immediate, 0xFFFF)
     return (SLTI_OPCODE << 26) | (rs << 21) | (rt << 16) | value
+
+
+def encode_sltiu(destination: int, source: int, immediate: int) -> int:
+    """Encode SLTIU with its architectural unsigned 16-bit field."""
+    rt = _require_gpr_index(destination)
+    rs = _require_gpr_index(source)
+    value = _require_unsigned("immediate", immediate, 0xFFFF)
+    return (SLTIU_OPCODE << 26) | (rs << 21) | (rt << 16) | value
 
 
 def encode_addu(destination: int, source_a: int, source_b: int) -> int:
@@ -399,6 +408,27 @@ class R5900State:
         )
         return self.write_gpr(rt, result)
 
+    def _step_sltiu(self, word: int) -> R5900State:
+        """Compare an unsigned scalar source against a sign-extended immediate."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        immediate = word & 0xFFFF
+        if immediate & 0x8000:
+            immediate |= SCALAR_MASK ^ 0xFFFF
+        result = _merge_scalar(
+            self.read_gpr(rt),
+            int((self.read_gpr(rs) & SCALAR_MASK) < immediate),
+        )
+        return self.write_gpr(rt, result)
+
+    def _step_signed_immediate_group(self, word: int, opcode: int) -> R5900State:
+        """Dispatch one operation whose 16-bit immediate is sign-extended."""
+        if opcode == ADDIU_OPCODE:
+            return self._step_addiu(word)
+        if opcode == SLTI_OPCODE:
+            return self._step_slti(word)
+        return self._step_sltiu(word)
+
     def _step_addu(self, word: int) -> R5900State:
         """Add two source words modulo 32 bits without an overflow exception."""
         rs = (word >> 21) & 0x1F
@@ -506,10 +536,8 @@ class R5900State:
             function = word & 0x3F
             immediate = opcode == SPECIAL_OPCODE and reserved_rs == 0
             variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
-            if opcode == ADDIU_OPCODE:
-                updated = self._step_addiu(word)
-            elif opcode == SLTI_OPCODE:
-                updated = self._step_slti(word)
+            if opcode in (ADDIU_OPCODE, SLTI_OPCODE, SLTIU_OPCODE):
+                updated = self._step_signed_immediate_group(word, opcode)
             elif variable and function in (
                 ADDU_FUNCTION,
                 SUBU_FUNCTION,
