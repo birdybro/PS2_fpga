@@ -247,10 +247,20 @@ and upper-bound windows byte-for-byte. This proves the current simulation load
 path without adding a hardware-visible loader port or committing a binary
 fixture. The backdoor remains inactive during every transaction read.
 
+M042 completes the Phase 1 integration boundary with a generated external EE
+ELF. Two `PT_LOAD` records place file bytes at their virtual addresses, zero
+their separate memory-only tails, preserve sentinel-filled gaps, and publish an
+entry point inside the first segment. Verification overlays only the loader's
+returned memory ranges through the RAM backdoor, then checks the entry, file,
+BSS, adjacency, gap, and final RAM-boundary windows using normal transactions.
+The fixture exists only in ignored `build/inputs/`; no executable or firmware is
+committed. This establishes image placement and start-address publication, not
+instruction execution.
+
 ## Phase 1 exit
 
-Phase 1 exits with two integration tests: one places a raw binary into RAM and
-reads it back through the transaction interface; the other parses an EE ELF,
+Phase 1 exits with two green integration tests: one places a raw binary into RAM
+and reads it back through the transaction interface; the other parses an EE ELF,
 loads its segments and zero-fill, and publishes the entry point. CPU execution
 starts only after the Phase 2 foundation is expanded into instruction-sized
 milestones.

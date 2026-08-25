@@ -465,21 +465,26 @@ milestones:
       - 32-bit 64-bit and 128-bit transaction readback test
       - payload adjacency and final RAM boundary readback test
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
-    commit: "self (milestone(M041): integrate raw binary platform loading)"
+    commit: 7dc3603
     notes: Prove byte-exact external binary placement through the composed platform.
   - id: M042
     title: Add ELF loader and RAM integration test
     subsystem: integration
-    status: active
+    status: complete
     dependencies: [M041]
-    tests: [ELF segments zero-fill and entry-point integration test]
+    tests:
+      - independently encoded two-segment EE ELF fixture test
+      - exact entry-point and returned segment metadata test
+      - file-backed bytes BSS zero-fill and gap-preservation test
+      - 32-bit 64-bit and 128-bit platform transaction readback test
+      - final legal RAM window boundary test
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M042): integrate EE ELF platform loading)"
     notes: Complete Phase 1 with a deterministic EE ELF memory image and start address.
   - id: M043
     title: Expand Phase 2 R5900 foundation roadmap
     subsystem: planning
-    status: pending
+    status: active
     dependencies: [M042]
     tests: [R5900 foundation roadmap validation]
     references: [REFERENCES.md, ARCHITECTURE.md, docs/CONVENTIONS.md]

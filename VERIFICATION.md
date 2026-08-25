@@ -212,6 +212,20 @@ first and second payload halves, bytes immediately before and after the load,
 and the final legal 128-bit RAM window. Full 128-bit response comparison also
 checks zero extension of narrower reads.
 
+## EE ELF platform integration
+
+One integration test independently encodes a temporary little-endian
+`ET_EXEC`/`EM_MIPS` ELF32 image with two ordered `PT_LOAD` entries whose
+physical addresses deliberately differ from their RAM destinations. The loader
+must publish entry `0x00000044`, return exact segment metadata, copy 16 and 8
+file bytes to virtual addresses `0x40` and `0xa0`, zero distinct 16- and 8-byte
+BSS tails, and preserve a sentinel everywhere else. Cocotb reconstructs that
+expected memory without calling the parser, initializes RTL RAM to the
+sentinel, and overlays only the returned complete segment ranges. Transaction
+reads cover the entry instruction bytes, both file payloads, both BSS regions,
+inter-segment gaps, adjacency, and the final legal 128-bit RAM window using all
+three implemented transfer widths.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M041 — add raw binary platform integration test
-- Next milestone: M042 — add ELF loader and RAM integration test
-- Current subsystem: EE ELF and simulation RAM integration
-- Current regression status: 189 tests pass with no skips; external raw-file placement reads back byte-exactly through 32/64/128-bit platform transactions
+- Last completed milestone: M042 — add ELF loader and RAM integration test
+- Next milestone: M043 — expand Phase 2 R5900 foundation roadmap
+- Current subsystem: R5900 foundation planning
+- Current regression status: 190 tests pass with no skips; Phase 1 raw and two-segment EE ELF images read back byte-exactly through the composed platform
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M041 milestone commit (this commit)
+- Most recent pushed commit: M042 milestone commit (this commit)
 
 ## Resume note
 
