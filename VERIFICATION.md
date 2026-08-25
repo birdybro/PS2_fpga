@@ -252,3 +252,14 @@ types; explicit temporary-file loading; oversize files; and missing paths. Every
 rejected range is checked for zero partial mutation, while valid loads verify
 all surrounding bytes and returned half-open range metadata. Ruff now includes
 `sim/` so loader code participates in the authoritative lint gate.
+
+## Generic ELF32 header parser
+
+Twenty-eight directed cases construct headers with an independent
+integer-to-byte fixture builder. They decode every fixed field in little- and
+big-endian headers with trailing data, verify reserved identification padding is
+ignored, and independently reject truncation before 16 and 52 bytes, corruption
+of each magic byte, non-ELF32 classes, invalid data encodings, invalid
+identification and header versions, incorrect declared header sizes, and
+non-bytes input. Target machine and EE byte-order acceptance are intentionally
+deferred to M030.

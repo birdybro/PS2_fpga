@@ -82,6 +82,14 @@ Public GNU maintainer discussion of accepted R5900 target support, including
 the ISA subset, FPU limitations, MMI support, and ELF targets. Linked patch
 source has not been copied or used as RTL implementation source.
 
+<!-- ref:system-v-gabi-elf -->
+### System V generic ABI ELF object file format
+
+The public Xinuos generic ABI specification defines `e_ident`, ELF class and
+data-encoding tags, and the `Elf32_Ehdr` field layout. It guides only generic
+container parsing in M029; PS2 EE target acceptance remains a separate M030
+decision using PS2/MIPS-specific evidence.
+
 ## Verification tooling
 
 <!-- ref:cocotb-development-docs -->

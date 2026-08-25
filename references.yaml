@@ -88,6 +88,17 @@ references:
     redistribution: link-only
     consulted_sections: [architecture review summary, accepted target support]
     notes: Public maintainer review is useful for ISA subset and ELF target corroboration.
+  - id: system-v-gabi-elf
+    title: System V generic ABI ELF object file format
+    url: https://gabi.xinuos.com/elf/02-eheader.html
+    source_class: official-publication
+    role: toolchain
+    subsystems: [elf, loader, software]
+    license: Copyright Xinuos; public ABI specification, redistribution not assumed
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [ELF32 header contents, ELF identification, data encoding]
+    notes: Primary format specification for generic ELF identification and header layout.
   - id: sgi-mips-iv-index
     title: SGI MIPS IV Instruction Set archive index
     url: https://techpubs.jurassic.nl/manuals/hdwr/developer/

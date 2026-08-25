@@ -120,6 +120,13 @@ loadable segments, zero-fill, and entry-point publication are separate steps.
 Bounds, overlap, overflow, malformed-input, and endianness cases receive
 directed tests.
 
+M029 implements the first of those steps: generic ELF32 identification and the
+fixed 52-byte `Elf32_Ehdr` are decoded into an immutable record. The parser
+accepts either ABI-defined byte order, requires the ELF magic, ELF32 class,
+valid data encoding, current identification/header versions, and the declared
+ELF32 header size, and ignores reserved identification padding. It neither
+accepts an EE target nor changes memory; those are later milestones.
+
 Downloaded or user-supplied programs remain external unless a tiny purpose-built
 fixture is clearly licensed and intentionally reviewed for inclusion.
 

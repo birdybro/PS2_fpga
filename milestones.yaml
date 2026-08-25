@@ -308,21 +308,24 @@ milestones:
       - atomic negative past-end and crossing-range rejection tests
       - explicit file oversize missing-path and metadata tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: "self (milestone(M028): add raw binary image loader)"
+    commit: 70603fb
     notes: Load an explicit external binary at a caller-selected byte address.
   - id: M029
     title: Parse ELF32 identification and header
     subsystem: loader
-    status: active
+    status: complete
     dependencies: [M028]
-    tests: [valid and malformed ELF32 header tests]
+    tests:
+      - little-endian and big-endian full-field header decode tests
+      - magic class encoding version size and truncation rejection tests
+      - reserved-padding trailing-data and input-domain tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M029): parse ELF32 identification and header)"
     notes: Parse header fields without mutating simulated memory.
   - id: M030
     title: Validate EE ELF machine and endianness
     subsystem: loader
-    status: pending
+    status: active
     dependencies: [M029]
     tests: [ELF target and endian rejection tests]
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]

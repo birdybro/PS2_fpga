@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M028 — add raw binary image loader
-- Next milestone: M029 — parse ELF32 identification and header
+- Last completed milestone: M029 — parse ELF32 identification and header
+- Next milestone: M030 — validate EE ELF machine and endianness
 - Current subsystem: simulation loaders
-- Current regression status: 100 tests pass with no skips; raw binary loads are byte-exact and atomic on failure
+- Current regression status: 128 tests pass with no skips; generic ELF32 headers decode in both declared byte orders
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M028 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M029 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
