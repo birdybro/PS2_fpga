@@ -988,21 +988,27 @@ milestones:
       - independent Python model validation tests
       - deterministic 524-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M075): implement R5900 SLT)"
+    commit: 301176b
     notes: Compare signed low 64-bit sources and preserve destination bits 127:64 around a 0-or-1 result.
   - id: M076
     title: Implement R5900 SLTU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M075]
-    tests: [directed SLTU unsigned extrema, randomized SLTU differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Distinguish unsigned ordering at the sign-bit boundary.
+    tests:
+      - complete SPECIAL source destination and reserved-shift decode tests
+      - equal zero one unsigned-maximum bit-31 bit-32 and bit-63 boundary tests
+      - signed-order disagreement source upper-lane ignore destination upper-lane preservation and exact Boolean tests
+      - both destination aliases equal-source GPR-zero PC-wrap and exact-event tests
+      - independent Python model validation tests
+      - deterministic 524-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M076): implement R5900 SLTU)"
+    notes: Compare unsigned low 64-bit sources and preserve destination bits 127:64 around a 0-or-1 result.
   - id: M077
     title: Implement R5900 SLTI
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M076]
     tests: [directed SLTI signed immediate extrema, randomized SLTI differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

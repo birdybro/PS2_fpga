@@ -24,6 +24,7 @@ OR_FUNCTION = 37
 XOR_FUNCTION = 38
 NOR_FUNCTION = 39
 SLT_FUNCTION = 42
+SLTU_FUNCTION = 43
 IMMEDIATE_OPERATIONS = {0: 2, SRL_FUNCTION: 3, SRA_FUNCTION: 4}
 REGISTER_OPERATIONS = {
     SLLV_FUNCTION: 5,
@@ -36,6 +37,7 @@ REGISTER_OPERATIONS = {
     XOR_FUNCTION: 17,
     NOR_FUNCTION: 18,
     SLT_FUNCTION: 19,
+    SLTU_FUNCTION: 20,
 }
 
 
@@ -121,6 +123,9 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x0000_002A,
         0x023F_F82A,
         0x0000_006A,
+        0x0000_002B,
+        0x023F_F82B,
+        0x0000_006B,
         0x0000_0800,
         0x0001_0000,
         0x0020_0000,

@@ -21,6 +21,7 @@ from reference.ee.r5900 import (
     encode_sll,
     encode_sllv,
     encode_slt,
+    encode_sltu,
     encode_sra,
     encode_srav,
     encode_srl,
@@ -63,6 +64,7 @@ ENCODED_OR_EXAMPLE = 0x02F1_F825
 ENCODED_XOR_EXAMPLE = 0x02F1_F826
 ENCODED_NOR_EXAMPLE = 0x02F1_F827
 ENCODED_SLT_EXAMPLE = 0x02F1_F82A
+ENCODED_SLTU_EXAMPLE = 0x02F1_F82B
 
 
 @pytest.mark.unit
@@ -1166,6 +1168,64 @@ def test_r5900_reference_slt_handles_aliases_zero_and_encoder_validation() -> No
         error = TypeError if any(type(field) is bool for field in fields) else IndexError
         with pytest.raises(error):
             encode_slt(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("source_a_scalar", "source_b_scalar", "expected_scalar"),
+    [
+        (0x0000_0000_0000_0000, 0x0000_0000_0000_0001, 1),
+        (0x0000_0000_0000_0001, 0x0000_0000_0000_0000, 0),
+        (0xFFFF_FFFF_FFFF_FFFF, 0x0000_0000_0000_0000, 0),
+        (0x0000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFF, 1),
+        (0x8000_0000_0000_0000, 0x7FFF_FFFF_FFFF_FFFF, 0),
+        (0x7FFF_FFFF_FFFF_FFFF, 0x8000_0000_0000_0000, 1),
+        (0xAAAA_AAAA_AAAA_AAAA, 0xAAAA_AAAA_AAAA_AAAA, 0),
+        (0x0000_0000_8000_0000, 0x0000_0000_0000_0000, 0),
+        (0x0000_0000_FFFF_FFFF, 0x0000_0001_0000_0000, 1),
+    ],
+)
+def test_r5900_reference_sltu_compares_unsigned_scalar_lane_and_preserves_upper_lane(
+    source_a_scalar: int,
+    source_b_scalar: int,
+    expected_scalar: int,
+) -> None:
+    """Compare unsigned 64-bit sources and replace only the destination scalar lane."""
+    source_a = 0xFFFF_FFFF_FFFF_FFFF_0000_0000_0000_0000 | source_a_scalar
+    source_b = 0xAAAA_AAAA_AAAA_AAAA_0000_0000_0000_0000 | source_b_scalar
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source_a).write_gpr(4, source_b).write_gpr(5, destination)
+    updated = state.step(encode_sltu(5, 3, 4))
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(3) == source_a
+    assert updated.read_gpr(4) == source_b
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_sltu_handles_aliases_zero_and_encoder_validation() -> None:
+    """Cover both source aliases, equality, zero, and exact SLTU encoding."""
+    source_a = 0xCAFE_BABE_1234_5678_0000_0000_0000_0001
+    source_b = 0x0123_4567_89AB_CDEF_FFFF_FFFF_FFFF_FFFF
+    upper_mask = GPR_MASK ^ ((1 << 64) - 1)
+    state = R5900State.initial().write_gpr(31, source_a).write_gpr(30, source_b)
+    rd_is_rs = state.step(encode_sltu(31, 31, 30))
+    assert rd_is_rs.read_gpr(31) == (source_a & upper_mask) | 1
+    rd_is_rt = state.step(encode_sltu(30, 31, 30))
+    assert rd_is_rt.read_gpr(30) == (source_b & upper_mask) | 1
+    equal_sources = state.step(encode_sltu(29, 30, 30))
+    assert equal_sources.read_gpr(29) == 0
+    discarded = state.step(encode_sltu(0, 31, 30))
+    assert discarded.gprs == state.gprs
+    zero_sources = state.step(encode_sltu(29, 0, 0))
+    assert zero_sources.read_gpr(29) == 0
+    assert encode_sltu(31, 23, 17) == ENCODED_SLTU_EXAMPLE
+    for fields in ((-1, 0, 0), (0, GPR_COUNT, 0), (0, 0, True)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_sltu(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

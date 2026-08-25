@@ -36,7 +36,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its five-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, ADDU, SUBU, AND, OR, XOR, NOR, and SLT; and primary-opcode LUI, ORI, ANDI, XORI, and ADDIU
+SLLV, SRLV, SRAV, ADDU, SUBU, AND, OR, XOR, NOR, SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, and ADDIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
 operation with legality deasserted.
@@ -68,7 +68,8 @@ rules for inclusive combination, XOR uses exclusive combination, and NOR
 complements the 64-bit inclusive result without extending that complement into
 the preserved upper lane. SLT compares both scalar lanes as signed 64-bit
 values and replaces the destination scalar lane with exactly zero or one while
-preserving its upper lane. The debug interface carries each
+preserving its upper lane; SLTU applies the same result rules to an unsigned
+64-bit comparison. The debug interface carries each
 retirement record.
 
 ## Repository boundaries

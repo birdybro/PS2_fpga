@@ -505,6 +505,18 @@ reserved-field rejection. A deterministic differential/randomized test
 executes twelve boundary plus 512 seeded instructions and compares PC,
 complete GPR state, writeback, and retirement after every instruction.
 
+## R5900 SLTU
+
+SPECIAL function `0x2b` with reserved `sa` clear now executes SLTU for every
+source and destination register field. Four directed cocotb cases cover equal,
+zero, one, unsigned maximum, bit-31, bit-32, and bit-63 boundaries, including
+comparisons that deliberately disagree with signed SLT; ignored source bits
+127:64; preserved destination bits 127:64; exact zero-or-one scalar results;
+both destination aliases; source and destination zero; PC wrap; exact events;
+and reserved-field rejection. A deterministic differential/randomized test
+executes twelve boundary plus 512 seeded instructions and compares PC,
+complete GPR state, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,
