@@ -3,9 +3,12 @@
 ## Unimplemented architecture
 
 The Phase 1 simulation platform, loaders, behavioral RAM, and debug controls are
-implemented, but no PS2 architectural execution RTL exists yet. The active
-Phase 2 work begins with a tested R5900 roadmap and coverage baseline; this is
-not a claim of CPU compatibility.
+implemented. Phase 2 now has isolated R5900 GPR, PC, control, and instruction
+fetch-request RTL, but these blocks are not yet composed into an executing CPU.
+This is not a claim of CPU compatibility.
+
+Instruction fetch currently ends at request acceptance. Response capture,
+memory errors, instruction decode, and execution remain unimplemented.
 
 All 22 entries in the initial R5900 ISA coverage matrix are pending. The matrix
 records planned encodings and ownership, not corroborated implementation

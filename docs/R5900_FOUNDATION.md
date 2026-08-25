@@ -98,6 +98,14 @@ and returns from writeback to fetch-request. Reset enters fetch-request. A
 reusable fatal checker rejects the remaining three enum values. The completion
 inputs are functional boundaries for later modules, not fixed cycle latencies.
 
+The fetch-request block now latches one aligned PC and issues one four-byte read
+over the common memory interface. Address, direction, size, payload, and strobes
+remain stable until the target accepts the request. A second start may replace
+an accepted request in the same cycle, but cannot overwrite a request stalled
+by backpressure. Assertions make unaligned starts and stalled replacement fatal.
+The response path is intentionally absent until M052, so this block makes no
+claim about response latency, error handling, or instruction availability.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

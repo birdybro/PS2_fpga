@@ -21,6 +21,11 @@ external simulation start address; physical reset-vector policy remains outside
 this early CPU boundary.
 `rtl/ee/r5900/r5900_control.sv` is a five-state, completion-gated functional
 sequencer. It expresses no pipeline, latency, issue-width, or hazard timing.
+`rtl/ee/r5900/r5900_fetch_request.sv` converts an aligned PC into one latched
+32-bit read request. It holds every request field through backpressure and
+emits one acceptance event; response consumption remains a separate boundary.
+The shared memory interface exposes request-initiator and response-consumer
+modports so those paths can be verified independently before composition.
 
 ## Repository boundaries
 

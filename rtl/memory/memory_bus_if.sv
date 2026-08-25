@@ -50,6 +50,23 @@ interface memory_bus_if #(
         output rsp_error
     );
 
+    modport request_initiator (
+        output req_valid,
+        input  req_ready,
+        output req_write,
+        output req_addr,
+        output req_size,
+        output req_wdata,
+        output req_wstrb
+    );
+
+    modport response_consumer (
+        input  rsp_valid,
+        output rsp_ready,
+        input  rsp_rdata,
+        input  rsp_error
+    );
+
     modport monitor (
         input req_valid,
         input req_ready,

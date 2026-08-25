@@ -198,6 +198,18 @@ five-state set. A test-only second checker receives enum value seven and proves
 the invariant terminates assertion-enabled simulation with the expected marker,
 without forcing or multiply driving controller RTL.
 
+## R5900 instruction-fetch requests
+
+The request issuer latches one aligned 32-bit PC, emits an exact read with a
+four-byte size code and zero write payload and strobes, and holds the complete
+request while the target applies backpressure. Three legal cocotb cases cover
+the lowest address, ordinary addresses, the final aligned 32-bit address,
+source-PC changes during stalls, exactly one accepted handshake, and reset
+cancellation. Two assertion-enabled negative runs prove that an unaligned
+start and replacement of a stalled request terminate simulation with distinct
+diagnostic markers. Strict standalone lint uses the request-only memory-bus
+modport; response capture remains independently gated by M052.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

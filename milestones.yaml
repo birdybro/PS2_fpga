@@ -587,21 +587,26 @@ milestones:
       - reset-state and reset-priority test
       - fatal illegal-enum assertion injection test
     references: [docs/R5900_FOUNDATION.md, ARCHITECTURE.md]
-    commit: "self (milestone(M050): define R5900 multi-cycle control states)"
+    commit: 8aeeb92
     notes: Establish completion-gated functional fetch decode execute and writeback sequencing.
   - id: M051
     title: Issue R5900 32-bit instruction fetch requests
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M050]
-    tests: [fetch address size validity stall and single-acceptance tests]
+    tests:
+      - exact read address size direction data and strobe field tests
+      - low normal and final aligned address boundary tests
+      - complete request stability under backpressure test
+      - single acceptance and reset cancellation test
+      - fatal unaligned-start and stalled-replacement assertion tests
     references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]
-    commit: null
+    commit: "self (milestone(M051): issue R5900 instruction fetch requests)"
     notes: Drive aligned little-endian word reads through the existing memory interface.
   - id: M052
     title: Capture R5900 instruction fetch responses
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M051]
     tests: [response backpressure capture error and instruction-register tests]
     references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]

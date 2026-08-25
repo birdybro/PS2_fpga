@@ -25,6 +25,8 @@ R5900_GPR_FILE := rtl/ee/r5900/r5900_gpr_file.sv
 R5900_PC := rtl/ee/r5900/r5900_pc.sv
 R5900_CONTROL := rtl/ee/r5900/r5900_control.sv
 R5900_CONTROL_CHECKER := rtl/ee/r5900/r5900_control_state_checker.sv
+R5900_FETCH_REQUEST := rtl/ee/r5900/r5900_fetch_request.sv
+R5900_FETCH_REQUEST_LINT_TOP := tests/unit/r5900_fetch_request/r5900_fetch_request_top.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
@@ -84,6 +86,9 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VERILATOR) --lint-only -Wall --assert --top-module r5900_control \
 		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
 		$(R5900_CONTROL_CHECKER) $(R5900_CONTROL)
+	$(VERILATOR) --lint-only -Wall --assert --top-module r5900_fetch_request_top \
+		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
+		rtl/memory/memory_bus_if.sv $(R5900_FETCH_REQUEST) $(R5900_FETCH_REQUEST_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
 		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
 		rtl/memory/memory_bus_protocol_checker.sv $(SIM_SOURCES)
