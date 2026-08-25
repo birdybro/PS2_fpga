@@ -137,3 +137,11 @@ The simulation-only `sim_reset` model holds active-low reset for a positive,
 parameterized rising-edge count. Its isolated test composes the clock and reset
 models, verifies reset before the first edge, samples every asserted edge,
 checks exact falling-edge release, and observes three additional stable cycles.
+
+## Internal memory transaction interface
+
+`memory_bus_if` separates initiator- and target-driven signals with explicit
+modports. A test-only pair of bridges proves all request and response payload
+bits cross in the intended direction, including 128-bit data, byte strobes,
+size, error, and independent ready backpressure. This milestone defines
+connectivity only; protocol assertions are the next independently gated step.

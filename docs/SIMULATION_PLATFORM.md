@@ -12,6 +12,8 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
   asserts before the first clock edge, holds for four rising edges by default,
   releases on the following falling edge to avoid a sequential sampling race,
   and remains released thereafter.
+- M017 provides the parameterized `memory_bus_if` ready/valid interface. Its
+  default configuration carries 32-bit byte addresses and 128-bit payloads.
 
 ## Planned boundaries
 
@@ -32,6 +34,26 @@ byte enables. A request is accepted exactly once on ready/valid handshake. The
 response is independently backpressured. Protocol assertions cover request
 stability, supported transfer sizes, response stability, and no response without
 an accepted request.
+
+| Signal | Driven by | Default width | Meaning |
+| --- | --- | ---: | --- |
+| `req_valid` | initiator | 1 | Request payload is valid. |
+| `req_ready` | target | 1 | Target can accept the request this cycle. |
+| `req_write` | initiator | 1 | One for write, zero for read. |
+| `req_addr` | initiator | 32 | Byte address of the transfer. |
+| `req_size` | initiator | 3 | Log2 bytes: 0, 1, 2, 3, or 4 for 1 through 16 bytes. |
+| `req_wdata` | initiator | 128 | Write payload; byte lane zero is bits 7:0. |
+| `req_wstrb` | initiator | 16 | One bit per write-data byte lane. |
+| `rsp_valid` | target | 1 | Response payload is valid. |
+| `rsp_ready` | initiator | 1 | Initiator can accept the response this cycle. |
+| `rsp_rdata` | target | 128 | Read payload in the same byte-lane order. |
+| `rsp_error` | target | 1 | The accepted transfer failed. |
+
+Request payload remains stable from assertion of `req_valid` through the cycle
+where `req_ready` is also asserted. Response payload follows the equivalent
+rule. Only one request may be outstanding, and every response follows one
+accepted request. Zero-latency response is permitted. Read strobes and write
+response data are ignored. M018 adds executable assertions for these rules.
 
 Behavioral system RAM is little-endian and byte-addressed. Byte lane zero maps
 to the lowest address. The roadmap adds 32-, 64-, and 128-bit aligned accesses

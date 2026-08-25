@@ -173,21 +173,21 @@ milestones:
     dependencies: [M015]
     tests: [reset asserted-edge count falling-edge release and stability test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M016): add deterministic reset sequencer)"
+    commit: a90b3b6
     notes: Drive deterministic active-low reset independently from architectural RTL.
   - id: M017
     title: Define internal memory transaction interface
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M016]
-    tests: [interface elaboration and handshake smoke test]
+    tests: [both-modport elaboration payload connectivity and backpressure test]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M017): define internal memory transaction interface)"
     notes: Define one explicit request and response ready-valid contract.
   - id: M018
     title: Assert memory transaction protocol invariants
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M017]
     tests: [protocol assertion positive and negative tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
