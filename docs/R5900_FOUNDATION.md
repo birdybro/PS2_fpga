@@ -64,6 +64,13 @@ physical-storage tests remain unchanged, keeping storage mechanics independent
 from the architectural zero rule documented by both the MIPS IV notation and
 PS2Tek's EE register description.
 
+The functional PC register is 32 bits. While its active-low synchronous reset is
+asserted it samples the harness-provided start address exactly, including values
+that are not instruction-aligned; later fetch validation decides whether such an
+address can execute. Redirect wins over sequential advance, advance adds four
+modulo 32 bits, and otherwise the value holds. Loading an ELF entry point here
+does not model the hardware reset vector or COP0 reset state.
+
 The simulation loader's published ELF entry point supplies the initial PC for
 early software tests. This is a harness start-address mechanism, not a claim
 about the physical reset vector or COP0 reset behavior.

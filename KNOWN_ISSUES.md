@@ -17,6 +17,11 @@ No consulted public R5900 source defines the post-reset values of GPR 1 through
 location before reading it. The public R10000 reset rule is recorded only as a
 caution against assuming generic MIPS GPR zeroing, not as R5900 behavior.
 
+The standalone PC loads the simulation harness's selected ELF start address
+while reset is asserted. This is not the physical EE reset vector, a COP0 reset
+model, or BIOS boot behavior; those remain deferred and the port must not be
+interpreted as an architectural reset claim.
+
 Public base-MIPS documentation does not by itself establish R5900-specific
 instruction inclusion, opcode differences, 128-bit GPR destination-extension
 rules, COP0 behavior, or FPU behavior. Each implementation milestone must

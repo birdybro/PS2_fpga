@@ -22,6 +22,7 @@ R5900_TYPES_LINT_DRIVER := tests/unit/r5900_types/r5900_debug_driver.sv
 R5900_TYPES_LINT_PROBE := tests/unit/r5900_types/r5900_debug_probe.sv
 R5900_GPR_STORAGE := rtl/ee/r5900/r5900_gpr_storage.sv
 R5900_GPR_FILE := rtl/ee/r5900/r5900_gpr_file.sv
+R5900_PC := rtl/ee/r5900/r5900_pc.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
@@ -76,6 +77,8 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VERILATOR) --lint-only -Wall --assert --top-module r5900_gpr_file \
 		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
 		$(R5900_GPR_STORAGE) $(R5900_GPR_FILE)
+	$(VERILATOR) --lint-only -Wall --top-module r5900_pc \
+		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv $(R5900_PC)
 	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
 		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
 		rtl/memory/memory_bus_protocol_checker.sv $(SIM_SOURCES)

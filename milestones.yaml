@@ -559,21 +559,26 @@ milestones:
       - unrelated GPR preservation test
       - clocked register-zero invariant assertion
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M048): enforce immutable R5900 register zero)"
+    commit: 5eef006
     notes: Keep all 128 bits of GPR zero architecturally constant above physical storage.
   - id: M049
     title: Implement R5900 program counter state
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M048]
-    tests: [PC start increment hold redirect and reset tests]
+    tests:
+      - full-width aligned and unaligned simulation start tests
+      - disabled multi-edge hold test
+      - four-byte advance and 32-bit wrap test
+      - redirect and simultaneous-advance priority test
+      - reset priority and start-address resampling test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Accept a simulation start address while deferring reset-vector policy to COP0.
+    commit: "self (milestone(M049): implement R5900 program counter state)"
+    notes: Accept an exact simulation start address while deferring reset-vector policy to COP0.
   - id: M050
     title: Define R5900 multi-cycle control states
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M049]
     tests: [control reset legal transition and illegal-state assertion tests]
     references: [docs/R5900_FOUNDATION.md, ARCHITECTURE.md]

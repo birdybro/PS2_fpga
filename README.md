@@ -12,7 +12,8 @@ scalar encodings have machine-readable coverage owners, and an immutable Python
 architectural state model plus matching RTL type contracts are verified, but
 R5900 execution (Level 1) is not implemented yet. Reset-free physical GPR
 storage and its hardwired-zero architectural wrapper are the first sequential
-CPU blocks. See [PROGRESS.md](PROGRESS.md) for the exact resume point and
+CPU blocks, followed by a functional harness-started PC. See
+[PROGRESS.md](PROGRESS.md) for the exact resume point and
 [MILESTONES.md](MILESTONES.md) for completion rules.
 
 No PlayStation 2 BIOS, game image, proprietary SDK material, or other

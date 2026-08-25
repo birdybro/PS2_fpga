@@ -176,6 +176,16 @@ all other locations, prove an attempted zero write cannot corrupt them, and
 compare the complete packed architectural snapshot. The physical-storage suite
 continues to test its writable index-zero location independently.
 
+## R5900 program counter state
+
+The standalone 32-bit PC loads an exact external start address synchronously
+while reset is asserted, holds without control, increments by four with explicit
+32-bit wraparound, and gives redirect priority over sequential advance. Four
+cocotb cases cover zero, one, normal ELF, top-aligned, and all-one start values;
+multi-edge hold; wrap to zero; repeated advance; aligned and unaligned redirect;
+simultaneous redirect/advance; and reset resampling with highest priority. No
+alignment or reset-vector rule is invented at this storage boundary.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

@@ -16,6 +16,9 @@ widths and packed observation records without implementing state storage.
 one-write array. `rtl/ee/r5900/r5900_gpr_file.sv` layers architectural
 write suppression, read forcing, debug masking, and an invariant assertion for
 all 128 bits of GPR zero above that storage.
+`rtl/ee/r5900/r5900_pc.sv` holds the functional 32-bit PC and accepts an
+external simulation start address; physical reset-vector policy remains outside
+this early CPU boundary.
 
 ## Repository boundaries
 
