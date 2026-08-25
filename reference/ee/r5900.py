@@ -19,6 +19,7 @@ SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 LUI_OPCODE = 15
 ORI_OPCODE = 13
+ANDI_OPCODE = 12
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -130,6 +131,14 @@ def encode_ori(destination: int, source: int, immediate: int) -> int:
     rs = _require_gpr_index(source)
     value = _require_unsigned("immediate", immediate, 0xFFFF)
     return (ORI_OPCODE << 26) | (rs << 21) | (rt << 16) | value
+
+
+def encode_andi(destination: int, source: int, immediate: int) -> int:
+    """Encode ANDI with a zero-extended 16-bit immediate."""
+    rt = _require_gpr_index(destination)
+    rs = _require_gpr_index(source)
+    value = _require_unsigned("immediate", immediate, 0xFFFF)
+    return (ANDI_OPCODE << 26) | (rs << 21) | (rt << 16) | value
 
 
 def _merge_scalar(old_destination: int, scalar: int) -> int:
@@ -245,6 +254,14 @@ class R5900State:
         result = _merge_scalar(self.read_gpr(rt), scalar)
         return self.write_gpr(rt, result)
 
+    def _step_andi(self, word: int) -> R5900State:
+        """AND one source scalar lane with a zero-extended immediate."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        scalar = (self.read_gpr(rs) & SCALAR_MASK) & (word & 0xFFFF)
+        result = _merge_scalar(self.read_gpr(rt), scalar)
+        return self.write_gpr(rt, result)
+
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
@@ -257,7 +274,9 @@ class R5900State:
             function = word & 0x3F
             immediate = opcode == SPECIAL_OPCODE and reserved_rs == 0
             variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
-            if opcode == ORI_OPCODE:
+            if opcode == ANDI_OPCODE:
+                updated = self._step_andi(word)
+            elif opcode == ORI_OPCODE:
                 updated = self._step_ori(word)
             elif opcode == LUI_OPCODE and reserved_rs == 0:
                 updated = self._step_lui(word)
