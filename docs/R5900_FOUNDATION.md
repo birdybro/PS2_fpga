@@ -131,10 +131,11 @@ the machine-readable ISA coverage therefore remains pending until instruction
 admission and semantics pass their own milestones.
 
 Decode admission is explicit and closed by default. The five-bit operation enum
-contains no-operation, NOP, SLL, SRL, and SRA. Exact word zero selects the canonical
+contains no-operation, NOP, SLL, SRL, SRA, and SLLV. Exact word zero selects the canonical
 NOP alias; other SPECIAL function-zero words select SLL, while SPECIAL
-function-two words select SRL, and function-three words select SRA. All require
-reserved `rs` to be zero. Every
+function-two words select SRL, and function-three words select SRA. Those
+immediate shifts require reserved `rs` to be zero. Function-four words select
+SLLV and require reserved `sa` to be zero. Every
 other primary and SPECIAL encoding remains illegal even if a later milestone
 plans it. This makes instruction support grow only through independently
 verified admissions.
@@ -187,6 +188,14 @@ old destination bits 127:64 remain intact. Explicit signed RTL and independent
 Python integer conversion cover counts 0, 1, 30, and 31, both source signs,
 aliasing, GPR-zero suppression, PC wrap, and exact events. Sequential randomized
 differential tests make SRA the fourth complete ISA coverage entry.
+
+Canonical SLLV selects the runtime count exclusively from `rs[4:0]`; all other
+count-register bits are ignored. It shifts `rt[31:0]` left, truncates to one
+word, sign-extends that word through bits 63:32, and retains the old destination
+bits 127:64. Counts 32, 33, and all ones explicitly prove modulo-32 masking.
+Tests also cover `rd == rt`, `rd == rs`, destination zero, reserved `sa`, PC
+wrap, and exact events. Nine boundary plus 512 sequential randomized cases make
+SLLV the fifth complete ISA coverage entry.
 
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing

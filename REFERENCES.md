@@ -61,8 +61,8 @@ Independently authored PS2 hardware documentation with broad EE, DMAC, GIF,
 VIF, VU, GS, IOP, and SIF coverage. The upstream repository does not state a
 license, so it is link-only and architectural details require corroboration.
 Its EE register section identifies 32 128-bit GPRs and the hardwired-zero
-register, and its instruction table identifies the canonical SLL encoding; it
-does not document post-reset contents for the other GPRs.
+register, and its instruction table identifies the canonical scalar shift
+encodings; it does not document post-reset contents for the other GPRs.
 
 <!-- ref:mips-iv-instruction-set -->
 ### MIPS IV Instruction Set, Revision 3.2
@@ -117,12 +117,12 @@ evidence only; no source structure or text is copied.
 <!-- ref:pcsx2-r5900-interpreter -->
 ### PCSX2 R5900 interpreter implementation
 
-The GPL-3.0 license was reviewed before consulting the constant-shift portion
-of this public emulator. It independently corroborates that SLL shifts a
-32-bit word, sign-extends the result through the low 64-bit scalar lane, and
-does not write the upper 64-bit lane. The project implements that documented
-behavior independently in SystemVerilog and Python without copying source text
-or implementation structure.
+The GPL-3.0 license was reviewed before consulting the scalar-shift portion of
+this public emulator. It independently corroborates 32-bit shift inputs,
+sign-extended scalar results, preserved upper GPR lanes, and low-five-bit SLLV
+count selection. The project implements that documented behavior independently
+in SystemVerilog and Python without copying source text or implementation
+structure.
 
 <!-- ref:system-v-gabi-elf -->
 ### System V generic ABI ELF object file format

@@ -29,6 +29,7 @@ module r5900_shift_immediate_top (
     output logic          reserved_valid_o,
     output logic [31:0]   reserved_pc_o,
     output logic [31:0]   reserved_instruction_o,
+    output logic [127:0]  source_rs_value_o,
     output logic [127:0]  source_rt_value_o,
     output logic [127:0]  destination_value_o,
     output logic [4095:0] gprs_o
@@ -70,6 +71,9 @@ module r5900_shift_immediate_top (
     assign reserved_valid_o = reserved_instruction.valid;
     assign reserved_pc_o = reserved_instruction.pc;
     assign reserved_instruction_o = reserved_instruction.instruction;
+    assign source_rs_value_o = gprs_o[
+        (instruction_i[25:21] * R5900_GPR_WIDTH) +: R5900_GPR_WIDTH
+    ];
 
     r5900_decode_dispatch u_decode_dispatch (
         .decode_valid_i(instruction_valid_i),
@@ -85,6 +89,7 @@ module r5900_shift_immediate_top (
         .operation_i(operation_o),
         .pc_i(pc_o),
         .instruction_i,
+        .source_rs_shift_i(source_rs_value_o[4:0]),
         .source_rt_word_i(source_rt_value_o[31:0]),
         .destination_upper_i(destination_value_o[127:64]),
         .complete_o(execute_complete_o),

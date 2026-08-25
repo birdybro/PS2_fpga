@@ -9,25 +9,29 @@ from cocotb.triggers import Timer
 RANDOM_CASES = 2048
 SRL_FUNCTION = 2
 SRA_FUNCTION = 3
+SLLV_FUNCTION = 4
 
 
 def expected_operation(word: int) -> int:
-    """Model admitted NOP/SLL/SRL/SRA encodings independently from the RTL."""
+    """Model admitted constant and variable shifts independently from the RTL."""
     if word == 0:
         return 1
     opcode = word >> 26
     reserved_rs = (word >> 21) & 0x1F
+    reserved_shift = (word >> 6) & 0x1F
     function = word & 0x3F
     if opcode == 0 and reserved_rs == 0 and function == 0:
         return 2
     if opcode == 0 and reserved_rs == 0 and function == SRL_FUNCTION:
         return 3
-    return 4 if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION else 0
+    if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION:
+        return 4
+    return 5 if opcode == 0 and reserved_shift == 0 and function == SLLV_FUNCTION else 0
 
 
 @cocotb.test()
 async def test_r5900_decode_randomized_admission(dut) -> None:
-    """Require NOP/SLL/SRL/SRA recognition over reproducible arbitrary words."""
+    """Require implemented shift recognition over reproducible arbitrary words."""
     seed = int(os.environ.get("RANDOM_SEED", "1"))
     generator = random.Random(seed)
     boundary_words = (
@@ -38,6 +42,9 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x001F_FFC2,
         0x0000_0003,
         0x001F_FFC3,
+        0x0000_0004,
+        0x023F_F804,
+        0x0000_0044,
         0x0000_0800,
         0x0001_0000,
         0x0020_0000,

@@ -329,6 +329,20 @@ differential and randomized layers executes seven boundary plus 512 seeded SRA
 instructions sequentially and compares the PC, complete GPR state, writeback,
 and retirement after every instruction.
 
+## R5900 SLLV
+
+Canonical SPECIAL function-four words with reserved `sa` equal to zero now
+execute as 32-bit SLLV. Five directed cocotb cases prove that only `rs[4:0]`
+selects the count and only `rt[31:0]` supplies data. They cover effective counts
+0, 1, and 31; raw count values 32, 33, and all ones; scalar sign extension;
+preserved destination bits 127:64; `rd == rt` and `rd == rs`; GPR-zero
+suppression; immediate/variable operation separation; reserved-field
+rejection; PC wrap; and exact writeback and retirement. The Python transition
+uses masks and immutable state rather than the RTL's five-bit operand port. A
+deterministic differential/randomized test executes nine boundary plus 512
+seeded instructions sequentially and compares PC, the complete GPR state,
+operand selection, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

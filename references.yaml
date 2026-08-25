@@ -85,7 +85,7 @@ references:
       - subsystem coverage
       - EE Registers
       - EE Instruction Decoding
-    notes: Independently documents 32 128-bit EE GPRs and hardwired zero; corroboration remains required.
+    notes: Independently documents 128-bit EE GPRs and canonical scalar shift encodings.
   - id: binutils-r5900-review
     title: GNU Binutils R5900 support review
     url: https://sourceware.org/pipermail/binutils/2013-January/079862.html
@@ -120,8 +120,8 @@ references:
     license: GPL-3.0; repository COPYING.GPLv3 reviewed before consultation
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [constant shift interpreter operations]
-    notes: Independent corroboration only; no implementation text or structure was copied.
+    consulted_sections: [scalar shift interpreter operations]
+    notes: Corroborates R5900 scalar shift widths and count masking; no source structure was copied.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format
     url: https://gabi.xinuos.com/elf/02-eheader.html
@@ -151,6 +151,7 @@ references:
       - CPU architecture overview and functional instruction groups
       - instruction description notation operations and exceptions
       - CPU instruction formats and encoding tables
+      - SLLV instruction description
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual

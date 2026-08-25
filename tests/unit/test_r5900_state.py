@@ -11,6 +11,7 @@ from reference.ee.r5900 import (
     R5900State,
     UnsupportedInstructionError,
     encode_sll,
+    encode_sllv,
     encode_sra,
     encode_srl,
 )
@@ -20,8 +21,11 @@ PRESERVED_GPR_VALUE = 0x55
 PC_COPY_START = 0x1000
 ALIASED_SLL_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0010
 TWO_INSTRUCTION_PC = 8
+ONE_INSTRUCTION_PC = 4
 ALIASED_SRL_RESULT = 0xCAFE_BABE_1234_5678_0000_0000_0800_0001
 ALIASED_SRA_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_F800_0001
+ALIASED_SLLV_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0010
+ALIASED_SLLV_RS_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_8000_0000
 
 
 @pytest.mark.unit
@@ -329,6 +333,65 @@ def test_r5900_reference_sra_reads_before_alias_and_protects_zero() -> None:
 def test_r5900_sra_encoder_sets_function_and_variable_fields() -> None:
     """Place canonical SRA variable fields without changing reserved rs."""
     assert encode_sra(31, 17, 31) == (17 << 16) | (31 << 11) | (31 << 6) | 3
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("shift_register_value", "low_word", "expected_scalar"),
+    [
+        (0, 0x7FFF_FFFF, 0x0000_0000_7FFF_FFFF),
+        (0, 0x8000_0000, 0xFFFF_FFFF_8000_0000),
+        (1, 0x4000_0000, 0xFFFF_FFFF_8000_0000),
+        (31, 0x0000_0001, 0xFFFF_FFFF_8000_0000),
+        (32, 0x7FFF_FFFF, 0x0000_0000_7FFF_FFFF),
+        (33, 0x4000_0000, 0xFFFF_FFFF_8000_0000),
+        (0xFFFF_FFFF, 0x0000_0001, 0xFFFF_FFFF_8000_0000),
+    ],
+)
+def test_r5900_reference_sllv_masks_count_and_merges_destination(
+    shift_register_value: int,
+    low_word: int,
+    expected_scalar: int,
+) -> None:
+    """Use rs low five bits, shift rt low word, and retain rd upper 64 bits."""
+    shift_register = 0xF00D_CAFE_1234_5678_9ABC_DEF0_0000_0000 | shift_register_value
+    source = 0xDEAD_BEEF_CAFE_F00D_1234_5678_0000_0000 | low_word
+    old_destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(2, shift_register)
+    state = state.write_gpr(3, source).write_gpr(5, old_destination)
+
+    updated = state.step(encode_sllv(5, 3, 2))
+
+    assert updated.read_gpr(5) == (old_destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(2) == shift_register
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_sllv_reads_all_operands_before_alias_write() -> None:
+    """Preserve original rt, rs, and rd values for aliased variable shifts."""
+    original = 0xCAFE_BABE_1234_5678_8765_4321_0800_0001
+    state = R5900State.initial().write_gpr(2, 4).write_gpr(7, original)
+    rd_equals_rt = state.step(encode_sllv(7, 7, 2))
+    assert rd_equals_rt.read_gpr(7) == ALIASED_SLLV_RESULT
+
+    count_and_destination = 0x0123_4567_89AB_CDEF_1111_2222_0000_0021
+    state = rd_equals_rt.write_gpr(8, 0x4000_0000).write_gpr(9, count_and_destination)
+    rd_equals_rs = state.step(encode_sllv(9, 8, 9))
+    assert rd_equals_rs.read_gpr(9) == ALIASED_SLLV_RS_RESULT
+
+
+@pytest.mark.unit
+def test_r5900_reference_sllv_protects_zero_and_encodes_reserved_sa() -> None:
+    """Suppress destination zero and leave the encoded shift field clear."""
+    state = R5900State.initial().write_gpr(2, 31).write_gpr(3, 1)
+    discarded = state.step(encode_sllv(0, 3, 2))
+    assert discarded.read_gpr(0) == 0
+    assert discarded.gprs[1:] == state.gprs[1:]
+    assert discarded.pc == ONE_INSTRUCTION_PC
+    assert encode_sllv(31, 17, 9) == (9 << 21) | (17 << 16) | (31 << 11) | 4
 
 
 @pytest.mark.unit

@@ -36,7 +36,8 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its five-bit
 operation enum admits exact word zero as NOP and canonical SPECIAL SLL, SRL,
-and SRA encodings with the reserved `rs` field clear. Every unsupported word maps to no
+SRA, and SLLV encodings. Immediate shifts require reserved `rs` to be clear;
+SLLV requires reserved `sa` to be clear. Every unsupported word maps to no
 operation with legality deasserted.
 `rtl/ee/r5900/r5900_decode_dispatch.sv` gates valid decoded operations toward
 execution. Unsupported words cannot dispatch and instead produce the packed
@@ -47,9 +48,9 @@ adapter. It accepts one commit per asserted episode, suppresses destination
 zero, emits the same typed event used by debug and differential observation,
 and drives the existing GPR file's index/value write port.
 `rtl/ee/r5900/r5900_execute.sv` is the growing functional operation boundary.
-NOP completes without writeback. SLL, SRL, and SRA shift the low source word
-left, logically right, or arithmetically right, then sign-extend the 32-bit
-result through the low 64-bit scalar lane. The shifts preserve the old
+NOP completes without writeback. SLL, SRL, SRA, and SLLV shift the low source
+word left, logically right, arithmetically right, or left by `rs[4:0]`, then
+sign-extend the 32-bit result through the low 64-bit scalar lane. The shifts preserve the old
 destination's upper 64-bit lane and commit the complete 128-bit value through
 centralized writeback. All four operations
 advance PC by four and emit a typed retirement record with the pre-advance PC

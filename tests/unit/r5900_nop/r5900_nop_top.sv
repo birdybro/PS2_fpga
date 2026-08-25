@@ -83,6 +83,7 @@ module r5900_nop_top (
         .operation_i(operation_o),
         .pc_i(pc_o),
         .instruction_i,
+        .source_rs_shift_i(5'd0),
         .source_rt_word_i(read_value_a_o[31:0]),
         .destination_upper_i(read_value_b_o[127:64]),
         .complete_o(execute_complete_o),

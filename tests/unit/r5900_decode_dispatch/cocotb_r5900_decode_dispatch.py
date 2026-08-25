@@ -8,6 +8,7 @@ OPERATION_NOP = 1
 OPERATION_SLL = 2
 OPERATION_SRL = 3
 OPERATION_SRA = 4
+OPERATION_SLLV = 5
 
 
 async def check_dispatch(
@@ -84,11 +85,23 @@ async def test_r5900_decode_dispatch_sends_canonical_sra_to_execute(dut) -> None
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_sllv_to_execute(dut) -> None:
+    """Dispatch SLLV register fields without a reserved diagnostic."""
+    for pc, instruction in (
+        (0, 0x0000_0004),
+        (4, 0x0020_0004),
+        (0x0010_0000, 0x023F_F804),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SLLV, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -> None:
     """Preserve fault PC/opcode/word while preventing execute and later writeback."""
     cases = (
         (0, 0x0000_0001),
         (4, 0x0020_0000),
+        (8, 0x0000_0044),
         (0x0010_0000, 0x3405_1234),
         (0x8000_0180, 0x0400_0000),
         (0xFFFF_FFFC, 0xFFFF_FFFF),

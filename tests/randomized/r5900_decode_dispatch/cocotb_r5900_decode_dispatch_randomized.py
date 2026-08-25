@@ -9,20 +9,24 @@ from cocotb.triggers import Timer
 RANDOM_CASES = 1024
 SRL_FUNCTION = 2
 SRA_FUNCTION = 3
+SLLV_FUNCTION = 4
 
 
 def decoded_operation(word: int) -> int:
-    """Model admitted NOP/SLL/SRL/SRA operations independently from the RTL."""
+    """Model admitted constant and variable shifts independently from the RTL."""
     if word == 0:
         return 1
     opcode = word >> 26
     reserved_rs = (word >> 21) & 0x1F
+    reserved_shift = (word >> 6) & 0x1F
     function = word & 0x3F
     if opcode == 0 and reserved_rs == 0 and function == 0:
         return 2
     if opcode == 0 and reserved_rs == 0 and function == SRL_FUNCTION:
         return 3
-    return 4 if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION else 0
+    if opcode == 0 and reserved_rs == 0 and function == SRA_FUNCTION:
+        return 4
+    return 5 if opcode == 0 and reserved_shift == 0 and function == SLLV_FUNCTION else 0
 
 
 @cocotb.test()
@@ -39,6 +43,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 16, 0x001F_FFC2),
         (True, 20, 0x0000_0003),
         (True, 24, 0x001F_FFC3),
+        (True, 28, 0x0000_0004),
+        (True, 32, 0x023F_F804),
+        (True, 36, 0x0000_0044),
         (True, 4, 1),
         (True, 0x0010_0000, 0x3405_1234),
         (True, 0xFFFF_FFFC, 0xFFFF_FFFF),
