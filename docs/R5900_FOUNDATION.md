@@ -332,6 +332,10 @@ randomized cases make DSRA the twenty-fifth complete ISA coverage entry.
 
 DSLL32 function `0x3c` widens the encoded count before shifting, implementing
 effective counts 32 through 63 while preserving destination bits 127:64.
+DSRL32 function `0x3e` uses the same widened count for logical-right shifts,
+zero-fills the low doubleword, and preserves the destination upper lane.
+Directed and 524-case randomized differential checks make it the twenty-seventh
+complete ISA coverage entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

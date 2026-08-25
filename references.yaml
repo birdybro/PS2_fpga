@@ -136,10 +136,11 @@ references:
       - DSRL interpreter operation
       - DSRA interpreter operation
       - DSLL32 interpreter operation
+      - DSRL32 interpreter operation
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
     notes: >-
-      Corroborates R5900 scalar result widths, DSLL DSRL DSRA and DSLL32
-      low-doubleword results with preserved upper lanes, DSLL32 high-range shift
+      Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 and DSRL32
+      low-doubleword results with preserved upper lanes, high-range shift
       counts, and immediate or register arithmetic handling; no source structure
       was copied.
   - id: system-v-gabi-elf

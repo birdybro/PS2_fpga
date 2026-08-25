@@ -18,6 +18,7 @@ from reference.ee.r5900 import (
     encode_dsll32,
     encode_dsra,
     encode_dsrl,
+    encode_dsrl32,
     encode_lui,
     encode_nor,
     encode_or,
@@ -54,6 +55,7 @@ ALIASED_SRAV_RS_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_C000_0000
 ENCODED_DSLL_EXAMPLE = 0x0011_FB78
 ENCODED_DSLL32_EXAMPLE = 0x0011_FB7C
 ENCODED_DSRL_EXAMPLE = 0x0011_FB7A
+ENCODED_DSRL32_EXAMPLE = 0x0011_FB7E
 ENCODED_DSRA_EXAMPLE = 0x0011_FB7B
 ENCODED_LUI_EXAMPLE = 0x3C1F_1234
 ENCODED_ORI_EXAMPLE = 0x36FF_1234
@@ -506,6 +508,57 @@ def test_r5900_reference_dsll32_handles_alias_zero_and_encoder_validation() -> N
     ):
         with pytest.raises(error):
             encode_dsll32(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("encoded_count", "source_scalar", "expected_scalar"),
+    [
+        (0, 0xFEDC_BA98_7654_3210, 0x0000_0000_FEDC_BA98),
+        (1, 0xFEDC_BA98_7654_3210, 0x0000_0000_7F6E_5D4C),
+        (13, 0xFFFF_E000_0000_0000, 0x0000_0000_0007_FFFF),
+        (30, 0xC000_0000_0000_0000, 0x0000_0000_0000_0003),
+        (31, 0x8000_0000_0000_0000, 0x0000_0000_0000_0001),
+        (31, 0x7FFF_FFFF_FFFF_FFFF, 0),
+    ],
+)
+def test_r5900_reference_dsrl32_uses_effective_counts_32_through_63(
+    encoded_count: int,
+    source_scalar: int,
+    expected_scalar: int,
+) -> None:
+    """Logically shift by sa plus 32 and preserve rd upper bits."""
+    source = 0xDEAD_BEEF_CAFE_F00D_0000_0000_0000_0000 | source_scalar
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source).write_gpr(5, destination)
+    updated = state.step(encode_dsrl32(5, 3, encoded_count))
+    assert updated.read_gpr(5) == (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_dsrl32_handles_alias_zero_and_encoder_validation() -> None:
+    """Cover aliasing, destination zero, exact encoding, and field rejection."""
+    original = 0xCAFE_BABE_1234_5678_FEDC_BA98_7654_3210
+    upper_mask = GPR_MASK ^ ((1 << 64) - 1)
+    state = R5900State.initial().write_gpr(7, original)
+    aliased = state.step(encode_dsrl32(7, 7, 4))
+    assert aliased.read_gpr(7) == (original & upper_mask) | 0x0000_0000_0FED_CBA9
+    discarded = aliased.step(encode_dsrl32(0, 7, 31))
+    assert discarded.read_gpr(0) == 0
+    assert discarded.gprs[1:] == aliased.gprs[1:]
+    assert encode_dsrl32(31, 17, 13) == ENCODED_DSRL32_EXAMPLE
+    for fields, error in (
+        ((-1, 0, 0), IndexError),
+        ((0, GPR_COUNT, 0), IndexError),
+        ((0, 0, -1), ValueError),
+        ((0, 0, 32), ValueError),
+        ((True, 0, 0), TypeError),
+    ):
+        with pytest.raises(error):
+            encode_dsrl32(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

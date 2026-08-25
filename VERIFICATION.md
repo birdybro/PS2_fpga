@@ -482,6 +482,14 @@ writeback, and retirement after every instruction.
 Function `0x3c` executes effective shifts 32 through 63. Directed tests cover
 counts 32, 33, 62, and 63; a 524-case differential stream compares all GPRs.
 
+## R5900 DSRL32
+
+Function `0x3e` logically shifts the low doubleword by effective counts 32
+through 63 without sign fill. Directed tests cover effective counts 32, 33,
+62, and 63; preserved destination bits 127:64; aliasing; GPR zero; PC wrap;
+reserved `rs`; and exact events. A 524-case seeded differential stream compares
+PC and all 32 complete 128-bit GPRs after every instruction.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.
