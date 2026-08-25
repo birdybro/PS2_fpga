@@ -643,21 +643,26 @@ milestones:
       - zero-function nonzero-operand field rejection test
       - deterministic 2048-word randomized admission test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M054): add R5900 decode legality skeleton)"
+    commit: ac80bc3
     notes: Make decode admission explicit before instruction semantics are added.
   - id: M055
     title: Report R5900 reserved instructions
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M054]
-    tests: [reserved-instruction event PC opcode and no-writeback tests]
+    tests:
+      - inactive decode input masks dispatch and diagnostics test
+      - legal NOP execute dispatch without reserved event test
+      - illegal primary and SPECIAL exact PC word and opcode diagnostic tests
+      - illegal execute and downstream writeback suppression test
+      - deterministic 1024-case randomized dispatch and diagnostic test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
+    commit: "self (milestone(M055): report R5900 reserved instructions)"
     notes: Expose a diagnostic event before architectural COP0 exception entry exists.
   - id: M056
     title: Add R5900 GPR writeback framework
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M055]
     tests: [destination value enable zero suppression and one-shot writeback tests]
     references: [docs/R5900_FOUNDATION.md, docs/CONVENTIONS.md]

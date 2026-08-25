@@ -245,6 +245,19 @@ word-equals-zero rule to eleven boundary encodings and 2,048 seeded arbitrary
 words. The coverage matrix now marks NOP decode as partial while implementation
 and semantic tests remain pending under M057.
 
+## R5900 reserved-instruction diagnostics
+
+The decode-dispatch boundary sends admitted operations toward execution and
+maps every valid unsupported word to a packed diagnostic containing its exact
+PC and instruction. Because execute validity remains low for that event, an
+unsupported word cannot become eligible for the downstream writeback framework.
+Three directed cocotb cases cover inactive-input masking, NOP dispatch without
+a diagnostic, primary and SPECIAL failures, PC boundaries, opcode preservation,
+and deterministic zeroing of inactive fields. A randomized-layer test compares
+five boundary and 1,024 seeded validity/PC/word cases against an independent
+dispatch rule. These diagnostics remain explicitly pre-architectural until
+COP0 exception entry is implemented.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

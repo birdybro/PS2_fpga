@@ -10,8 +10,9 @@ executing CPU. This is not a claim of CPU compatibility.
 Instruction fetch request and response paths are independently implemented but
 not yet composed with control or RAM. Bus errors are retained as functional
 fetch status. Instruction fields are extracted and exact zero-word NOP is
-admitted, but no instruction is executed. Illegal words do not yet emit the
-M055 diagnostic or enter an architectural exception; COP0 remains unimplemented.
+admitted, but no instruction is executed. Illegal words emit a functional
+diagnostic and are suppressed before execution, but do not enter an
+architectural exception; COP0 remains unimplemented.
 
 NOP is partial and the other 21 entries in the initial R5900 ISA coverage
 matrix remain pending. The matrix records planned encodings and ownership, not

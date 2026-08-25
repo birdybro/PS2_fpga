@@ -130,6 +130,14 @@ only through independently verified admissions. NOP is therefore `decoded` and
 `partial` in the coverage matrix, but remains unimplemented until M057 proves
 its architectural state transition.
 
+A decode-dispatch boundary now consumes that closed decoder. A valid admitted
+word produces an execute-valid operation, while a valid unsupported word cannot
+dispatch and instead produces the packed reserved-instruction diagnostic with
+its exact PC and word. Inactive decode input produces neither output. Blocking
+execute validity also blocks any later writeback eligibility, but this does not
+yet model the architectural Reserved Instruction exception, EPC, Cause, Status,
+or exception-vector PC transition; those remain COP0 milestones.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

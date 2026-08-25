@@ -38,6 +38,10 @@ sign- and zero-extended immediates; it does not decide encoding legality.
 five-bit operation enum admits only exact word zero as NOP and maps every other
 word to no operation with legality deasserted. Instruction execution remains a
 separate milestone.
+`rtl/ee/r5900/r5900_decode_dispatch.sv` gates valid decoded operations toward
+execution. Unsupported words cannot dispatch and instead produce the packed
+diagnostic record already defined by the R5900 type package, preserving their
+exact PC and instruction. This is intentionally not COP0 exception entry.
 
 ## Repository boundaries
 
