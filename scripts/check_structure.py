@@ -5,6 +5,7 @@ from pathlib import Path
 
 REQUIRED_DIRECTORIES = (
     ".github/workflows",
+    "coverage",
     "docs",
     "reference/common",
     "reference/ee",

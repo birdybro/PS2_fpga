@@ -491,21 +491,26 @@ milestones:
       - missing instruction milestone mutation test
       - bundled dependency mutation test
     references: [REFERENCES.md, ARCHITECTURE.md, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M043): expand R5900 foundation roadmap)"
+    commit: b9c084b
     notes: Enumerate CPU state, fetch, decode, writeback, instructions, and integration.
   - id: M044
     title: Establish R5900 ISA coverage matrix
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M043]
-    tests: [coverage schema inventory and milestone linkage tests]
-    references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
-    commit: null
-    notes: Track decode implementation and every verification layer before RTL instructions.
+    tests:
+      - coverage schema and exact inventory test
+      - missing and duplicate instruction mutation tests
+      - false completion state mutation test
+      - milestone ownership mutation test
+      - unknown source provenance mutation test
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md, REFERENCES.md]
+    commit: "self (milestone(M044): establish R5900 ISA coverage matrix)"
+    notes: Track decode, implementation, and every verification layer before RTL instructions.
   - id: M045
     title: Define Python R5900 architectural state
     subsystem: reference
-    status: pending
+    status: active
     dependencies: [M044]
     tests: [reference state width reset copy and zero-register tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

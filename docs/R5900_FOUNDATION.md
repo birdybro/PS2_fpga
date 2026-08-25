@@ -73,11 +73,14 @@ all-one and alternating patterns, single bits, shift-mask boundaries, carry,
 borrow, and immediate-extension boundaries.
 
 Each instruction receives its own milestone with directed and randomized
-differential coverage. A machine-readable ISA matrix established by M044 tracks
-decode, implementation, directed, differential, randomized, and exception
-coverage separately. The first integration gates fetch from the behavioral RAM,
-execute a sequential NOP image, and then execute a generated EE ELF arithmetic
-stream from its published entry point.
+differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
+directed, randomized-differential, and exception coverage separately. Its 22
+foundation entries start pending: an encoding string and milestone owner are a
+plan, not an implementation claim. A validator cross-checks exact inventory,
+roadmap ownership, reference provenance, and summary-state consistency. The
+first integration gates fetch from the behavioral RAM, execute a sequential NOP
+image, and then execute a generated EE ELF arithmetic stream from its published
+entry point.
 
 ## Deferred behavior
 

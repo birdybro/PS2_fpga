@@ -69,13 +69,15 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	done
 	$(VENV_PYTHON) -m ruff check reference scripts sim tests
 	$(VENV_PYTHON) -m ruff format --check reference scripts sim tests
-	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml references.yaml .github/workflows/ci.yml
+	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml \
+		milestones.yaml references.yaml coverage/r5900_isa.yaml .github/workflows/ci.yml
 	$(VENV_PYTHON) scripts/check_tracked_files.py
 	$(VENV_PYTHON) scripts/check_ci_workflow.py
 	$(VENV_PYTHON) scripts/check_milestones.py
 	$(VENV_PYTHON) scripts/check_references.py
 	$(VENV_PYTHON) scripts/check_conventions.py
 	$(VENV_PYTHON) scripts/check_roadmap.py
+	$(VENV_PYTHON) scripts/check_r5900_coverage.py
 
 test: structure build venv ## Run the routine pytest gate.
 	$(TEST_RUNNER) test --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"

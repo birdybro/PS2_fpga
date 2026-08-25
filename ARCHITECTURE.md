@@ -15,6 +15,7 @@ initial state, control, evidence, verification, and deferral boundaries.
 - `rtl/` contains synthesis-oriented hardware organized by PS2 subsystem.
 - `sim/` contains non-synthesizable models, loaders, debug, and the simulation top.
 - `reference/` contains correctness-oriented models independent from the RTL.
+- `coverage/` contains machine-readable architectural feature and verification state.
 - `tests/` separates unit, differential, randomized, integration, regression,
   and system verification.
 - `software/` contains source for legal, purpose-built bare-metal workloads.

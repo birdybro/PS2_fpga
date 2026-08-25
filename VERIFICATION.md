@@ -116,6 +116,16 @@ instruction cannot silently disappear or be bundled into a neighboring gate.
 The planning document also separates base MIPS evidence from R5900-specific
 behavior and defers unsupported or unproven ISA groups explicitly.
 
+## R5900 ISA coverage validation
+
+`coverage/r5900_isa.yaml` contains the exact 22-encoding foundation inventory in
+roadmap order. Each entry names its milestone and cataloged evidence, and tracks
+decode, implementation, directed testing, randomized differential testing, and
+exception testing independently. Summary states cannot become `partial` or
+`complete` unless their detailed fields justify the claim. Six directed
+mutation tests prove that a missing or duplicate instruction, false completion,
+wrong milestone owner, and unknown source all fail verification.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

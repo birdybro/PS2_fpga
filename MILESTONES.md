@@ -23,6 +23,12 @@ The design contract and exit criteria for Phase 1 are documented in
 order, title, subsystem ownership, and one-step dependency a tested contract.
 Later major subsystems will be expanded the same way before implementation.
 
+Architectural feature status is tracked independently from roadmap completion.
+`coverage/r5900_isa.yaml` starts with the 22 scalar foundation encodings and
+separates decoded, implemented, directed-test, randomized-differential, and
+exception-test state. `scripts/check_r5900_coverage.py` validates inventory,
+roadmap ownership, source provenance, and honest summary status.
+
 ## Machine-readable schema
 
 Every entry requires `id`, `title`, `subsystem`, `status`, `dependencies`,

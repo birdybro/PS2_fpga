@@ -1,0 +1,271 @@
+schema_version: 1
+architecture: r5900
+scope: scalar-functional-foundation
+coverage_states:
+  feature: [pending, partial, complete]
+  test: [pending, complete, not-applicable]
+instructions:
+  - mnemonic: NOP
+    category: alias
+    encoding: exact word 0x00000000; SLL r0, r0, 0
+    milestone: M057
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Track the architecturally inert zero-word encoding separately from general SLL.
+  - mnemonic: SLL
+    category: 32-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x00
+    milestone: M058
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Exact R5900 destination extension and encoding legality remain milestone evidence gates.
+  - mnemonic: SRL
+    category: 32-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x02
+    milestone: M059
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Exact R5900 destination extension and encoding legality remain milestone evidence gates.
+  - mnemonic: SRA
+    category: 32-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x03
+    milestone: M060
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Exact R5900 destination extension and encoding legality remain milestone evidence gates.
+  - mnemonic: SLLV
+    category: 32-bit shift variable
+    encoding: SPECIAL opcode 0x00, function 0x04
+    milestone: M061
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Variable shift masking and destination extension require instruction-specific tests.
+  - mnemonic: SRLV
+    category: 32-bit shift variable
+    encoding: SPECIAL opcode 0x00, function 0x06
+    milestone: M062
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Variable shift masking and destination extension require instruction-specific tests.
+  - mnemonic: SRAV
+    category: 32-bit shift variable
+    encoding: SPECIAL opcode 0x00, function 0x07
+    milestone: M063
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Variable shift masking and destination extension require instruction-specific tests.
+  - mnemonic: LUI
+    category: immediate constant
+    encoding: primary opcode 0x0f
+    milestone: M064
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: The full 128-bit GPR result rule requires R5900-specific milestone evidence.
+  - mnemonic: ORI
+    category: logical immediate
+    encoding: primary opcode 0x0d
+    milestone: M065
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Zero extension and the full 128-bit GPR result are verified at implementation.
+  - mnemonic: ANDI
+    category: logical immediate
+    encoding: primary opcode 0x0c
+    milestone: M066
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Zero extension and the full 128-bit GPR result are verified at implementation.
+  - mnemonic: XORI
+    category: logical immediate
+    encoding: primary opcode 0x0e
+    milestone: M067
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Zero extension and the full 128-bit GPR result are verified at implementation.
+  - mnemonic: ADDIU
+    category: 32-bit arithmetic immediate
+    encoding: primary opcode 0x09
+    milestone: M068
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Sign extension, wrapping, no-overflow behavior, and GPR extension need explicit tests.
+  - mnemonic: ADDU
+    category: 32-bit arithmetic register
+    encoding: SPECIAL opcode 0x00, function 0x21
+    milestone: M069
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Wrapping, no-overflow behavior, and 128-bit GPR extension need explicit tests.
+  - mnemonic: SUBU
+    category: 32-bit arithmetic register
+    encoding: SPECIAL opcode 0x00, function 0x23
+    milestone: M070
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Wrapping, no-overflow behavior, and 128-bit GPR extension need explicit tests.
+  - mnemonic: AND
+    category: logical register
+    encoding: SPECIAL opcode 0x00, function 0x24
+    milestone: M071
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Operand width and the complete 128-bit destination result require explicit verification.
+  - mnemonic: OR
+    category: logical register
+    encoding: SPECIAL opcode 0x00, function 0x25
+    milestone: M072
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Operand width and the complete 128-bit destination result require explicit verification.
+  - mnemonic: XOR
+    category: logical register
+    encoding: SPECIAL opcode 0x00, function 0x26
+    milestone: M073
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Operand width and the complete 128-bit destination result require explicit verification.
+  - mnemonic: NOR
+    category: logical register
+    encoding: SPECIAL opcode 0x00, function 0x27
+    milestone: M074
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Operand width and the complete 128-bit destination result require explicit verification.
+  - mnemonic: SLT
+    category: signed comparison register
+    encoding: SPECIAL opcode 0x00, function 0x2a
+    milestone: M075
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Signed operand width and the complete 128-bit Boolean result need explicit tests.
+  - mnemonic: SLTU
+    category: unsigned comparison register
+    encoding: SPECIAL opcode 0x00, function 0x2b
+    milestone: M076
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Unsigned operand width and the complete 128-bit Boolean result need explicit tests.
+  - mnemonic: SLTI
+    category: signed comparison immediate
+    encoding: primary opcode 0x0a
+    milestone: M077
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Signed operand width, immediate extension, and 128-bit Boolean result need tests.
+  - mnemonic: SLTIU
+    category: unsigned comparison immediate
+    encoding: primary opcode 0x0b
+    milestone: M078
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, binutils-r5900-review]
+    notes: Unsigned comparison still sign-extends the immediate; exact width needs evidence.
