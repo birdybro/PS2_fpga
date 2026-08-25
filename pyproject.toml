@@ -4,4 +4,8 @@ testpaths = ["tests"]
 addopts = ["--strict-config", "--strict-markers", "-ra"]
 markers = [
     "unit: directed tests of one isolated RTL component",
+    "differential: comparisons between RTL and an independent reference model",
+    "randomized: deterministic seeded randomized verification",
+    "integration: tests spanning two or more project components",
+    "system: tests that execute a complete simulated software workload",
 ]

@@ -11,6 +11,7 @@ SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.requirements-dev.stamp
+TEST_RUNNER := $(VENV_PYTHON) scripts/run_tests.py
 
 .PHONY: help venv structure build lint test unit differential randomized integration regression software waves clean
 
@@ -39,32 +40,22 @@ lint: structure ## Run the currently available static repository checks.
 	@git diff HEAD --check -- .
 
 test: structure build venv ## Run the routine pytest gate.
-	@mkdir -p $(BUILD_DIR)/results
-	RANDOM_SEED="$(RANDOM_SEED)" PS2_BUILD_ROOT="$(abspath $(BUILD_DIR))" \
-		$(VENV_PYTHON) -m pytest \
-		--junitxml="$(abspath $(BUILD_DIR))/results/pytest.xml"
-	@echo "routine tests: PASS"
+	$(TEST_RUNNER) test --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
 
 unit: venv ## Run directed unit tests.
-	@mkdir -p $(BUILD_DIR)/results
-	RANDOM_SEED="$(RANDOM_SEED)" PS2_BUILD_ROOT="$(abspath $(BUILD_DIR))" \
-		$(VENV_PYTHON) -m pytest tests/unit/test_register_en_runner.py \
-		--junitxml="$(abspath $(BUILD_DIR))/results/pytest-unit.xml"
+	$(TEST_RUNNER) unit --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
 
-differential: ## Run differential tests (introduced with reference models).
-	@echo "differential tests are not implemented yet" >&2
-	@exit 2
+differential: venv ## Run differential tests.
+	$(TEST_RUNNER) differential --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
 
-randomized: ## Run deterministic randomized tests (introduced by M008).
-	@echo "randomized tests are not available until milestone M008" >&2
-	@exit 2
+randomized: venv ## Run deterministic randomized tests.
+	$(TEST_RUNNER) randomized --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
 
-integration: ## Run integration tests (introduced as subsystems connect).
-	@echo "integration tests are not implemented yet" >&2
-	@exit 2
+integration: venv ## Run integration tests.
+	$(TEST_RUNNER) integration --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
 
-regression: test ## Run the authoritative pre-commit regression gate.
-	@echo "bootstrap regression: PASS"
+regression: structure build venv ## Run the authoritative pre-commit regression gate.
+	$(TEST_RUNNER) regression --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
 
 software: ## Build legal project test software when a cross-toolchain is configured.
 	@echo "software builds are not implemented yet" >&2

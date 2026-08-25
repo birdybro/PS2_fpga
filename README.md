@@ -18,6 +18,10 @@ Run `make help` for the stable development command surface. Commands are made
 executable milestone-by-milestone; an unavailable verification layer fails
 with the milestone that introduces it rather than silently passing.
 
+`make test` runs the routine pytest suite. `make regression` runs the
+authoritative pre-commit suite. Set `RANDOM_SEED=<integer>` to reproduce seeded
+verification; the default is `1`.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

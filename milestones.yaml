@@ -56,21 +56,21 @@ milestones:
     dependencies: [M004]
     tests: [make test]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M005): integrate pytest)"
+    commit: 1a0f262
     notes: Make pytest the Python verification orchestrator.
   - id: M006
     title: Add top-level test runner
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M005]
     tests: [make test, make regression]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M006): add top-level test runner)"
     notes: Expose the required stable command surface.
   - id: M007
     title: Add lint configuration
     subsystem: verification
-    status: pending
+    status: active
     dependencies: [M006]
     tests: [make lint]
     references: [CONTRIBUTING.md]
