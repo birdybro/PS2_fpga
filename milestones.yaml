@@ -296,21 +296,24 @@ milestones:
       - captured-read write-side-effect backpressure and reset tests
       - complete zero-latency backward-compatibility regression
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M027): add configurable RAM response latency)"
+    commit: d5354bb
     notes: Exercise backpressure without claiming physical RDRAM timing.
   - id: M028
     title: Add raw binary image loader
     subsystem: loader
-    status: active
+    status: complete
     dependencies: [M027]
-    tests: [binary load bounds and byte-exact tests]
+    tests:
+      - bytes-like first interior final and empty-range exact-copy tests
+      - atomic negative past-end and crossing-range rejection tests
+      - explicit file oversize missing-path and metadata tests
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M028): add raw binary image loader)"
     notes: Load an explicit external binary at a caller-selected byte address.
   - id: M029
     title: Parse ELF32 identification and header
     subsystem: loader
-    status: pending
+    status: active
     dependencies: [M028]
     tests: [valid and malformed ELF32 header tests]
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]

@@ -242,3 +242,13 @@ backpressure, acceptance-time read-data capture despite a later backdoor change,
 write side effects at acceptance, and reset cancellation of a pending response.
 The complete existing RAM suite runs at the default zero setting to guard
 backward compatibility.
+
+## Raw binary loader
+
+Fourteen directed Python cases cover bytes, bytearray, and memoryview inputs at
+the first, interior, and final legal destinations; an empty image at the
+exclusive upper bound; negative, past-end, and crossing ranges; invalid argument
+types; explicit temporary-file loading; oversize files; and missing paths. Every
+rejected range is checked for zero partial mutation, while valid loads verify
+all surrounding bytes and returned half-open range metadata. Ruff now includes
+`sim/` so loader code participates in the authoritative lint gate.

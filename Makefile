@@ -54,8 +54,8 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 		$(VERILATOR) --lint-only -Wall --timing --top-module $$top \
 			$(VERILATOR_FLAGS) $(SIM_SOURCES); \
 	done
-	$(VENV_PYTHON) -m ruff check scripts tests reference
-	$(VENV_PYTHON) -m ruff format --check scripts tests reference
+	$(VENV_PYTHON) -m ruff check reference scripts sim tests
+	$(VENV_PYTHON) -m ruff format --check reference scripts sim tests
 	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml references.yaml .github/workflows/ci.yml
 	$(VENV_PYTHON) scripts/check_tracked_files.py
 	$(VENV_PYTHON) scripts/check_ci_workflow.py

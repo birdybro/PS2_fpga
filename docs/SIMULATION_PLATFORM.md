@@ -107,11 +107,18 @@ not an architectural port and will not appear on `ps2_top`.
 
 ## Loader contract
 
-The raw loader copies an explicit binary to a caller-selected byte address. The
-ELF loader initially supports only the legal EE test format established by a
-future toolchain milestone. Header identification, target validation, loadable
-segments, zero-fill, and entry-point publication are separate steps. Bounds,
-overlap, overflow, malformed-input, and endianness cases receive directed tests.
+M028 provides an atomic raw loader for a caller-owned `bytearray`. It accepts an
+explicit bytes-like image or file path, validates the complete half-open
+destination range before mutation, preserves all surrounding bytes, and reports
+the loaded start, size, and exclusive end. Empty data at the memory end is a
+valid no-op. The file API reads only caller-selected external content; it does
+not embed software or firmware in the simulator.
+
+The ELF loader initially supports only the legal EE test format established by
+a future toolchain milestone. Header identification, target validation,
+loadable segments, zero-fill, and entry-point publication are separate steps.
+Bounds, overlap, overflow, malformed-input, and endianness cases receive
+directed tests.
 
 Downloaded or user-supplied programs remain external unless a tiny purpose-built
 fixture is clearly licensed and intentionally reviewed for inclusion.
