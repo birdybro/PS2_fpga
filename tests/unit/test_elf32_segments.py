@@ -1,6 +1,7 @@
-"""Directed ELF32 program-header and EE file-segment loader tests."""
+"""Directed ELF32 program-header and EE image-loader tests."""
 
 from collections.abc import Mapping, Sequence
+from dataclasses import FrozenInstanceError
 
 import pytest
 
@@ -9,9 +10,11 @@ from sim.loaders.elf32 import (
     ELF32_HEADER_SIZE,
     ELF32_PROGRAM_HEADER_SIZE,
     PT_LOAD,
+    EeElf32Load,
     Elf32ProgramHeader,
     ElfFormatError,
     load_ee_elf32_file_segments,
+    load_ee_elf32_image,
     load_ee_elf32_segments,
     parse_elf32_program_headers,
 )
@@ -477,3 +480,38 @@ def test_load_segments_rejects_later_malformed_size_without_partial_zero_fill() 
     with pytest.raises(ElfFormatError, match=r"file size.*exceeds memory size"):
         load_ee_elf32_segments(memory, image)
     assert memory == before
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("entry_point", (0, 0x0010_0000, 0xFFFF_FFFF))
+def test_load_image_publishes_exact_entry_point(entry_point: int) -> None:
+    """Return e_entry unchanged without inventing load-range membership policy."""
+    image = build_elf32_image(
+        [
+            program_header(
+                file_offset=0x100,
+                virtual_address=0x20,
+                file_size=2,
+                memory_size=4,
+            )
+        ],
+        header_overrides={"entry": entry_point},
+        chunks=((0x100, b"PC"),),
+    )
+    memory = bytearray([0xA5] * 0x40)
+
+    result = load_ee_elf32_image(memory, image)
+
+    assert isinstance(result, EeElf32Load)
+    assert result.entry_point == entry_point
+    assert result.segments[0].start_address == PROGRAM_HEADER_DEFAULTS["virtual_address"]
+    assert memory[0x20:0x24] == b"PC\x00\x00"
+
+
+@pytest.mark.unit
+def test_load_image_result_is_immutable() -> None:
+    """Keep the published start address stable after a completed load."""
+    image = build_elf32_image([], header_overrides={"entry": 0x0010_0000})
+    result = load_ee_elf32_image(bytearray(1), image)
+    with pytest.raises(FrozenInstanceError):
+        result.entry_point = 0  # type: ignore[misc]

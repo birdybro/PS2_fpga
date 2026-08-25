@@ -294,3 +294,12 @@ segment, preservation of gaps and bytes adjacent to equal-sized file/memory
 segments, and a zero-fill tail ending exactly at the exclusive RAM boundary. A
 multi-segment malformed-size case proves `p_filesz > p_memsz` is rejected before
 any earlier file copy or BSS clear.
+
+## ELF32 entry-point publication
+
+Four directed cases load complete images and propagate representative `e_entry`
+values of zero, the normal EE software base, and all ones without truncation or
+invented segment-membership policy. Each case also verifies initialized data,
+BSS, and returned segment metadata. The remaining case proves the completed
+image result is immutable so its published start address cannot drift after
+load.

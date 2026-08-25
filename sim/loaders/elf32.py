@@ -90,6 +90,14 @@ class Elf32SegmentLoad:
         return self.start_address + self.memory_size_bytes
 
 
+@dataclass(frozen=True, slots=True)
+class EeElf32Load:
+    """Publish one complete EE image load and its architectural start address."""
+
+    entry_point: int
+    segments: tuple[Elf32SegmentLoad, ...]
+
+
 def _coerce_elf_image(image: bytes | bytearray | memoryview) -> bytes:
     if not isinstance(image, (bytes, bytearray, memoryview)):
         msg = "ELF image must be bytes-like"
@@ -308,13 +316,29 @@ def _plan_file_segment_loads(
 def _prepare_ee_segment_load(
     memory: bytearray,
     image: bytes | bytearray | memoryview,
-) -> tuple[bytes, tuple[Elf32SegmentLoad, ...]]:
+) -> tuple[bytes, Elf32Header, tuple[Elf32SegmentLoad, ...]]:
     _validate_elf_memory(memory)
     payload = _coerce_elf_image(image)
     header = parse_ee_elf32_header(payload)
     program_headers = _parse_program_headers(payload, header)
     loads = _plan_file_segment_loads(len(memory), len(payload), program_headers)
-    return payload, loads
+    return payload, header, loads
+
+
+def _apply_ee_segment_load(
+    memory: bytearray,
+    payload: bytes,
+    loads: tuple[Elf32SegmentLoad, ...],
+    *,
+    zero_fill: bool,
+) -> None:
+    for load in loads:
+        memory[load.start_address : load.file_end_address] = payload[
+            load.file_offset : load.file_end_offset
+        ]
+        if zero_fill:
+            zero_fill_size = load.memory_size_bytes - load.file_size_bytes
+            memory[load.file_end_address : load.memory_end_address] = bytes(zero_fill_size)
 
 
 def load_ee_elf32_file_segments(
@@ -322,12 +346,8 @@ def load_ee_elf32_file_segments(
     image: bytes | bytearray | memoryview,
 ) -> tuple[Elf32SegmentLoad, ...]:
     """Atomically copy EE PT_LOAD file bytes to their virtual addresses."""
-    payload, loads = _prepare_ee_segment_load(memory, image)
-
-    for load in loads:
-        memory[load.start_address : load.file_end_address] = payload[
-            load.file_offset : load.file_end_offset
-        ]
+    payload, _header, loads = _prepare_ee_segment_load(memory, image)
+    _apply_ee_segment_load(memory, payload, loads, zero_fill=False)
     return loads
 
 
@@ -336,12 +356,16 @@ def load_ee_elf32_segments(
     image: bytes | bytearray | memoryview,
 ) -> tuple[Elf32SegmentLoad, ...]:
     """Atomically load EE PT_LOAD file bytes and zero each memory-only tail."""
-    payload, loads = _prepare_ee_segment_load(memory, image)
-
-    for load in loads:
-        memory[load.start_address : load.file_end_address] = payload[
-            load.file_offset : load.file_end_offset
-        ]
-        zero_fill_size = load.memory_size_bytes - load.file_size_bytes
-        memory[load.file_end_address : load.memory_end_address] = bytes(zero_fill_size)
+    payload, _header, loads = _prepare_ee_segment_load(memory, image)
+    _apply_ee_segment_load(memory, payload, loads, zero_fill=True)
     return loads
+
+
+def load_ee_elf32_image(
+    memory: bytearray,
+    image: bytes | bytearray | memoryview,
+) -> EeElf32Load:
+    """Load a complete EE image and publish its exact ELF entry point."""
+    payload, header, loads = _prepare_ee_segment_load(memory, image)
+    _apply_ee_segment_load(memory, payload, loads, zero_fill=True)
+    return EeElf32Load(entry_point=header.entry, segments=loads)

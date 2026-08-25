@@ -151,6 +151,13 @@ sizes leave adjacent RAM untouched; segments with no file bytes may initialize
 an entire BSS range. Validation still completes before the first copy or clear,
 so a malformed later segment cannot partially alter an earlier one.
 
+M033 adds an immutable complete-image result containing the exact 32-bit
+`e_entry` value and the tuple of loaded segments. Entry publication occurs only
+after target, table, and segment validation and complete data/BSS initialization.
+The loader does not require the entry point to fall inside a load segment: ELF
+defines zero for an image with no associated entry, and later CPU or executable
+policy may impose narrower start-address requirements with separate evidence.
+
 Downloaded or user-supplied programs remain external unless a tiny purpose-built
 fixture is clearly licensed and intentionally reviewed for inclusion.
 

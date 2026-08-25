@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M032 — apply ELF segment zero-fill
-- Next milestone: M033 — publish ELF entry point
+- Last completed milestone: M033 — publish ELF entry point
+- Next milestone: M034 — add simulation cycle timeout
 - Current subsystem: simulation loaders
-- Current regression status: 168 tests pass with no skips; complete PT_LOAD images include exact atomic BSS zero-fill
+- Current regression status: 172 tests pass with no skips; complete ELF loads publish exact immutable entry points
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M032 milestone commit (this commit)
+- Most recent pushed commit: M033 milestone commit (this commit)
 
 ## Resume note
 

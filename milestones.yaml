@@ -356,21 +356,24 @@ milestones:
       - exclusive RAM boundary and equal-size adjacency tests
       - atomic malformed-later-segment size rejection test
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: "self (milestone(M032): apply ELF segment zero-fill)"
+    commit: caf542a
     notes: Zero the memory-only tail when segment memory size exceeds file size.
   - id: M033
     title: Publish ELF entry point
     subsystem: loader
-    status: active
+    status: complete
     dependencies: [M032]
-    tests: [ELF entry-point propagation test]
+    tests:
+      - zero normal-base and all-ones entry-point propagation tests
+      - complete image data BSS and segment-metadata test
+      - immutable completed-image result test
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M033): publish ELF entry point)"
     notes: Expose the validated EE start address to the future CPU harness.
   - id: M034
     title: Add simulation cycle timeout
     subsystem: simulation
-    status: pending
+    status: active
     dependencies: [M033]
     tests: [timeout boundary and disabled-timeout tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
