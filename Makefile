@@ -14,12 +14,13 @@ MEMORY_BUS_PROTOCOL_LINT_TOP := tests/unit/memory_bus_protocol/memory_bus_protoc
 BEHAVIORAL_RAM_LINT_TOP := tests/unit/behavioral_system_ram/behavioral_system_ram_bus_top.sv
 MEMORY_TRACE_LINT_TOP := tests/unit/memory_transaction_trace/memory_transaction_trace_top.sv
 ARCH_TRACE_LINT_TOP := tests/unit/architectural_trace_sink/architectural_trace_sink_top.sv
+WAVEFORM_LINT_TOP := tests/unit/sim_waveform_control/sim_waveform_control_top.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.requirements-dev.stamp
 TEST_RUNNER := $(VENV_PYTHON) scripts/run_tests.py
-WAVE_FILE := $(BUILD_DIR)/waves/register_en/dump.vcd
+WAVE_FILE := $(BUILD_DIR)/waves/sim_waveform_control/dump.vcd
 
 .PHONY: help venv structure build lint test unit differential randomized integration regression software waves ci clean
 
@@ -57,6 +58,8 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 		sim/debug/memory_transaction_trace.sv $(MEMORY_TRACE_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --timing --top-module architectural_trace_sink_top \
 		$(VERILATOR_FLAGS) sim/debug/architectural_trace_sink.sv $(ARCH_TRACE_LINT_TOP)
+	$(VERILATOR) --lint-only -Wall --timing --top-module sim_waveform_control_top \
+		$(VERILATOR_FLAGS) sim/debug/sim_waveform_control.sv $(WAVEFORM_LINT_TOP)
 	@for top in $(SIM_LINT_TOPS); do \
 		$(VERILATOR) --lint-only -Wall --timing --top-module $$top \
 			$(VERILATOR_FLAGS) $(SIM_SOURCES); \
@@ -93,10 +96,11 @@ software: ## Build legal project test software when a cross-toolchain is configu
 	@echo "software builds are not implemented yet" >&2
 	@exit 2
 
-waves: venv ## Run a directed test and generate a Verilator VCD trace.
+waves: venv ## Run the waveform-control test and retain its Verilator VCD trace.
 	@rm -f -- $(WAVE_FILE)
-	PS2_WAVES=1 $(TEST_RUNNER) unit \
-		--seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
+	PS2_WAVES=1 RANDOM_SEED="$(RANDOM_SEED)" \
+		PS2_BUILD_ROOT="$(abspath $(BUILD_DIR))" \
+		$(VENV_PYTHON) -m pytest -q tests/unit/test_sim_waveform_control_runner.py
 	@test -s $(WAVE_FILE)
 	@grep -q '$$enddefinitions $$end' $(WAVE_FILE)
 	@echo "waveform: $(WAVE_FILE)"

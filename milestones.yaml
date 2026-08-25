@@ -427,21 +427,24 @@ milestones:
       - exact versioned architectural trace schema test
       - reset gap cycle and event sequence ordering test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M038): add architectural trace sink)"
+    commit: 1729bae
     notes: Define a passive producer-tagged trace transport before CPU execution exists.
   - id: M039
     title: Integrate simulation waveform controls
     subsystem: debug
-    status: active
+    status: complete
     dependencies: [M038]
-    tests: [platform waveform opt-in and silence tests]
+    tests:
+      - trace-capable disabled waveform silence test
+      - enabled VCD structure and signal transition test
+      - make waves retained output test
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M039): integrate simulation waveform controls)"
     notes: Reuse ignored waveform outputs for the composed platform.
   - id: M040
     title: Assemble simulation platform top
     subsystem: simulation
-    status: pending
+    status: active
     dependencies: [M039]
     tests: [platform elaboration and reset integration tests]
     references: [docs/SIMULATION_PLATFORM.md, ARCHITECTURE.md]

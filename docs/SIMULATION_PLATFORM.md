@@ -215,6 +215,16 @@ semantics. Inactive cycles and reset-time inputs are silent; reset restarts both
 the active-cycle and event-sequence counters. The sink has no ready signal and
 cannot stall or modify its producer.
 
+M039 adds `sim_waveform_control`, a simulation-only VCD controller for the
+future composed platform. `WAVE_ENABLE=0` is the default and performs no dump
+system tasks, even when the simulator binary was compiled with trace support.
+An enabled instance takes its output from `+WAVE_FILE=<path>`, with `waves.vcd`
+as a fallback, and starts a whole-design `$dumpvars` capture. `make waves`
+exercises both settings and retains the enabled result under ignored `build/`;
+ordinary verification removes its temporary enabled self-test capture. Trace
+instrumentation remains a build concern, so enabling the RTL parameter still
+requires Verilator's `--trace` option.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and

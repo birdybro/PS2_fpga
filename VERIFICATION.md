@@ -66,11 +66,12 @@ fails, the runner appends its outer seed to ignored
 
 ## Waveforms
 
-`make waves` rebuilds the directed register test with Verilator tracing enabled,
-runs it at the selected deterministic seed, and validates both a nonempty VCD
-and its end-of-definitions marker. The ignored trace is written to
-`build/waves/register_en/dump.vcd`. Normal test and regression targets do not
-enable tracing.
+`make waves` builds the reusable simulation waveform control with Verilator
+tracing enabled, runs its opt-in and disabled cases, and validates a changing
+probe plus the VCD end-of-definitions marker. The intentionally retained,
+ignored trace is written to `build/waves/sim_waveform_control/dump.vcd`.
+Ordinary unit and regression runs delete their temporary enabled self-test VCD,
+while the disabled case must not create a file even in a trace-capable binary.
 
 ## Differential smoke layer
 
