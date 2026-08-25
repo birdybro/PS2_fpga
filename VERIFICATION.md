@@ -222,6 +222,19 @@ runs prove that unsolicited responses and overlapping accepted fetch requests
 are fatal. The response-only bus modport and standalone wrapper keep this gate
 independent from later fetch/control composition.
 
+## R5900 fetch and simulation-RAM integration
+
+The composed fetch path is selected as the simulation platform's internal
+memory initiator for one integration run. The test holds a valid external
+write request throughout to prove that the parameter-selected external master
+cannot influence RAM, populates two instruction words through the loader
+backdoor, and fetches both through ordinary 32-bit transactions. It checks
+reset rejection and idle readiness, the exact request and single-outstanding
+sequence, a configured two-cycle RAM response, little-endian instruction
+assembly, clean error status, and repeated operation. Decoder backpressure is
+held for three cycles after each response to prove that instruction validity
+and data remain stable until explicit consumption.
+
 ## R5900 instruction-field extraction
 
 The combinational field extractor exposes the standard overlapping 32-bit MIPS

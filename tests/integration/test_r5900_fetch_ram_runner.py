@@ -1,4 +1,4 @@
-"""Pytest orchestration for raw-file loading through the composed platform."""
+"""Pytest orchestration for the R5900 fetch-to-RAM integration path."""
 
 import os
 from pathlib import Path
@@ -7,17 +7,8 @@ from xml.etree import ElementTree
 import pytest
 from cocotb_tools.runner import get_runner
 
-from sim.loaders.raw_binary import load_raw_binary_file
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
-TESTBENCH_DIR = Path(__file__).resolve().parent / "ps2_sim_raw_loader"
-RAM_SIZE = 128
-LOAD_ADDRESS = 32
-SENTINEL = 0xA5
-RAW_PAYLOAD = bytes.fromhex(
-    "00 01 7f 80 fe ff 55 aa 10 20 30 40 50 60 70 80 "
-    "ff 00 ff 00 aa 55 aa 55 de ad be ef 12 34 56 78"
-)
+TESTBENCH_DIR = Path(__file__).resolve().parent / "r5900_fetch_ram"
 SOURCES = [
     REPO_ROOT / "rtl/ee/r5900/r5900_types_pkg.sv",
     REPO_ROOT / "rtl/memory/memory_bus_if.sv",
@@ -38,46 +29,34 @@ SOURCES = [
 
 
 @pytest.mark.integration
-def test_raw_binary_loader_through_platform_ram_with_verilator() -> None:
-    """Load an external raw file and require exact transaction readback."""
+def test_r5900_fetch_path_reads_platform_ram_with_verilator() -> None:
+    """Fetch two words with fixed RAM latency and instruction backpressure."""
     seed = int(os.environ.get("RANDOM_SEED", "1"))
     build_root = Path(os.environ.get("PS2_BUILD_ROOT", REPO_ROOT / "build"))
-    build_dir = build_root / "pytest" / "ps2_sim_raw_loader"
-    results_path = build_root / "results" / "cocotb-ps2-sim-raw-loader.xml"
-    raw_path = build_root / "inputs" / "raw-platform-integration.bin"
-    build_dir.mkdir(parents=True, exist_ok=True)
+    build_dir = build_root / "pytest" / "r5900_fetch_ram"
+    results_path = build_root / "results" / "cocotb-r5900-fetch-ram.xml"
     results_path.parent.mkdir(parents=True, exist_ok=True)
-    raw_path.parent.mkdir(parents=True, exist_ok=True)
-    raw_path.write_bytes(RAW_PAYLOAD)
-
-    memory_image = bytearray([SENTINEL] * RAM_SIZE)
-    load_result = load_raw_binary_file(memory_image, raw_path, LOAD_ADDRESS)
-    assert load_result.start_address == LOAD_ADDRESS
-    assert load_result.size_bytes == len(RAW_PAYLOAD)
-    assert load_result.end_address == LOAD_ADDRESS + len(RAW_PAYLOAD)
 
     runner = get_runner("verilator")
     runner.build(
         sources=SOURCES,
         hdl_toplevel="ps2_sim_top",
-        parameters={"RESET_CYCLES": 2, "RAM_SIZE_BYTES": RAM_SIZE},
+        parameters={
+            "RESET_CYCLES": 2,
+            "RAM_SIZE_BYTES": 128,
+            "RAM_RESPONSE_LATENCY_CYCLES": 2,
+            "R5900_FETCH_ENABLE": 1,
+        },
         build_args=["-Wall", "--assert", "--timing"],
         build_dir=build_dir,
         always=True,
     )
     result = runner.test(
-        test_module="cocotb_ps2_sim_raw_loader",
+        test_module="cocotb_r5900_fetch_ram",
         hdl_toplevel="ps2_sim_top",
         build_dir=build_dir,
         test_dir=TESTBENCH_DIR,
         seed=seed,
-        extra_env={
-            "SIM_LOAD_ADDRESS": str(LOAD_ADDRESS),
-            "SIM_RAM_IMAGE_HEX": memory_image.hex(),
-            "SIM_RAM_SIZE": str(RAM_SIZE),
-            "SIM_RAW_BINARY_PATH": str(raw_path),
-            "SIM_SENTINEL": str(SENTINEL),
-        },
         results_xml=str(results_path),
     )
 

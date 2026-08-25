@@ -257,6 +257,17 @@ The fixture exists only in ignored `build/inputs/`; no executable or firmware is
 committed. This establishes image placement and start-address publication, not
 instruction execution.
 
+M079 adds the first CPU-side owner of the composed platform memory bus.
+`R5900_FETCH_ENABLE=1` selects the synthesizable R5900 fetch path in place of
+the temporary external request driver; the default remains external so the
+existing raw and ELF loader tests retain their narrow transaction harness.
+The fetch-enabled integration test keeps an external write request asserted to
+prove it is ignored, loads two words through the RAM backdoor, and observes
+ordinary checked read transactions with a configured two-cycle response.
+Reset behavior, little-endian data, one-outstanding accounting, response
+latency, output buffering, downstream backpressure, and a second fetch are all
+verified without adding a hardware-visible loader mechanism.
+
 ## Phase 1 exit
 
 Phase 1 exits with two green integration tests: one places a raw binary into RAM

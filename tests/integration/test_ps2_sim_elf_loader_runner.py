@@ -37,8 +37,12 @@ HEADER_FIELD_LAYOUT = (
     (0, 2),
 )
 SOURCES = [
+    REPO_ROOT / "rtl/ee/r5900/r5900_types_pkg.sv",
     REPO_ROOT / "rtl/memory/memory_bus_if.sv",
     REPO_ROOT / "rtl/memory/memory_bus_protocol_checker.sv",
+    REPO_ROOT / "rtl/ee/r5900/r5900_fetch_request.sv",
+    REPO_ROOT / "rtl/ee/r5900/r5900_fetch_response.sv",
+    REPO_ROOT / "rtl/ee/r5900/r5900_fetch_path.sv",
     REPO_ROOT / "sim/models/behavioral_system_ram.sv",
     REPO_ROOT / "sim/models/sim_clock.sv",
     REPO_ROOT / "sim/models/sim_reset.sv",

@@ -1033,21 +1033,30 @@ milestones:
       - independent Python model validation tests
       - deterministic 524-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M078): implement R5900 SLTIU)"
+    commit: a675dff
     notes: Sign-extend the immediate through 64 bits before unsigned comparison and preserve destination bits 127:64.
   - id: M079
     title: Integrate R5900 fetch with simulation RAM
     subsystem: integration
-    status: active
+    status: complete
     dependencies: [M078]
-    tests: [CPU RAM fetch reset latency and backpressure integration tests]
-    references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]
-    commit: null
-    notes: Replace the temporary external memory master for instruction reads.
+    tests:
+      - reset rejection and idle fetch-readiness integration test
+      - internal fetch ownership with ignored external-master activity test
+      - exact request handoff two-cycle response and one-outstanding test
+      - two-word little-endian RAM fetch and error-status test
+      - buffered-instruction backpressure consumption and repeated-fetch test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - docs/SIMULATION_PLATFORM.md
+      - ARCHITECTURE.md
+      - VERIFICATION.md
+    commit: "self (milestone(M079): integrate R5900 fetch with simulation RAM)"
+    notes: Select the composed fetch path as the simulation RAM initiator without removing the external loader harness.
   - id: M080
     title: Execute a sequential R5900 NOP image
     subsystem: integration
-    status: pending
+    status: active
     dependencies: [M079]
     tests: [loaded NOP stream PC retirement and timeout-bound execution test]
     references: [docs/R5900_FOUNDATION.md, VERIFICATION.md]

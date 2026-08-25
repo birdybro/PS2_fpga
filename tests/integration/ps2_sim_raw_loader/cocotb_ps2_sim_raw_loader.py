@@ -27,6 +27,9 @@ def drive_idle(dut) -> None:
     dut.mem_req_wdata_i.value = 0
     dut.mem_req_wstrb_i.value = 0
     dut.mem_rsp_ready_i.value = 1
+    dut.ee_fetch_start_i.value = 0
+    dut.ee_fetch_pc_i.value = 0
+    dut.ee_instruction_ready_i.value = 0
     dut.ram_backdoor_write_i.value = 0
     dut.ram_backdoor_addr_i.value = 0
     dut.ram_backdoor_wdata_i.value = 0

@@ -122,6 +122,17 @@ complete response payload must be known. Unsolicited responses and a new request
 while either a response or unconsumed instruction occupies the receiver are
 fatal. Request, response, and control composition remains deferred to M079.
 
+M079 composes those request and response halves as one synthesizable fetch
+path and selects it as the simulation platform's memory initiator. Request
+acceptance crosses a register before arming response state, removing a
+combinational readiness path through a zero-latency target while retaining the
+receiver's standalone same-cycle capability. Start readiness stays low for a
+pending request, the registered acceptance handoff, an expected response, or
+an unconsumed instruction. Integration verification fetches two distinct
+little-endian words from behavioral RAM with configured two-cycle latency,
+holds each buffered word under backpressure, and proves that the disabled
+external memory-master inputs cannot alter the transaction stream.
+
 The next combinational boundary exposes instruction bits 31 through 26 as the
 primary opcode; the three five-bit register indices; the five-bit shift amount;
 the six-bit function; and the overlapping 16-bit immediate and 26-bit target.
@@ -364,10 +375,9 @@ directed, randomized-differential, and exception coverage separately. All 22
 foundation entries are complete; they began pending because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and
-summary-state consistency. The
-first integration gates fetch from the behavioral RAM, execute a sequential NOP
-image, and then execute a generated EE ELF arithmetic stream from its published
-entry point.
+summary-state consistency. The first integration now gates fetch from the
+behavioral RAM. The next two milestones execute a sequential NOP image and then
+a generated EE ELF arithmetic stream from its published entry point.
 
 ## Deferred behavior
 

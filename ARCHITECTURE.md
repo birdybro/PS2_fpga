@@ -30,6 +30,11 @@ modports so those paths can be verified independently before composition.
 buffers the low 32 response bits plus error status, and retains them through
 downstream backpressure. The one-entry receiver permits a same-cycle response
 but rejects unsolicited responses and overlapping fetches.
+`rtl/ee/r5900/r5900_fetch_path.sv` composes the request and response halves
+into one synthesizable, single-fetch path. A registered request-acceptance
+handoff prevents target readiness from feeding combinationally back through
+response readiness, while start readiness excludes every pending request,
+accepted request, expected response, or unconsumed instruction.
 `rtl/ee/r5900/r5900_instruction_fields.sv` is a timing-free combinational view
 of the 32-bit instruction word. It exposes the overlapping MIPS opcode,
 register, shift, function, immediate, and target fields plus explicit 32-bit
@@ -95,9 +100,13 @@ simulation clock and reset, behavioral RAM, the single-outstanding memory
 protocol checker, timeout and PASS/FAIL controls, memory and architectural trace
 sinks, and waveform control. Its temporary external memory-master and
 architectural-event ports let loaders and verification drive the platform
-before an EE core exists. Those ports are simulation harness boundaries, not
-PS2 architectural pins; later CPU integration will connect the same internal
-memory transaction interface without changing the RAM contract.
+before an EE core exists. With `R5900_FETCH_ENABLE`, the internal fetch path
+owns that same memory interface instead, and the external memory-master inputs
+are ignored. This parameterized selection preserves CPU-independent loader
+tests while proving real instruction reads against the existing RAM and
+protocol checker. Those ports are simulation harness boundaries, not PS2
+architectural pins; later CPU integration will connect control and execution
+without changing the RAM contract.
 
 The RAM byte backdoor is likewise exposed only for loaders and verification.
 It cannot appear on the eventual synthesizable `rtl/ps2_top.sv` boundary.

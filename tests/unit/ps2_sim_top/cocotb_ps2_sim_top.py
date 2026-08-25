@@ -15,6 +15,9 @@ def drive_reset_epoch_activity(dut) -> None:
     dut.mem_req_wdata_i.value = 0
     dut.mem_req_wstrb_i.value = 0
     dut.mem_rsp_ready_i.value = 1
+    dut.ee_fetch_start_i.value = 1
+    dut.ee_fetch_pc_i.value = 0
+    dut.ee_instruction_ready_i.value = 1
     dut.ram_backdoor_write_i.value = 0
     dut.ram_backdoor_addr_i.value = 0
     dut.ram_backdoor_wdata_i.value = 0
@@ -36,6 +39,7 @@ def drive_inactive_controls(dut) -> None:
     dut.pass_i.value = 0
     dut.fail_i.value = 0
     dut.arch_event_valid_i.value = 0
+    dut.ee_fetch_start_i.value = 0
 
 
 def assert_reset_state(dut) -> None:
@@ -46,6 +50,13 @@ def assert_reset_state(dut) -> None:
     assert int(dut.mem_rsp_rdata_o.value) == 0
     assert int(dut.mem_rsp_error_o.value) == 0
     assert int(dut.mem_outstanding_o.value) == 0
+    assert int(dut.ee_fetch_start_ready_o.value) == 0
+    assert int(dut.ee_fetch_request_accepted_o.value) == 0
+    assert int(dut.ee_fetch_response_accepted_o.value) == 0
+    assert int(dut.ee_fetch_response_expected_o.value) == 0
+    assert int(dut.ee_instruction_valid_o.value) == 0
+    assert int(dut.ee_instruction_o.value) == 0
+    assert int(dut.ee_fetch_error_o.value) == 0
     assert int(dut.timeout_o.value) == 0
     assert int(dut.cycle_count_o.value) == 0
     assert int(dut.pass_event_o.value) == 0
@@ -60,6 +71,13 @@ def assert_idle_active_state(dut) -> None:
     assert int(dut.rst_no.value) == 1
     assert int(dut.mem_rsp_valid_o.value) == 0
     assert int(dut.mem_outstanding_o.value) == 0
+    assert int(dut.ee_fetch_start_ready_o.value) == 0
+    assert int(dut.ee_fetch_request_accepted_o.value) == 0
+    assert int(dut.ee_fetch_response_accepted_o.value) == 0
+    assert int(dut.ee_fetch_response_expected_o.value) == 0
+    assert int(dut.ee_instruction_valid_o.value) == 0
+    assert int(dut.ee_instruction_o.value) == 0
+    assert int(dut.ee_fetch_error_o.value) == 0
     assert int(dut.timeout_o.value) == 0
     assert int(dut.cycle_count_o.value) == 0
     assert int(dut.pass_event_o.value) == 0

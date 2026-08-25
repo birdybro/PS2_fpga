@@ -13,10 +13,12 @@ module ps2_sim_top #(
     parameter bit FATAL_ON_FAIL = 1'b1,
     parameter bit MEMORY_TRACE_ENABLE = 1'b0,
     parameter bit ARCH_TRACE_ENABLE = 1'b0,
-    parameter bit WAVE_ENABLE = 1'b0
+    parameter bit WAVE_ENABLE = 1'b0,
+    parameter bit R5900_FETCH_ENABLE = 1'b0
 ) (
     output logic         clk_o,
     output logic         rst_no,
+    /* verilator lint_off UNUSEDSIGNAL */
     input  logic         mem_req_valid_i,
     output logic         mem_req_ready_o,
     input  logic         mem_req_write_i,
@@ -44,6 +46,17 @@ module ps2_sim_top #(
     output logic         timeout_o,
     output logic [31:0]  cycle_count_o,
     output logic         mem_outstanding_o,
+    input  logic         ee_fetch_start_i,
+    input  logic [31:0]  ee_fetch_pc_i,
+    input  logic         ee_instruction_ready_i,
+    /* verilator lint_on UNUSEDSIGNAL */
+    output logic         ee_fetch_start_ready_o,
+    output logic         ee_fetch_request_accepted_o,
+    output logic         ee_fetch_response_accepted_o,
+    output logic         ee_fetch_response_expected_o,
+    output logic         ee_instruction_valid_o,
+    output logic [31:0]  ee_instruction_o,
+    output logic         ee_fetch_error_o,
     input  logic         arch_event_valid_i,
     input  logic [7:0]   arch_event_source_i,
     input  logic [7:0]   arch_event_kind_i,
@@ -61,17 +74,45 @@ module ps2_sim_top #(
         .DATA_WIDTH(128)
     ) memory_bus ();
 
-    assign memory_bus.req_valid = mem_req_valid_i;
     assign mem_req_ready_o = memory_bus.req_ready;
-    assign memory_bus.req_write = mem_req_write_i;
-    assign memory_bus.req_addr = mem_req_addr_i;
-    assign memory_bus.req_size = mem_req_size_i;
-    assign memory_bus.req_wdata = mem_req_wdata_i;
-    assign memory_bus.req_wstrb = mem_req_wstrb_i;
     assign mem_rsp_valid_o = memory_bus.rsp_valid;
-    assign memory_bus.rsp_ready = mem_rsp_ready_i;
     assign mem_rsp_rdata_o = memory_bus.rsp_rdata;
     assign mem_rsp_error_o = memory_bus.rsp_error;
+
+    generate
+        if (R5900_FETCH_ENABLE) begin : g_r5900_fetch
+            r5900_fetch_path u_fetch_path (
+                .clk_i(clk_o),
+                .rst_ni(rst_no),
+                .start_i(ee_fetch_start_i),
+                .pc_i(ee_fetch_pc_i),
+                .instruction_ready_i(ee_instruction_ready_i),
+                .bus(memory_bus),
+                .start_ready_o(ee_fetch_start_ready_o),
+                .request_accepted_o(ee_fetch_request_accepted_o),
+                .response_accepted_o(ee_fetch_response_accepted_o),
+                .response_expected_o(ee_fetch_response_expected_o),
+                .instruction_valid_o(ee_instruction_valid_o),
+                .instruction_o(ee_instruction_o),
+                .fetch_error_o(ee_fetch_error_o)
+            );
+        end else begin : g_external_memory_master
+            assign memory_bus.req_valid = mem_req_valid_i;
+            assign memory_bus.req_write = mem_req_write_i;
+            assign memory_bus.req_addr = mem_req_addr_i;
+            assign memory_bus.req_size = mem_req_size_i;
+            assign memory_bus.req_wdata = mem_req_wdata_i;
+            assign memory_bus.req_wstrb = mem_req_wstrb_i;
+            assign memory_bus.rsp_ready = mem_rsp_ready_i;
+            assign ee_fetch_start_ready_o = 1'b0;
+            assign ee_fetch_request_accepted_o = 1'b0;
+            assign ee_fetch_response_accepted_o = 1'b0;
+            assign ee_fetch_response_expected_o = 1'b0;
+            assign ee_instruction_valid_o = 1'b0;
+            assign ee_instruction_o = 32'd0;
+            assign ee_fetch_error_o = 1'b0;
+        end
+    endgenerate
 
     sim_clock #(
         .PERIOD(CLOCK_PERIOD)
