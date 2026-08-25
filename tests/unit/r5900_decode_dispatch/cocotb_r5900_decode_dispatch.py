@@ -5,6 +5,7 @@ from cocotb.triggers import Timer
 
 OPERATION_NONE = 0
 OPERATION_NOP = 1
+OPERATION_SLL = 2
 
 
 async def check_dispatch(
@@ -48,11 +49,22 @@ async def test_r5900_decode_dispatch_sends_exact_nop_to_execute(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_sll_to_execute(dut) -> None:
+    """Dispatch nonzero SLL variable fields without a reserved diagnostic."""
+    for pc, instruction in (
+        (0, 0x0000_0040),
+        (4, 0x0001_0000),
+        (0x0010_0000, 0x001F_FFC0),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SLL, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -> None:
     """Preserve fault PC/opcode/word while preventing execute and later writeback."""
     cases = (
         (0, 0x0000_0001),
-        (4, 0x0000_0040),
+        (4, 0x0020_0000),
         (0x0010_0000, 0x3405_1234),
         (0x8000_0180, 0x0400_0000),
         (0xFFFF_FFFC, 0xFFFF_FFFF),

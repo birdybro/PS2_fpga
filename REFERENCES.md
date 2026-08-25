@@ -23,7 +23,9 @@ Documents without clear redistribution permission remain link-only. Any useful
 local download must live in an ignored cache and be reproducibly fetched; it
 must never be committed merely because it is publicly reachable. Emulator
 implementation source requires an explicit license and provenance review before
-consultation. No emulator source has guided this implementation so far.
+consultation. M058 consulted one GPL-3.0 emulator's constant-shift behavior only
+after that review; no implementation text or structure was copied into this MIT
+codebase.
 
 ## Architecture and hardware
 
@@ -59,7 +61,8 @@ Independently authored PS2 hardware documentation with broad EE, DMAC, GIF,
 VIF, VU, GS, IOP, and SIF coverage. The upstream repository does not state a
 license, so it is link-only and architectural details require corroboration.
 Its EE register section identifies 32 128-bit GPRs and the hardwired-zero
-register; it does not document post-reset contents for the other GPRs.
+register, and its instruction table identifies the canonical SLL encoding; it
+does not document post-reset contents for the other GPRs.
 
 <!-- ref:mips-iv-instruction-set -->
 ### MIPS IV Instruction Set, Revision 3.2
@@ -102,6 +105,24 @@ the ISA subset, known missing base instructions, FPU limitations, MMI support,
 opcode divergences, and ELF targets. It is used as a roadmap guardrail, not as
 hardware-semantics authority. Linked patch source has not been copied or used
 as RTL implementation source.
+
+<!-- ref:qemu-r5900-overview -->
+### QEMU R5900 multimedia instruction overview patch review
+
+Public QEMU patch review whose R5900 overview states that GPR bits 127:64 are
+used only by quadword loads/stores and selected multimedia instructions. The
+GPL-2.0-or-later contribution is consulted as corroborating architecture
+evidence only; no source structure or text is copied.
+
+<!-- ref:pcsx2-r5900-interpreter -->
+### PCSX2 R5900 interpreter implementation
+
+The GPL-3.0 license was reviewed before consulting the constant-shift portion
+of this public emulator. It independently corroborates that SLL shifts a
+32-bit word, sign-extends the result through the low 64-bit scalar lane, and
+does not write the upper 64-bit lane. The project implements that documented
+behavior independently in SystemVerilog and Python without copying source text
+or implementation structure.
 
 <!-- ref:system-v-gabi-elf -->
 ### System V generic ABI ELF object file format

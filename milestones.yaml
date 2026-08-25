@@ -686,21 +686,31 @@ milestones:
       - independent Python NOP transition validation tests
       - deterministic 260-state randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M057): implement R5900 NOP)"
+    commit: c3bd3a4
     notes: Treat NOP as the exact SLL zero zero zero encoding without a writeback.
   - id: M058
     title: Implement R5900 SLL
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M057]
-    tests: [directed SLL boundaries, randomized SLL differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Research and test the complete R5900 destination-width extension rule.
+    tests:
+      - canonical encoding and reserved rs rejection tests
+      - zero one thirty and thirty-one shift boundary tests
+      - source high-bit independence and destination upper-lane preservation tests
+      - signed scalar extension and rd equals rt alias tests
+      - GPR-zero suppression and exact retirement event tests
+      - independent Python model validation tests
+      - deterministic 519-case sequential randomized differential test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - coverage/r5900_isa.yaml
+      - REFERENCES.md
+    commit: "self (milestone(M058): implement R5900 SLL)"
+    notes: Preserve rd bits 127:64 while sign-extending the shifted word through bits 63:32.
   - id: M059
     title: Implement R5900 SRL
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M058]
     tests: [directed SRL boundaries, randomized SRL differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

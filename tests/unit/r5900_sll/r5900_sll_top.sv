@@ -2,7 +2,7 @@
 
 `default_nettype none
 
-module r5900_nop_top (
+module r5900_sll_top (
     input  logic          clk_i,
     input  logic          rst_ni,
     input  logic [31:0]   start_pc_i,
@@ -11,14 +11,14 @@ module r5900_nop_top (
     input  logic          seed_commit_i,
     input  logic [4:0]    seed_destination_i,
     input  logic [127:0]  seed_value_i,
-    input  logic [4:0]    read_index_a_i,
-    input  logic [4:0]    read_index_b_i,
     output logic [31:0]   pc_o,
     output logic          execute_valid_o,
     output logic [4:0]    operation_o,
     output logic          execute_complete_o,
     output logic          pc_advance_o,
     output logic          execute_writeback_commit_o,
+    output logic [4:0]    execute_writeback_destination_o,
+    output logic [127:0]  execute_writeback_value_o,
     output logic          commit_accepted_o,
     output logic          writeback_valid_o,
     output logic [4:0]    writeback_destination_o,
@@ -29,8 +29,8 @@ module r5900_nop_top (
     output logic          reserved_valid_o,
     output logic [31:0]   reserved_pc_o,
     output logic [31:0]   reserved_instruction_o,
-    output logic [127:0]  read_value_a_o,
-    output logic [127:0]  read_value_b_o,
+    output logic [127:0]  source_rt_value_o,
+    output logic [127:0]  destination_value_o,
     output logic [4095:0] gprs_o
 );
 
@@ -59,6 +59,8 @@ module r5900_nop_top (
     assign central_value = seed_commit_i ? seed_value_i : execute_writeback_value;
 
     assign execute_writeback_commit_o = execute_writeback_commit;
+    assign execute_writeback_destination_o = execute_writeback_destination;
+    assign execute_writeback_value_o = execute_writeback_value;
     assign writeback_valid_o = writeback.valid;
     assign writeback_destination_o = writeback.destination;
     assign writeback_value_o = writeback.value;
@@ -83,8 +85,8 @@ module r5900_nop_top (
         .operation_i(operation_o),
         .pc_i(pc_o),
         .instruction_i,
-        .source_rt_word_i(read_value_a_o[31:0]),
-        .destination_upper_i(read_value_b_o[127:64]),
+        .source_rt_word_i(source_rt_value_o[31:0]),
+        .destination_upper_i(destination_value_o[127:64]),
         .complete_o(execute_complete_o),
         .pc_advance_o,
         .writeback_commit_o(execute_writeback_commit),
@@ -118,10 +120,10 @@ module r5900_nop_top (
 
     r5900_gpr_file u_gpr_file (
         .clk_i,
-        .read_index_a_i,
-        .read_value_a_o,
-        .read_index_b_i,
-        .read_value_b_o,
+        .read_index_a_i(instruction_i[20:16]),
+        .read_value_a_o(source_rt_value_o),
+        .read_index_b_i(instruction_i[15:11]),
+        .read_value_b_o(destination_value_o),
         .write_valid_i(gpr_write_enable),
         .write_index_i(gpr_write_index),
         .write_value_i(gpr_write_data),

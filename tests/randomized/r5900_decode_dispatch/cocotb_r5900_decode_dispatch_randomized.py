@@ -9,6 +9,16 @@ from cocotb.triggers import Timer
 RANDOM_CASES = 1024
 
 
+def decoded_operation(word: int) -> int:
+    """Model the admitted NOP/SLL operation without using RTL decoder outputs."""
+    if word == 0:
+        return 1
+    opcode = word >> 26
+    reserved_rs = (word >> 21) & 0x1F
+    function = word & 0x3F
+    return 2 if opcode == 0 and reserved_rs == 0 and function == 0 else 0
+
+
 @cocotb.test()
 async def test_r5900_decode_dispatch_randomized(dut) -> None:
     """Compare dispatch and diagnostic mapping across seeded PC/word pairs."""
@@ -17,6 +27,8 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
     boundary_cases = (
         (False, 0, 0),
         (True, 0, 0),
+        (True, 4, 0x0000_0040),
+        (True, 8, 0x001F_FFC0),
         (True, 4, 1),
         (True, 0x0010_0000, 0x3405_1234),
         (True, 0xFFFF_FFFC, 0xFFFF_FFFF),
@@ -36,9 +48,10 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         dut.instruction_i.value = instruction
         await Timer(1, unit="ns")
 
-        expected_execute = decode_valid and instruction == 0
-        expected_reserved = decode_valid and instruction != 0
-        expected_operation = 1 if expected_execute else 0
+        operation = decoded_operation(instruction)
+        expected_execute = decode_valid and operation != 0
+        expected_reserved = decode_valid and operation == 0
+        expected_operation = operation if expected_execute else 0
         expected_pc = pc if expected_reserved else 0
         expected_instruction = instruction if expected_reserved else 0
         actual = (

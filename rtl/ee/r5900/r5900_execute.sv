@@ -7,6 +7,8 @@ module r5900_execute (
     input r5900_types_pkg::r5900_operation_t        operation_i,
     input r5900_types_pkg::r5900_pc_t               pc_i,
     input r5900_types_pkg::r5900_instruction_t      instruction_i,
+    input logic [31:0]                               source_rt_word_i,
+    input logic [63:0]                               destination_upper_i,
     output logic                                     complete_o,
     output logic                                     pc_advance_o,
     output logic                                     writeback_commit_o,
@@ -20,6 +22,10 @@ module r5900_execute (
 
     import r5900_types_pkg::*;
 
+    logic [31:0] sll_word;
+
+    assign sll_word = source_rt_word_i << instruction_i[10:6];
+
     always_comb begin
         complete_o = 1'b0;
         pc_advance_o = 1'b0;
@@ -28,16 +34,41 @@ module r5900_execute (
         writeback_value_o = '0;
         retirement_o = '0;
 
-        if (
-            execute_valid_i
-            && (operation_i == R5900_OPERATION_NOP)
-            && (instruction_i == 32'd0)
-        ) begin
-            complete_o = 1'b1;
-            pc_advance_o = 1'b1;
-            retirement_o.valid = 1'b1;
-            retirement_o.pc = pc_i;
-            retirement_o.instruction = instruction_i;
+        if (execute_valid_i) begin
+            unique case (operation_i)
+                R5900_OPERATION_NOP: begin
+                    if (instruction_i == 32'd0) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_SLL: begin
+                    if (
+                        (instruction_i != 32'd0)
+                        && (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[25:21] == 5'h00)
+                        && (instruction_i[5:0] == 6'h00)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            {32{sll_word[31]}},
+                            sll_word
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                default: begin
+                end
+            endcase
         end
     end
 

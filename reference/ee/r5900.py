@@ -10,6 +10,12 @@ GPR_MASK = (1 << GPR_WIDTH) - 1
 PC_MASK = (1 << PC_WIDTH) - 1
 INSTRUCTION_MASK = (1 << INSTRUCTION_WIDTH) - 1
 NOP_INSTRUCTION = 0
+SPECIAL_OPCODE = 0
+SLL_FUNCTION = 0
+SCALAR_WIDTH = 64
+WORD_WIDTH = 32
+SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
+WORD_MASK = (1 << WORD_WIDTH) - 1
 
 
 class UnsupportedInstructionError(ValueError):
@@ -45,6 +51,23 @@ def _require_gpr_index(index: object) -> int:
         msg = f"GPR index out of range: {integer}"
         raise IndexError(msg)
     return integer
+
+
+def _require_shift_amount(shift_amount: object) -> int:
+    """Validate the five-bit immediate shift field without masking mistakes."""
+    integer = _require_integer("shift amount", shift_amount)
+    if not 0 <= integer < WORD_WIDTH:
+        msg = f"shift amount out of range: {integer}"
+        raise ValueError(msg)
+    return integer
+
+
+def encode_sll(destination: int, source: int, shift_amount: int) -> int:
+    """Encode one canonical SPECIAL SLL word with its reserved field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    sa = _require_shift_amount(shift_amount)
+    return (rt << 16) | (rd << 11) | (sa << 6)
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,7 +121,24 @@ class R5900State:
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
-        if word != NOP_INSTRUCTION:
-            msg = f"unsupported R5900 instruction: 0x{word:08x}"
-            raise UnsupportedInstructionError(msg)
-        return self.write_pc(self.pc + 4)
+        if word == NOP_INSTRUCTION:
+            return self.write_pc(self.pc + 4)
+
+        opcode = word >> 26
+        reserved_rs = (word >> 21) & 0x1F
+        function = word & 0x3F
+        if opcode == SPECIAL_OPCODE and reserved_rs == 0 and function == SLL_FUNCTION:
+            rt = (word >> 16) & 0x1F
+            rd = (word >> 11) & 0x1F
+            shift_amount = (word >> 6) & 0x1F
+            shifted_word = (self.read_gpr(rt) & WORD_MASK) << shift_amount
+            shifted_word &= WORD_MASK
+            scalar_result = shifted_word
+            if shifted_word & (1 << (WORD_WIDTH - 1)):
+                scalar_result |= SCALAR_MASK ^ WORD_MASK
+            old_destination = self.read_gpr(rd)
+            result = (old_destination & (GPR_MASK ^ SCALAR_MASK)) | scalar_result
+            return self.write_gpr(rd, result).write_pc(self.pc + 4)
+
+        msg = f"unsupported R5900 instruction: 0x{word:08x}"
+        raise UnsupportedInstructionError(msg)

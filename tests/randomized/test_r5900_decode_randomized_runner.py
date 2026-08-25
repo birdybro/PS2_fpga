@@ -13,7 +13,7 @@ TESTBENCH_DIR = Path(__file__).resolve().parent / "r5900_decode"
 
 @pytest.mark.randomized
 def test_r5900_decode_admission_randomized() -> None:
-    """Compare seeded arbitrary encodings against the exact-zero admission rule."""
+    """Compare seeded arbitrary encodings against the NOP/SLL admission rule."""
     seed = int(os.environ.get("RANDOM_SEED", "1"))
     build_root = Path(os.environ.get("PS2_BUILD_ROOT", REPO_ROOT / "build"))
     build_dir = build_root / "pytest" / "r5900_decode_randomized"

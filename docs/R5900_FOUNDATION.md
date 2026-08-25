@@ -15,6 +15,14 @@ documented exceptions. GNU Binutils R5900 target review records that the R5900
 is not a drop-in complete MIPS III or MIPS IV processor and calls out subset and
 FPU differences.
 
+PS2Tek independently identifies SLL in the EE SPECIAL function table. A public
+QEMU R5900 architecture overview states that GPR bits 127:64 are used only by
+quadword transfers and selected multimedia operations. After explicit GPL-3.0
+license review, the PCSX2 interpreter was consulted only to corroborate the
+remaining SLL-specific width rule: the shifted word is sign-extended through
+the 64-bit scalar lane while the upper GPR lane is not written. No emulator
+source text or implementation structure is copied.
+
 These sources have different authority. The MIPS manual may establish the base
 semantics of a corroborated scalar instruction, but it cannot establish an
 R5900-specific opcode, 128-bit destination extension, unsupported instruction,
@@ -122,13 +130,12 @@ is format extraction only: no output identifies a legal R5900 instruction, and
 the machine-readable ISA coverage therefore remains pending until instruction
 admission and semantics pass their own milestones.
 
-Decode admission is now explicit and closed by default. The initial five-bit
-operation enum contains only no-operation and NOP, and the decoder selects NOP
-only for exact word zero. Every other primary and SPECIAL encoding remains
-illegal even if a later milestone plans it. This makes instruction support grow
-only through independently verified admissions. NOP is therefore `decoded` and
-`partial` in the coverage matrix, but remains unimplemented until M057 proves
-its architectural state transition.
+Decode admission is explicit and closed by default. The five-bit operation enum
+contains no-operation, NOP, and SLL. Exact word zero selects the canonical NOP
+alias; other SPECIAL function-zero words select SLL only while reserved `rs` is
+zero. Every other primary and SPECIAL encoding remains illegal even if a later
+milestone plans it. This makes instruction support grow only through
+independently verified admissions.
 
 A decode-dispatch boundary now consumes that closed decoder. A valid admitted
 word produces an execute-valid operation, while a valid unsupported word cannot
@@ -153,6 +160,15 @@ commit or writeback event occurs. A separate typed retirement record captures
 the pre-advance PC and exact instruction for trace consumers. The Python model's
 `step` method independently implements only this word and rejects all other
 encodings, making NOP the first `complete` ISA coverage entry.
+
+Canonical nonzero SLL now reads `rt[31:0]`, applies the immediate five-bit
+shift, and truncates to a 32-bit word. Bit 31 is sign-extended through GPR bits
+63:32, while the old destination's bits 127:64 are preserved. The central
+writeback boundary suppresses a legal SLL targeting GPR zero; the exact
+all-zero encoding remains NOP and issues no commit at all. Both aliasing
+`rd == rt` and distinct source/destination forms read the original state before
+the complete 128-bit destination is formed. The independent Python transition
+and RTL executor now make SLL the second complete ISA coverage entry.
 
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing

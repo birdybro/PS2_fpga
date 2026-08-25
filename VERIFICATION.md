@@ -286,6 +286,21 @@ and retirement over four boundary plus 256 seeded aligned-PC states. NOP is now
 complete in the machine-readable ISA coverage matrix; exception coverage is
 not applicable to this inert exact encoding.
 
+## R5900 SLL
+
+Canonical nonzero SPECIAL function-zero words with reserved `rs` equal to zero
+now execute as 32-bit SLL. Five directed cocotb cases cover shift counts 0, 1,
+30, and 31; positive and negative word results; ignored source high bits;
+preserved destination bits 127:64; `rd == rt` read-before-write behavior;
+destination-zero suppression; the exact NOP alias; reserved-field rejection;
+PC wrap; and exact writeback and retirement events. The Python model expresses
+the operation with integer masks and immutable snapshots rather than the RTL's
+packed concatenation. Its own directed cases validate encoding boundaries and
+width rules. A deterministic test marked in both differential and randomized
+layers executes seven boundary plus 512 seeded instructions sequentially and
+compares the PC, complete 4,096-bit GPR state, writeback, and retirement after
+every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

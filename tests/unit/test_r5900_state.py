@@ -10,11 +10,14 @@ from reference.ee.r5900 import (
     PC_MASK,
     R5900State,
     UnsupportedInstructionError,
+    encode_sll,
 )
 
 EE_PROGRAM_START = 0x0010_0000
 PRESERVED_GPR_VALUE = 0x55
 PC_COPY_START = 0x1000
+ALIASED_SLL_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0010
+TWO_INSTRUCTION_PC = 8
 
 
 @pytest.mark.unit
@@ -158,10 +161,78 @@ def test_r5900_reference_nop_preserves_gprs_and_advances_pc() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    ("shift_amount", "low_word", "expected_scalar"),
+    [
+        (0, 0x7FFF_FFFF, 0x0000_0000_7FFF_FFFF),
+        (0, 0x8000_0000, 0xFFFF_FFFF_8000_0000),
+        (1, 0x4000_0000, 0xFFFF_FFFF_8000_0000),
+        (30, 0x0000_0003, 0xFFFF_FFFF_C000_0000),
+        (31, 0x0000_0001, 0xFFFF_FFFF_8000_0000),
+    ],
+)
+def test_r5900_reference_sll_word_and_destination_width_rules(
+    shift_amount: int,
+    low_word: int,
+    expected_scalar: int,
+) -> None:
+    """Shift only rt low word, sign-extend to 64 bits, and preserve rd upper 64."""
+    source = 0xDEAD_BEEF_CAFE_F00D_1234_5678_0000_0000 | low_word
+    old_destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source).write_gpr(5, old_destination)
+
+    updated = state.step(encode_sll(5, 3, shift_amount))
+
+    assert updated.read_gpr(5) == (old_destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_sll_reads_before_aliased_write_and_protects_zero() -> None:
+    """Handle rd equal to rt and legal non-NOP writes targeting GPR zero."""
+    original = 0xCAFE_BABE_1234_5678_8765_4321_0800_0001
+    state = R5900State.initial().write_gpr(7, original)
+    aliased = state.step(encode_sll(7, 7, 4))
+    assert aliased.read_gpr(7) == ALIASED_SLL_RESULT
+
+    discarded = aliased.step(encode_sll(0, 7, 31))
+    assert discarded.read_gpr(0) == 0
+    assert discarded.read_gpr(7) == aliased.read_gpr(7)
+    assert discarded.pc == TWO_INSTRUCTION_PC
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("destination", "source", "shift_amount", "error"),
+    [
+        (-1, 0, 0, IndexError),
+        (GPR_COUNT, 0, 0, IndexError),
+        (0, -1, 0, IndexError),
+        (0, GPR_COUNT, 0, IndexError),
+        (0, 0, -1, ValueError),
+        (0, 0, 32, ValueError),
+        (True, 0, 0, TypeError),
+        (0, 0, True, TypeError),
+    ],
+)
+def test_r5900_sll_encoder_rejects_non_fields(
+    destination: object,
+    source: object,
+    shift_amount: object,
+    error: type[Exception],
+) -> None:
+    """Reject values that cannot occupy canonical SLL register and shift fields."""
+    with pytest.raises(error):
+        encode_sll(destination, source, shift_amount)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
 def test_r5900_reference_step_rejects_unsupported_and_invalid_words() -> None:
     """Keep unimplemented encodings and malformed instruction inputs outside the model."""
     state = R5900State.initial()
-    for instruction in (1, 0x0000_0040, 0x3405_1234, PC_MASK):
+    for instruction in (1, 0x0020_0000, 0x3405_1234, PC_MASK):
         with pytest.raises(UnsupportedInstructionError):
             state.step(instruction)
     for instruction, error in ((-1, ValueError), (PC_MASK + 1, ValueError), (True, TypeError)):
