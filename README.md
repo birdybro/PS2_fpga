@@ -7,13 +7,15 @@ verification come before timing accuracy or FPGA-specific optimization.
 
 The project has completed Level 0 infrastructure and the Phase 1 simulation
 platform: behavioral RAM, raw and EE ELF loading, deterministic termination,
-tracing, waveforms, and platform integration are verified. The first 22 R5900
-scalar encodings have machine-readable coverage owners, and an immutable Python
-architectural state model plus matching RTL type contracts are verified, but
-R5900 execution (Level 1) is not implemented yet. Reset-free physical GPR
-storage and its hardwired-zero architectural wrapper are the first sequential
-CPU blocks, followed by a functional harness-started PC and five-state control
-skeleton. See [PROGRESS.md](PROGRESS.md) for the exact resume point and
+tracing, waveforms, and platform integration are verified. All 22 instructions
+in the initial R5900 scalar foundation have directed and random differential
+verification. A composed multi-cycle core now loads a generated native EE ELF
+into behavioral RAM, begins at its published entry point, executes a
+straight-line arithmetic stream, produces exact retirement traces and GPR
+results, and reaches the simulator PASS latch. This establishes the first
+bounded Level 1 execution path; branches, memory instructions, exceptions,
+compiled C, and timing accuracy remain later milestones. See
+[PROGRESS.md](PROGRESS.md) for the exact resume point and
 [MILESTONES.md](MILESTONES.md) for completion rules.
 
 No PlayStation 2 BIOS, game image, proprietary SDK material, or other

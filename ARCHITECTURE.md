@@ -121,12 +121,20 @@ state/event outputs support deterministic program loading and observation; they
 are not console pins. The first core image test executes four sequential NOPs
 and then removes run permission before the next fetch.
 
+In core mode, retirement automatically owns the architectural trace input with
+source `0x01` (EE) and kind `0x01` (retirement); testbench-supplied trace events
+are ignored. PC and instruction carry the exact retirement record, while the
+identifier and value fields remain zero until a later milestone defines a
+richer event adapter. This keeps trace capture passive and deterministic.
+
 The RAM byte backdoor is likewise exposed only for loaders and verification.
 It cannot appear on the eventual synthesizable `rtl/ps2_top.sv` boundary.
 
 ## Accuracy status
 
-- Functional accuracy: not yet implemented.
-- Architectural accuracy: not yet implemented.
+- Functional accuracy: the 22-instruction straight-line scalar foundation runs
+  from loaded RAM through the composed multi-cycle core.
+- Architectural accuracy: verified for the implemented scalar results, PC,
+  GPR zero, entry point, retirement, and writeback behavior only.
 - Timing accuracy: not yet implemented.
 - FPGA readiness: not yet assessed.

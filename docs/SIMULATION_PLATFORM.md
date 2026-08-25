@@ -278,6 +278,16 @@ enables the core, validates every multi-cycle state and bus handshake, disables
 new fetches after the fourth retirement, and remains below the configured
 timeout. These harness controls and packed observations are not PS2 pins.
 
+M081 connects core retirement to the existing architectural trace sink whenever
+core mode is selected. The adapter emits EE source `0x01`, retirement kind
+`0x01`, exact PC and instruction, and zero for fields whose future semantics
+are not yet established; external trace stimulus remains available in the two
+non-core modes. A generated EE ELF is loaded through the normal parser and RAM
+backdoor, executes from its published entry, and pulses the existing PASS
+control after exact GPR and retirement checks. This is the first complete
+ELF-to-PASS simulation path, but the program words are generated directly and
+do not yet establish compiler or ordinary C support.
+
 ## Phase 1 exit
 
 Phase 1 exits with two green integration tests: one places a raw binary into RAM

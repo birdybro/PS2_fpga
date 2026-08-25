@@ -1069,21 +1069,31 @@ milestones:
       - docs/SIMULATION_PLATFORM.md
       - ARCHITECTURE.md
       - VERIFICATION.md
-    commit: "self (milestone(M080): execute sequential R5900 NOP image)"
+    commit: 5f8ad2c
     notes: Compose the functional core and retire four loaded NOPs in exact PC order.
   - id: M081
     title: Execute an R5900 arithmetic EE ELF
     subsystem: integration
-    status: active
+    status: complete
     dependencies: [M080]
-    tests: [EE ELF entry arithmetic GPR and architectural trace integration test]
-    references: [docs/R5900_FOUNDATION.md, VERIFICATION.md]
-    commit: null
-    notes: Run a generated instruction image and inspect deterministic architectural state.
+    tests:
+      - independent instruction-field encoding and EE ELF loader test
+      - published entry-point and skipped-prefix instruction test
+      - exact 13-retirement and 12-writeback stream test
+      - final scalar GPR upper-lane preservation and zero-register test
+      - automatic EE architectural trace ownership payload and cycle test
+      - post-program hold and deterministic PASS event and latch test
+    references:
+      - docs/R5900_FOUNDATION.md
+      - docs/SIMULATION_PLATFORM.md
+      - ARCHITECTURE.md
+      - VERIFICATION.md
+    commit: "self (milestone(M081): execute R5900 arithmetic EE ELF)"
+    notes: Load a generated native EE executable, run from its entry, compare state and trace, and reach PASS.
   - id: M082
     title: Expand R5900 64-bit integer roadmap
     subsystem: planning
-    status: pending
+    status: active
     dependencies: [M081]
     tests: [64-bit instruction inventory and roadmap validation]
     references: [REFERENCES.md, docs/R5900_FOUNDATION.md]

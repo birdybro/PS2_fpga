@@ -52,7 +52,6 @@ module ps2_sim_top #(
     input  logic         ee_fetch_start_i,
     input  logic [31:0]  ee_fetch_pc_i,
     input  logic         ee_instruction_ready_i,
-    /* verilator lint_on UNUSEDSIGNAL */
     output logic         ee_fetch_start_ready_o,
     output logic         ee_fetch_request_accepted_o,
     output logic         ee_fetch_response_accepted_o,
@@ -79,10 +78,19 @@ module ps2_sim_top #(
     input  logic [31:0]  arch_event_instruction_i,
     input  logic [15:0]  arch_event_identifier_i,
     input  logic [127:0] arch_event_value_i
+    /* verilator lint_on UNUSEDSIGNAL */
 );
 
     timeunit 1ns;
     timeprecision 1ps;
+
+    logic         trace_event_valid;
+    logic [7:0]   trace_event_source;
+    logic [7:0]   trace_event_kind;
+    logic [31:0]  trace_event_pc;
+    logic [31:0]  trace_event_instruction;
+    logic [15:0]  trace_event_identifier;
+    logic [127:0] trace_event_value;
 
     initial begin
         if (R5900_FETCH_ENABLE && R5900_CORE_ENABLE) begin
@@ -194,6 +202,26 @@ module ps2_sim_top #(
         end
     endgenerate
 
+    generate
+        if (R5900_CORE_ENABLE) begin : g_core_architectural_trace
+            assign trace_event_valid = ee_retirement_valid_o;
+            assign trace_event_source = 8'h01;
+            assign trace_event_kind = 8'h01;
+            assign trace_event_pc = ee_retirement_pc_o;
+            assign trace_event_instruction = ee_retirement_instruction_o;
+            assign trace_event_identifier = 16'd0;
+            assign trace_event_value = 128'd0;
+        end else begin : g_external_architectural_trace
+            assign trace_event_valid = arch_event_valid_i;
+            assign trace_event_source = arch_event_source_i;
+            assign trace_event_kind = arch_event_kind_i;
+            assign trace_event_pc = arch_event_pc_i;
+            assign trace_event_instruction = arch_event_instruction_i;
+            assign trace_event_identifier = arch_event_identifier_i;
+            assign trace_event_value = arch_event_value_i;
+        end
+    endgenerate
+
     sim_clock #(
         .PERIOD(CLOCK_PERIOD)
     ) u_clock (
@@ -272,13 +300,13 @@ module ps2_sim_top #(
     ) u_architectural_trace (
         .clk_i(clk_o),
         .rst_ni(rst_no),
-        .event_valid_i(arch_event_valid_i),
-        .event_source_i(arch_event_source_i),
-        .event_kind_i(arch_event_kind_i),
-        .event_pc_i(arch_event_pc_i),
-        .event_instruction_i(arch_event_instruction_i),
-        .event_identifier_i(arch_event_identifier_i),
-        .event_value_i(arch_event_value_i)
+        .event_valid_i(trace_event_valid),
+        .event_source_i(trace_event_source),
+        .event_kind_i(trace_event_kind),
+        .event_pc_i(trace_event_pc),
+        .event_instruction_i(trace_event_instruction),
+        .event_identifier_i(trace_event_identifier),
+        .event_value_i(trace_event_value)
     );
 
     sim_waveform_control #(

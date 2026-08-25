@@ -246,6 +246,24 @@ PCs and instruction words exactly. NOP must never emit reserved-instruction or
 GPR-writeback events. After the fourth retirement, removing run permission must
 hold the core at `0x00000030` with no outstanding transaction or timeout.
 
+## R5900 arithmetic EE ELF execution
+
+A generated native `ET_EXEC`/`EM_MIPS` ELF contains one executable `PT_LOAD`
+segment, a valid arithmetic instruction before the entry point, 12 supported
+write-producing operations, and a final NOP. Independent field encoders are
+checked against literal instruction words before the normal ELF loader creates
+the RAM image. The core starts at the published entry and must leave the prefix
+destination unchanged, retire 13 exact PC/word pairs, perform 12 destination
+and low-scalar writebacks, preserve every destination upper lane, and match the
+complete final scalar GPR map. The zero register remains zero.
+
+Core retirement owns the enabled architectural trace during this run, even
+while bogus external trace inputs remain asserted. All 13 records are compared
+for exact functional cycle, sequence, EE source, retirement kind, PC,
+instruction, zero identifier, and zero value. After the final NOP, the held
+core has no outstanding transaction and pulses the existing simulation PASS
+mechanism with `FINISH_ON_PASS=0`, proving both event and latched success state.
+
 ## R5900 instruction-field extraction
 
 The combinational field extractor exposes the standard overlapping 32-bit MIPS

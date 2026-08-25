@@ -143,6 +143,16 @@ cleanly between instructions. Four loaded NOP words traverse the complete
 state loop, retire at consecutive PCs, perform no register writes, and stop at
 the first address beyond the bounded image.
 
+M081 uses the established EE loader rather than a direct word fixture. A
+generated executable segment places one valid but deliberately skipped
+instruction before its published entry, followed by LUI, logical immediates,
+wrapping word arithmetic, signed and unsigned comparisons, NOR, and NOP. The
+core retires the 13-word stream, commits 12 exact GPR updates from writeback,
+preserves upper 64-bit destination lanes, leaves the skipped destination and
+GPR zero unchanged, and stops at the first PC beyond the program. Retirement
+also drives the simulation architectural trace as EE source/kind `0x01`, and
+the completed program pulses the deterministic PASS latch.
+
 The next combinational boundary exposes instruction bits 31 through 26 as the
 primary opcode; the three five-bit register indices; the five-bit shift amount;
 the six-bit function; and the overlapping 16-bit immediate and 26-bit target.
@@ -385,9 +395,10 @@ directed, randomized-differential, and exception coverage separately. All 22
 foundation entries are complete; they began pending because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and
-summary-state consistency. Fetch-to-RAM integration and sequential NOP-image
-execution are now complete. The next milestone executes a generated EE ELF
-arithmetic stream from its published entry point.
+summary-state consistency. Fetch-to-RAM integration, sequential NOP execution,
+and a generated arithmetic EE ELF are now complete. The next planning milestone
+expands the roadmap from the initial scalar foundation into 64-bit operations
+and HI/LO-family behavior.
 
 ## Deferred behavior
 
