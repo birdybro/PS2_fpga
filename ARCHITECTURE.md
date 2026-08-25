@@ -9,7 +9,10 @@ The first implementation target is a deliberately simple multi-cycle R5900
 execution core connected to behavioral memory. Pipeline and timing accuracy
 are later, explicitly tracked work. `docs/R5900_FOUNDATION.md` defines the
 initial state, control, evidence, verification, and deferral boundaries. The
-timing-free immutable reference state begins in `reference/ee/r5900.py`.
+timing-free immutable reference state in `reference/ee/r5900.py` contains the
+128-bit GPRs, 32-bit PC, and independent 64-bit `HI`, `LO`, `HI1`, and `LO1`
+registers. Its defaults are deterministic simulation setup, not a hardware
+reset claim.
 `rtl/ee/r5900/r5900_types_pkg.sv` defines the corresponding synthesizable
 widths and packed observation records without implementing state storage.
 `rtl/ee/r5900/r5900_gpr_storage.sv` is the reset-free physical two-read,

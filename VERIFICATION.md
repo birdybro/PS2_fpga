@@ -138,12 +138,16 @@ unowned generic-MIPS `DMULT` row all fail verification.
 ## R5900 architectural reference state
 
 `reference/ee/r5900.py` defines a timing-free frozen state snapshot containing
-32 explicitly bounded 128-bit GPRs and a 32-bit PC. A validated initializer
-accepts the simulation loader's entry point without truncation. Computed GPR and
-PC updates explicitly mask Python's unlimited integers, return a new snapshot,
-and preserve all 128 bits of GPR zero. Thirty directed cases cover both width
-boundaries, malformed snapshots, invalid types and indices, copy isolation,
-every writable register, overflow normalization, and zero-register suppression.
+32 explicitly bounded 128-bit GPRs, a 32-bit PC, and four independent 64-bit
+`HI`, `LO`, `HI1`, and `LO1` values. A validated initializer accepts the
+simulation loader's entry point and explicit multiply/divide state without
+truncation. Computed GPR, PC, and HI/LO updates explicitly mask Python's
+unlimited integers, return a new snapshot, and preserve all 128 bits of GPR
+zero. The original 30 directed state cases cover GPR and PC boundaries;
+15 focused M083 cases cover independent four-register initialization, malformed
+snapshots, computed-result normalization, copy isolation, non-integer rejection,
+and preservation through existing GPR, PC, and NOP successors. Zero HI/LO
+defaults are a deterministic model input, not an architectural reset assertion.
 
 ## R5900 RTL state type contracts
 

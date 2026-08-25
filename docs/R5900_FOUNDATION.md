@@ -78,10 +78,18 @@ also unproven, so M084 must not invent a reset value.
 ## Initial architectural state
 
 The timing-free Python reference state contains 32 general-purpose registers
-with 128-bit storage, an immutable all-zero GPR 0, and a 32-bit program counter.
-It is a frozen snapshot: computed GPR and PC updates return a new value and mask
-Python integers explicitly to the architectural width. Its validated initial
-PC rejects out-of-range loader input rather than silently truncating it.
+with 128-bit storage, an immutable all-zero GPR 0, a 32-bit program counter,
+and four independent 64-bit multiply/divide registers named `HI`, `LO`, `HI1`,
+and `LO1`. It is a frozen snapshot: computed GPR, PC, and HI/LO-family updates
+return a new value and mask Python integers explicitly to the architectural
+width. Its validated initializer rejects out-of-range loader and multiply-
+divide state rather than silently truncating external input.
+
+The initializer accepts an explicit value for each multiply/divide register;
+its zero defaults provide deterministic test setup only and are not an R5900
+reset claim. Direct snapshots require already normalized unsigned values, while
+the four computed-result methods mask unlimited Python integers to 64 bits.
+Every existing GPR, PC, and instruction successor preserves all four registers.
 
 The functional RTL will separately expose the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
@@ -90,9 +98,9 @@ writeback event as those milestones arrive. Its type package already fixes a
 writeback and reserved-instruction records. The debug interface exposes these
 types through producer and monitor views, but does not implement storage. Those
 timing and diagnostic fields do not belong in the reference model's
-architectural snapshot. HI/LO-family state begins with M083 and M084; COP0,
-exception entry, branches and delay slots, data-memory operations, FPU, and the
-remaining MMI state are added only by later granular roadmaps.
+architectural snapshot. RTL HI/LO-family state begins with M084; COP0, exception
+entry, branches and delay slots, data-memory operations, FPU, and the remaining
+MMI state are added only by later granular roadmaps.
 
 The first physical GPR storage block has two combinational read ports, one
 synchronous write port, and a packed debug snapshot. It deliberately does not

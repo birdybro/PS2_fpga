@@ -1102,23 +1102,29 @@ milestones:
       - generic MIPS DMULT exclusion guard
       - source provenance validation
     references: [REFERENCES.md, references.yaml, docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M082): expand R5900 64-bit integer roadmap)"
+    commit: a6b0abd
     notes: >-
       Enumerate documented nontrapping doubleword, multiply/divide, and
       dual-HI/LO behavior without claiming generic MIPS-only operations.
   - id: M083
     title: Define Python R5900 HI LO state
     subsystem: reference
-    status: active
+    status: complete
     dependencies: [M082]
-    tests: [primary and secondary HI LO initialization copy and width tests]
+    tests:
+      - explicit independent HI LO HI1 and LO1 initialization test
+      - direct snapshot and initializer width rejection tests
+      - computed 64-bit result normalization tests for all four registers
+      - immutable independent successor and no-op identity test
+      - non-integer computed-result rejection tests
+      - GPR PC and NOP successor preservation test
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M083): define Python R5900 HI LO state)"
     notes: Add independent 64-bit HI LO HI1 and LO1 architectural state to the Python model.
   - id: M084
     title: Define RTL R5900 HI LO state
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M083]
     tests: [four-register width storage hold and simulation-initialization tests]
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md]

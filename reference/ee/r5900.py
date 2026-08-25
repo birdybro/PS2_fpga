@@ -34,8 +34,10 @@ SLT_FUNCTION = 42
 SLTU_FUNCTION = 43
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
+HILO_WIDTH = 64
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
 WORD_MASK = (1 << WORD_WIDTH) - 1
+HILO_MASK = (1 << HILO_WIDTH) - 1
 
 
 class UnsupportedInstructionError(ValueError):
@@ -281,6 +283,10 @@ class R5900State:
 
     gprs: tuple[int, ...] = field(default_factory=_zero_gprs)
     pc: int = 0
+    hi: int = 0
+    lo: int = 0
+    hi1: int = 0
+    lo1: int = 0
 
     def __post_init__(self) -> None:
         """Reject malformed snapshots instead of silently repairing model state."""
@@ -296,11 +302,32 @@ class R5900State:
             msg = "GPR 0 must remain zero"
             raise ValueError(msg)
         _require_unsigned("PC", self.pc, PC_MASK)
+        for name, value in (
+            ("HI", self.hi),
+            ("LO", self.lo),
+            ("HI1", self.hi1),
+            ("LO1", self.lo1),
+        ):
+            _require_unsigned(name, value, HILO_MASK)
 
     @classmethod
-    def initial(cls, *, start_pc: int = 0) -> R5900State:
-        """Create zeroed GPR state at an externally selected simulation entry point."""
-        return cls(pc=_require_unsigned("start PC", start_pc, PC_MASK))
+    def initial(
+        cls,
+        *,
+        start_pc: int = 0,
+        hi: int = 0,
+        lo: int = 0,
+        hi1: int = 0,
+        lo1: int = 0,
+    ) -> R5900State:
+        """Create explicitly selected deterministic simulation state."""
+        return cls(
+            pc=_require_unsigned("start PC", start_pc, PC_MASK),
+            hi=_require_unsigned("initial HI", hi, HILO_MASK),
+            lo=_require_unsigned("initial LO", lo, HILO_MASK),
+            hi1=_require_unsigned("initial HI1", hi1, HILO_MASK),
+            lo1=_require_unsigned("initial LO1", lo1, HILO_MASK),
+        )
 
     def read_gpr(self, index: int) -> int:
         """Read one validated 128-bit GPR value."""
@@ -322,6 +349,26 @@ class R5900State:
         if self.pc == normalized:
             return self
         return replace(self, pc=normalized)
+
+    def write_hi(self, value: int) -> R5900State:
+        """Return a snapshot with a normalized computed primary HI value."""
+        normalized = _require_integer("HI result", value) & HILO_MASK
+        return self if self.hi == normalized else replace(self, hi=normalized)
+
+    def write_lo(self, value: int) -> R5900State:
+        """Return a snapshot with a normalized computed primary LO value."""
+        normalized = _require_integer("LO result", value) & HILO_MASK
+        return self if self.lo == normalized else replace(self, lo=normalized)
+
+    def write_hi1(self, value: int) -> R5900State:
+        """Return a snapshot with a normalized computed secondary HI1 value."""
+        normalized = _require_integer("HI1 result", value) & HILO_MASK
+        return self if self.hi1 == normalized else replace(self, hi1=normalized)
+
+    def write_lo1(self, value: int) -> R5900State:
+        """Return a snapshot with a normalized computed secondary LO1 value."""
+        normalized = _require_integer("LO1 result", value) & HILO_MASK
+        return self if self.lo1 == normalized else replace(self, lo1=normalized)
 
     def _step_immediate_shift(self, word: int, function: int) -> R5900State:
         """Apply one admitted constant word shift without advancing PC."""
