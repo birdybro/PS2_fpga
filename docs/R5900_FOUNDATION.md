@@ -220,7 +220,8 @@ Decode admission is explicit and closed by default. The five-bit operation enum
 contains no-operation, NOP, and all six 32-bit shift operations. Exact word zero selects the canonical
 NOP alias; other SPECIAL function-zero words select SLL, while SPECIAL
 function-two words select SRL, function-three words select SRA, and
-function-`0x38` words select DSLL, while function-`0x3a` words select DSRL. Those
+function-`0x38` words select DSLL, function-`0x3a` words select DSRL, and
+function-`0x3b` words select DSRA. Those
 immediate shifts require reserved `rs` to be zero. Function-four words select
 SLLV, function-six words select SRLV, and function-seven words select SRAV; all
 require reserved `sa` to be zero. Every
@@ -320,6 +321,14 @@ Directed checks cover counts 0, 1, 30, and 31, zero fill, ignored source high
 bits, `rd == rt`, GPR zero, reserved `rs`, PC wrap, and exact events. Twelve
 boundary plus 512 sequential randomized cases make DSRL the twenty-fourth
 complete ISA coverage entry.
+
+Canonical DSRA completes the implemented low-range immediate doubleword shift
+trio. SPECIAL function `0x3b` requires reserved `rs` to be zero, interprets
+`rt[63:0]` as signed two's complement, and sign-fills from bit 63 for encoded
+counts 0 through 31. Old destination bits 127:64 remain intact. Directed checks
+cover both operand signs, counts 0, 1, 30, and 31, `rd == rt`, GPR zero,
+reserved `rs`, PC wrap, and exact events. Twelve boundary plus 512 sequential
+randomized cases make DSRA the twenty-fifth complete ISA coverage entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

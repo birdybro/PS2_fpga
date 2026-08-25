@@ -464,6 +464,19 @@ A deterministic differential/randomized test executes twelve boundary plus 512
 seeded instructions sequentially and compares PC, the complete 4,096-bit GPR
 state, writeback, and retirement after every instruction.
 
+## R5900 DSRA
+
+Canonical SPECIAL function `0x3b` with reserved `rs` equal to zero now executes
+as signed 64-bit arithmetic-right DSRA. Five directed cocotb cases cover counts
+0, 1, 30, and 31; negative sign fill and positive zero fill; ignored source
+bits 127:64; preserved destination bits 127:64; `rd == rt`; GPR-zero
+suppression; reserved `rs`; PC wrap; and exact writeback and retirement events.
+The RTL uses an explicitly signed 64-bit operand, while Python independently
+converts the masked bit pattern to a negative integer. A deterministic
+differential/randomized test executes twelve boundary plus 512 seeded
+instructions sequentially and compares PC, the complete 4,096-bit GPR state,
+writeback, and retirement after every instruction.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.

@@ -15,6 +15,7 @@ from reference.ee.r5900 import (
     encode_and,
     encode_andi,
     encode_dsll,
+    encode_dsra,
     encode_dsrl,
     encode_lui,
     encode_nor,
@@ -51,6 +52,7 @@ ALIASED_SRAV_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_F800_0001
 ALIASED_SRAV_RS_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_C000_0000
 ENCODED_DSLL_EXAMPLE = 0x0011_FB78
 ENCODED_DSRL_EXAMPLE = 0x0011_FB7A
+ENCODED_DSRA_EXAMPLE = 0x0011_FB7B
 ENCODED_LUI_EXAMPLE = 0x3C1F_1234
 ENCODED_ORI_EXAMPLE = 0x36FF_1234
 ENCODED_ANDI_EXAMPLE = 0x32FF_1234
@@ -395,6 +397,63 @@ def test_r5900_reference_dsrl_handles_alias_zero_and_encoder_validation() -> Non
     ):
         with pytest.raises(error):
             encode_dsrl(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("shift_amount", "source_scalar", "expected_scalar"),
+    [
+        (0, 0x8000_0000_0000_0001, 0x8000_0000_0000_0001),
+        (1, 0x8000_0000_0000_0001, 0xC000_0000_0000_0000),
+        (16, 0x1234_5678_9ABC_0000, 0x0000_1234_5678_9ABC),
+        (30, 0x8000_0000_0000_0000, 0xFFFF_FFFE_0000_0000),
+        (31, 0x8000_0000_0000_0000, 0xFFFF_FFFF_0000_0000),
+        (31, 0x7FFF_FFFF_FFFF_FFFF, 0x0000_0000_FFFF_FFFF),
+    ],
+)
+def test_r5900_reference_dsra_signed_doubleword_and_destination_width_rules(
+    shift_amount: int,
+    source_scalar: int,
+    expected_scalar: int,
+) -> None:
+    """Arithmetically shift rt low 64 bits and retain the complete rd upper lane."""
+    source = 0xDEAD_BEEF_CAFE_F00D_0000_0000_0000_0000 | source_scalar
+    old_destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source).write_gpr(5, old_destination)
+
+    updated = state.step(encode_dsra(5, 3, shift_amount))
+
+    assert updated.read_gpr(5) == (old_destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_dsra_handles_alias_zero_and_encoder_validation() -> None:
+    """Read an aliased signed rt, protect GPR zero, and validate fields."""
+    original = 0xCAFE_BABE_1234_5678_8765_4321_8000_0010
+    upper_mask = GPR_MASK ^ ((1 << 64) - 1)
+    state = R5900State.initial().write_gpr(7, original)
+    aliased = state.step(encode_dsra(7, 7, 4))
+    expected = (original & upper_mask) | 0xF876_5432_1800_0001
+    assert aliased.read_gpr(7) == expected
+
+    discarded = aliased.step(encode_dsra(0, 7, 31))
+    assert discarded.read_gpr(0) == 0
+    assert discarded.gprs[1:] == aliased.gprs[1:]
+    assert discarded.pc == TWO_INSTRUCTION_PC
+    assert encode_dsra(31, 17, 13) == ENCODED_DSRA_EXAMPLE
+    for fields, error in (
+        ((-1, 0, 0), IndexError),
+        ((0, GPR_COUNT, 0), IndexError),
+        ((0, 0, -1), ValueError),
+        ((0, 0, 32), ValueError),
+        ((True, 0, 0), TypeError),
+        ((0, 0, True), TypeError),
+    ):
+        with pytest.raises(error):
+            encode_dsra(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

@@ -28,6 +28,7 @@ OPERATION_SLTI = 21
 OPERATION_SLTIU = 22
 OPERATION_DSLL = 23
 OPERATION_DSRL = 24
+OPERATION_DSRA = 25
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -112,6 +113,20 @@ async def test_r5900_decode_recognizes_canonical_dsrl_encodings(dut) -> None:
     ):
         word = (rt << 16) | (rd << 11) | (shift_amount << 6) | 0x3A
         await check_decode(dut, word, True, OPERATION_DSRL)
+
+
+@cocotb.test()
+async def test_r5900_decode_recognizes_canonical_dsra_encodings(dut) -> None:
+    """Admit DSRA fields only while the SPECIAL reserved rs field stays zero."""
+    for rt, rd, shift_amount in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rt << 16) | (rd << 11) | (shift_amount << 6) | 0x3B
+        await check_decode(dut, word, True, OPERATION_DSRA)
 
 
 @cocotb.test()
@@ -391,7 +406,7 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         *range(40, 42),
         *range(44, 56),
         *range(57, 58),
-        *range(59, 64),
+        *range(60, 64),
     ):
         await check_decode(dut, function, False, OPERATION_NONE)
 
@@ -399,6 +414,7 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         await check_decode(dut, value << 21, False, OPERATION_NONE)
         await check_decode(dut, (value << 21) | 0x38, False, OPERATION_NONE)
         await check_decode(dut, (value << 21) | 0x3A, False, OPERATION_NONE)
+        await check_decode(dut, (value << 21) | 0x3B, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 4, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 6, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 7, False, OPERATION_NONE)

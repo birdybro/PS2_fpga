@@ -14,6 +14,7 @@ SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 DSLL_FUNCTION = 56
 DSRL_FUNCTION = 58
+DSRA_FUNCTION = 59
 LUI_OPCODE = 15
 ORI_OPCODE = 13
 ANDI_OPCODE = 12
@@ -35,6 +36,7 @@ IMMEDIATE_OPERATIONS = {
     SRA_FUNCTION: 4,
     DSLL_FUNCTION: 23,
     DSRL_FUNCTION: 24,
+    DSRA_FUNCTION: 25,
 }
 REGISTER_OPERATIONS = {
     SLLV_FUNCTION: 5,
@@ -107,6 +109,9 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x0000_003A,
         0x001F_FFFA,
         0x0020_003A,
+        0x0000_003B,
+        0x001F_FFFB,
+        0x0020_003B,
         0x3C00_0000,
         0x3C1F_FFFF,
         0x3C20_0000,

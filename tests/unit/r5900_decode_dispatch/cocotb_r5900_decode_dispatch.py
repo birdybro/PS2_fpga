@@ -28,6 +28,7 @@ OPERATION_SLTI = 21
 OPERATION_SLTIU = 22
 OPERATION_DSLL = 23
 OPERATION_DSRL = 24
+OPERATION_DSRA = 25
 
 
 async def check_dispatch(
@@ -123,6 +124,17 @@ async def test_r5900_decode_dispatch_sends_canonical_dsrl_to_execute(dut) -> Non
         (0x0010_0000, 0x001F_FFFA),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DSRL, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_dsra_to_execute(dut) -> None:
+    """Dispatch DSRA variable fields without a reserved diagnostic."""
+    for pc, instruction in (
+        (0, 0x0000_003B),
+        (4, 0x0001_003B),
+        (0x0010_0000, 0x001F_FFFB),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DSRA, False))
 
 
 @cocotb.test()
@@ -342,6 +354,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (25, 0x0000_006B),
         (26, 0x0020_0038),
         (27, 0x0020_003A),
+        (28, 0x0020_003B),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),
