@@ -114,6 +114,14 @@ complete response payload must be known. Unsolicited responses and a new request
 while either a response or unconsumed instruction occupies the receiver are
 fatal. Request, response, and control composition remains deferred to M079.
 
+The next combinational boundary exposes instruction bits 31 through 26 as the
+primary opcode; the three five-bit register indices; the five-bit shift amount;
+the six-bit function; and the overlapping 16-bit immediate and 26-bit target.
+It also supplies explicit 32-bit sign- and zero-extended immediate values. This
+is format extraction only: no output identifies a legal R5900 instruction, and
+the machine-readable ISA coverage therefore remains pending until instruction
+admission and semantics pass their own milestones.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

@@ -9,8 +9,8 @@ executing CPU. This is not a claim of CPU compatibility.
 
 Instruction fetch request and response paths are independently implemented but
 not yet composed with control or RAM. Bus errors are retained as functional
-fetch status; architectural exception handling, instruction decode, and
-execution remain unimplemented.
+fetch status. Instruction fields are extracted, but no opcode is yet admitted
+as legal or executed; architectural exception handling remains unimplemented.
 
 All 22 entries in the initial R5900 ISA coverage matrix are pending. The matrix
 records planned encodings and ownership, not corroborated implementation

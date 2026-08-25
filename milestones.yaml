@@ -616,21 +616,25 @@ milestones:
       - same-cycle request-response and reset cancellation test
       - fatal unsolicited-response and overlapping-request assertion tests
     references: [docs/R5900_FOUNDATION.md, docs/SIMULATION_PLATFORM.md]
-    commit: "self (milestone(M052): capture R5900 instruction fetch responses)"
+    commit: "6620872"
     notes: Latch one instruction response before decode without overlapping requests.
   - id: M053
     title: Extract R5900 instruction fields
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M052]
-    tests: [opcode register shift function immediate and target field tests]
+    tests:
+      - zero all-one alternating and asymmetric complete-word tests
+      - isolated opcode register shift and function field boundary tests
+      - immediate sign-extension and zero-extension boundary tests
+      - deterministic 1024-word randomized field extraction test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
+    commit: "self (milestone(M053): extract R5900 instruction fields)"
     notes: Decode only bit fields and sign or zero extension helpers in this milestone.
   - id: M054
     title: Add R5900 decode legality skeleton
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M053]
     tests: [recognized NOP and unrecognized primary and SPECIAL encoding tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

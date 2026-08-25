@@ -17,6 +17,11 @@ package r5900_types_pkg;
     typedef logic [R5900_GPR_INDEX_WIDTH-1:0] r5900_gpr_index_t;
     typedef logic [R5900_PC_WIDTH-1:0] r5900_pc_t;
     typedef logic [R5900_INSTRUCTION_WIDTH-1:0] r5900_instruction_t;
+    typedef logic [5:0] r5900_opcode_t;
+    typedef logic [4:0] r5900_shift_amount_t;
+    typedef logic [5:0] r5900_function_t;
+    typedef logic [15:0] r5900_immediate_t;
+    typedef logic [25:0] r5900_target_t;
     typedef logic [R5900_GPR_COUNT-1:0][R5900_GPR_WIDTH-1:0] r5900_gpr_file_t;
 
     typedef enum logic [2:0] {

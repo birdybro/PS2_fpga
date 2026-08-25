@@ -30,6 +30,10 @@ modports so those paths can be verified independently before composition.
 buffers the low 32 response bits plus error status, and retains them through
 downstream backpressure. The one-entry receiver permits a same-cycle response
 but rejects unsolicited responses and overlapping fetches.
+`rtl/ee/r5900/r5900_instruction_fields.sv` is a timing-free combinational view
+of the 32-bit instruction word. It exposes the overlapping MIPS opcode,
+register, shift, function, immediate, and target fields plus explicit 32-bit
+sign- and zero-extended immediates; it does not decide encoding legality.
 
 ## Repository boundaries
 

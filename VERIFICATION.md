@@ -222,6 +222,18 @@ runs prove that unsolicited responses and overlapping accepted fetch requests
 are fatal. The response-only bus modport and standalone wrapper keep this gate
 independent from later fetch/control composition.
 
+## R5900 instruction-field extraction
+
+The combinational field extractor exposes the standard overlapping 32-bit MIPS
+format views without admitting or executing an opcode. Three directed cocotb
+cases cover zero, all-one, alternating, and asymmetric words; isolate every
+opcode, register, shift, and function bit range; and distinguish immediate
+zero extension from signed boundaries at `0x7fff`, `0x8000`, and `0xffff`. A
+separate randomized-layer test compares ten boundary words and 1,024 seeded
+random words against independently expressed Python masks and arithmetic sign
+extension. Coverage rows remain undecoded because field extraction alone does
+not establish that any R5900 encoding is legal.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,
