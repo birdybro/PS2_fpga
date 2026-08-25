@@ -165,6 +165,17 @@ define post-reset GPR contents, and the public R10000 manual demonstrates that
 zero initialization is not a safe generic MIPS assumption. Every M047 test
 writes a location before reading it.
 
+## R5900 architectural GPR zero
+
+The architectural wrapper blocks physical writes whose five-bit destination is
+zero, independently forces either read port to 128 zero bits, and masks packed
+debug lane zero. An assertion checks the 128-bit invariant on every rising edge.
+Two cocotb cases observe zero before initialization, attempt zero, one, top-bit,
+all-one, and alternating writes, combine zero with both read ports, initialize
+all other locations, prove an attempted zero write cannot corrupt them, and
+compare the complete packed architectural snapshot. The physical-storage suite
+continues to test its writable index-zero location independently.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

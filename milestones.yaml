@@ -545,21 +545,26 @@ milestones:
       - disabled-write and unrelated-edge hold test
       - pre-edge old-value and post-edge new-value test
     references: [docs/R5900_FOUNDATION.md, REFERENCES.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M047): implement 128-bit R5900 GPR storage)"
+    commit: 1e15197
     notes: Add reset-free two-read one-write physical storage before architectural zero semantics.
   - id: M048
     title: Enforce immutable R5900 register zero
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M047]
-    tests: [register-zero write suppression read and assertion tests]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Keep all 128 bits of GPR zero architecturally constant.
+    tests:
+      - both-port 128-bit register-zero read test
+      - boundary-pattern register-zero write suppression test
+      - packed architectural snapshot zero-lane test
+      - unrelated GPR preservation test
+      - clocked register-zero invariant assertion
+    references: [docs/R5900_FOUNDATION.md, REFERENCES.md, coverage/r5900_isa.yaml]
+    commit: "self (milestone(M048): enforce immutable R5900 register zero)"
+    notes: Keep all 128 bits of GPR zero architecturally constant above physical storage.
   - id: M049
     title: Implement R5900 program counter state
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M048]
     tests: [PC start increment hold redirect and reset tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

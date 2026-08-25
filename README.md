@@ -11,8 +11,9 @@ tracing, waveforms, and platform integration are verified. The first 22 R5900
 scalar encodings have machine-readable coverage owners, and an immutable Python
 architectural state model plus matching RTL type contracts are verified, but
 R5900 execution (Level 1) is not implemented yet. Reset-free physical GPR
-storage is the first sequential CPU block. See [PROGRESS.md](PROGRESS.md) for
-the exact resume point and [MILESTONES.md](MILESTONES.md) for completion rules.
+storage and its hardwired-zero architectural wrapper are the first sequential
+CPU blocks. See [PROGRESS.md](PROGRESS.md) for the exact resume point and
+[MILESTONES.md](MILESTONES.md) for completion rules.
 
 No PlayStation 2 BIOS, game image, proprietary SDK material, or other
 copyrighted Sony binary belongs in this repository.

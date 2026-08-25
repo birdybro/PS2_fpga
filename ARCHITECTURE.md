@@ -13,7 +13,9 @@ timing-free immutable reference state begins in `reference/ee/r5900.py`.
 `rtl/ee/r5900/r5900_types_pkg.sv` defines the corresponding synthesizable
 widths and packed observation records without implementing state storage.
 `rtl/ee/r5900/r5900_gpr_storage.sv` is the reset-free physical two-read,
-one-write array; architectural zero-register behavior is layered above it.
+one-write array. `rtl/ee/r5900/r5900_gpr_file.sv` layers architectural
+write suppression, read forcing, debug masking, and an invariant assertion for
+all 128 bits of GPR zero above that storage.
 
 ## Repository boundaries
 

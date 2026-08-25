@@ -1,19 +1,19 @@
 # Progress
 
-- Last completed milestone: M047 — implement 128-bit R5900 GPR storage
-- Next milestone: M048 — enforce immutable R5900 register zero
-- Current subsystem: R5900 architectural general-purpose register file
-- Current regression status: 231 tests pass with no skips; reset-free physical storage covers all 32 locations and both read ports
-- Known architectural inaccuracies: physical GPR storage does not yet enforce hardwired register zero
+- Last completed milestone: M048 — enforce immutable R5900 register zero
+- Next milestone: M049 — implement R5900 program counter state
+- Current subsystem: R5900 program counter state
+- Current regression status: 232 tests pass with no skips; GPR zero read write snapshot and assertion coverage is green
+- Known architectural inaccuracies: R5900 execution has no program counter or instruction control yet
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M047 milestone commit (this commit)
+- Most recent pushed commit: M048 milestone commit (this commit)
 
 ## Resume note
 
 Development is on `main` with remote
 `https://github.com/birdybro/PS2_fpga.git`. The pinned local environment uses
 Verilator 5.050, Python 3.14, cocotb, and pytest. `make ci` is the complete
-local verification gate. Physical GPR state now exists, but its architectural
-zero-register wrapper and instruction semantics do not; resume with the single
-active milestone in `milestones.yaml`.
+local verification gate. The architectural GPR file now exists, but program
+counter and instruction semantics do not; resume with the single active
+milestone in `milestones.yaml`.

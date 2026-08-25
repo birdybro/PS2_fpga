@@ -57,6 +57,13 @@ Tests therefore write all 32 physical locations before reading them. The
 physical location at index zero remains writable until M048 adds the separate
 architectural hardwired-zero boundary.
 
+The architectural GPR wrapper now suppresses writes to index zero and forces
+both read ports plus packed debug lane zero to 128 zero bits. A clocked
+assertion makes this invariant fatal in required simulation. The underlying
+physical-storage tests remain unchanged, keeping storage mechanics independent
+from the architectural zero rule documented by both the MIPS IV notation and
+PS2Tek's EE register description.
+
 The simulation loader's published ELF entry point supplies the initial PC for
 early software tests. This is a harness start-address mechanism, not a claim
 about the physical reset vector or COP0 reset behavior.
