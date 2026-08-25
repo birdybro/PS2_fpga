@@ -138,6 +138,14 @@ execute validity also blocks any later writeback eligibility, but this does not
 yet model the architectural Reserved Instruction exception, EPC, Cause, Status,
 or exception-vector PC transition; those remain COP0 milestones.
 
+Architectural GPR updates now have one central adapter. A commit assertion is
+accepted once, even if held across multiple edges; a sampled low cycle rearms
+the next episode. Accepted destination zero is consumed without a GPR write or
+architectural writeback event. Every nonzero event carries the exact five-bit
+destination and 128-bit value that drive the GPR file, giving traces and future
+differential tests one observation point. This functional episode protocol is
+not a claim about the eventual EE pipeline retirement timing.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

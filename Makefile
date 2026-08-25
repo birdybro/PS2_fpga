@@ -33,6 +33,8 @@ R5900_INSTRUCTION_FIELDS := rtl/ee/r5900/r5900_instruction_fields.sv
 R5900_DECODE := rtl/ee/r5900/r5900_decode.sv
 R5900_DECODE_DISPATCH := rtl/ee/r5900/r5900_decode_dispatch.sv
 R5900_DECODE_DISPATCH_LINT_TOP := tests/unit/r5900_decode_dispatch/r5900_decode_dispatch_top.sv
+R5900_WRITEBACK := rtl/ee/r5900/r5900_writeback.sv
+R5900_WRITEBACK_LINT_TOP := tests/unit/r5900_writeback/r5900_writeback_top.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
@@ -105,6 +107,9 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VERILATOR) --lint-only -Wall --top-module r5900_decode_dispatch_top \
 		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
 		$(R5900_DECODE) $(R5900_DECODE_DISPATCH) $(R5900_DECODE_DISPATCH_LINT_TOP)
+	$(VERILATOR) --lint-only -Wall --assert --top-module r5900_writeback_top \
+		$(VERILATOR_FLAGS) rtl/ee/r5900/r5900_types_pkg.sv \
+		$(R5900_GPR_STORAGE) $(R5900_GPR_FILE) $(R5900_WRITEBACK) $(R5900_WRITEBACK_LINT_TOP)
 	$(VERILATOR) --lint-only -Wall --assert --timing --top-module ps2_sim_top \
 		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
 		rtl/memory/memory_bus_protocol_checker.sv $(SIM_SOURCES)

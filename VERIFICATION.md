@@ -258,6 +258,19 @@ five boundary and 1,024 seeded validity/PC/word cases against an independent
 dispatch rule. These diagnostics remain explicitly pre-architectural until
 COP0 exception entry is implemented.
 
+## R5900 architectural GPR writeback
+
+The centralized writeback adapter consumes one destination/value commit per
+asserted episode, produces a typed architectural event, and drives the existing
+GPR file through matching enable, index, and 128-bit value signals. Four
+directed cocotb cases cover zero, one, top-bit, all-one, alternating, and
+asymmetric values; both read ports; accepted destination-zero suppression;
+held-high payload changes; sampled-low rearming; and reset priority. The
+randomized layer initializes every nonzero GPR, then independently models 512
+seeded commit cycles and compares the complete 4,096-bit snapshot after each
+edge. A fatal assertion independently prevents an emitted port write from ever
+targeting GPR zero.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

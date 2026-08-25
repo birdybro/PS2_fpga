@@ -657,21 +657,26 @@ milestones:
       - illegal execute and downstream writeback suppression test
       - deterministic 1024-case randomized dispatch and diagnostic test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M055): report R5900 reserved instructions)"
+    commit: c4c4e54
     notes: Expose a diagnostic event before architectural COP0 exception entry exists.
   - id: M056
     title: Add R5900 GPR writeback framework
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M055]
-    tests: [destination value enable zero suppression and one-shot writeback tests]
+    tests:
+      - exact destination and full-width value commit tests
+      - accepted GPR-zero attempt without event or port write test
+      - held-high one-shot and sampled-low rearm test
+      - reset write blocking and post-reset rearm test
+      - deterministic 512-cycle full-GPR randomized model comparison
     references: [docs/R5900_FOUNDATION.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M056): add R5900 GPR writeback framework)"
     notes: Centralize architectural GPR updates for differential observation.
   - id: M057
     title: Implement R5900 NOP encoding
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M056]
     tests: [exact zero-word no-state-change PC-advance and trace tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

@@ -14,6 +14,10 @@ admitted, but no instruction is executed. Illegal words emit a functional
 diagnostic and are suppressed before execution, but do not enter an
 architectural exception; COP0 remains unimplemented.
 
+GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
+not a model of EE retirement, dual issue, pipeline hazards, or precise exception
+timing.
+
 NOP is partial and the other 21 entries in the initial R5900 ISA coverage
 matrix remain pending. The matrix records planned encodings and ownership, not
 corroborated implementation semantics; each row must pass its instruction

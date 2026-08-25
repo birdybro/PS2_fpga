@@ -42,6 +42,10 @@ separate milestone.
 execution. Unsupported words cannot dispatch and instead produce the packed
 diagnostic record already defined by the R5900 type package, preserving their
 exact PC and instruction. This is intentionally not COP0 exception entry.
+`rtl/ee/r5900/r5900_writeback.sv` is the single architectural GPR commit
+adapter. It accepts one commit per asserted episode, suppresses destination
+zero, emits the same typed event used by debug and differential observation,
+and drives the existing GPR file's index/value write port.
 
 ## Repository boundaries
 
