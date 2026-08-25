@@ -12,6 +12,8 @@ initial state, control, evidence, verification, and deferral boundaries. The
 timing-free immutable reference state begins in `reference/ee/r5900.py`.
 `rtl/ee/r5900/r5900_types_pkg.sv` defines the corresponding synthesizable
 widths and packed observation records without implementing state storage.
+`rtl/ee/r5900/r5900_gpr_storage.sv` is the reset-free physical two-read,
+one-write array; architectural zero-register behavior is layered above it.
 
 ## Repository boundaries
 

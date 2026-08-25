@@ -149,6 +149,22 @@ types and observation only; no sequential storage behavior exists in M046.
 RTL packages are ordered before other design units in the shared source list so
 all top-level lint builds resolve imported types deterministically.
 
+## R5900 physical GPR storage
+
+The storage primitive contains 32 physical 128-bit locations, two independent
+combinational reads, one rising-edge write, write-enable hold, and a packed
+observation snapshot. Three cocotb cases write every location with asymmetric
+full-width data, exercise both read ports, verify packed index mapping, preserve
+state across disabled and unrelated edges, and distinguish pre-edge from
+post-edge values. GPR zero is deliberately writable at this physical boundary;
+M048 adds the architectural suppression wrapper without weakening these storage
+tests.
+
+No reset input initializes the array. The consulted public R5900 sources do not
+define post-reset GPR contents, and the public R10000 manual demonstrates that
+zero initialization is not a safe generic MIPS assumption. Every M047 test
+writes a location before reading it.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

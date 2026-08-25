@@ -532,21 +532,25 @@ milestones:
       - maximum-width packed field propagation test
       - GPR zero and GPR 31 packed-lane mapping test
     references: [docs/R5900_FOUNDATION.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M046): define RTL R5900 architectural state types)"
+    commit: e97c901
     notes: Define explicit widths and packed observation contracts without storage behavior.
   - id: M047
     title: Implement 128-bit R5900 GPR storage
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M046]
-    tests: [all-register directed read write hold and reset tests]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Add two-read one-write storage before instruction execution.
+    tests:
+      - all-32-location two-read and packed-state mapping test
+      - full-width rising-edge write test
+      - disabled-write and unrelated-edge hold test
+      - pre-edge old-value and post-edge new-value test
+    references: [docs/R5900_FOUNDATION.md, REFERENCES.md, coverage/r5900_isa.yaml]
+    commit: "self (milestone(M047): implement 128-bit R5900 GPR storage)"
+    notes: Add reset-free two-read one-write physical storage before architectural zero semantics.
   - id: M048
     title: Enforce immutable R5900 register zero
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M047]
     tests: [register-zero write suppression read and assertion tests]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

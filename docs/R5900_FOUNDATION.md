@@ -48,6 +48,15 @@ architectural snapshot. HI/LO-family state, COP0, exception entry, branches and
 delay slots, data-memory operations, FPU, and MMI state are added only by later
 granular roadmaps.
 
+The first physical GPR storage block has two combinational read ports, one
+synchronous write port, and a packed debug snapshot. It deliberately does not
+initialize on reset: no consulted public R5900 source establishes post-reset
+contents for GPR 1 through 31. A public R10000 implementation manual is recorded
+only as a caution that generic MIPS logical registers need not reset to zero.
+Tests therefore write all 32 physical locations before reading them. The
+physical location at index zero remains writable until M048 adds the separate
+architectural hardwired-zero boundary.
+
 The simulation loader's published ELF entry point supplies the initial PC for
 early software tests. This is a harness start-address mechanism, not a claim
 about the physical reset vector or COP0 reset behavior.

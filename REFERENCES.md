@@ -58,6 +58,8 @@ relationships. The PDF is linked rather than copied.
 Independently authored PS2 hardware documentation with broad EE, DMAC, GIF,
 VIF, VU, GS, IOP, and SIF coverage. The upstream repository does not state a
 license, so it is link-only and architectural details require corroboration.
+Its EE register section identifies 32 128-bit GPRs and the hardwired-zero
+register; it does not document post-reset contents for the other GPRs.
 
 <!-- ref:mips-iv-instruction-set -->
 ### MIPS IV Instruction Set, Revision 3.2
@@ -68,6 +70,16 @@ operations, and documented exceptions guide the scalar foundation. It is not
 treated as proof that the R5900 implements every MIPS III or MIPS IV feature;
 PS2-specific inclusion, encoding, width, and exception behavior require
 separate evidence.
+
+<!-- ref:mips-r10000-manual -->
+### MIPS R10000 Microprocessor User's Manual
+
+Publicly archived MIPS Technologies implementation manual. Section 8.1 states
+that its integer and floating-point logical registers must be written before
+being read after power-on or cold reset. The R10000 is not the R5900, so this is
+used only as evidence that zero-clearing GPRs is not a safe generic MIPS
+assumption. M047 therefore leaves physical storage reset contents unspecified
+until R5900-specific evidence is available.
 
 ## Homebrew software and toolchain
 

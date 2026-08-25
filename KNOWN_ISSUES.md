@@ -12,6 +12,11 @@ records planned encodings and ownership, not corroborated implementation
 semantics; each row must pass its instruction milestone before becoming
 complete.
 
+No consulted public R5900 source defines the post-reset values of GPR 1 through
+31. The physical storage therefore has no reset input and tests initialize every
+location before reading it. The public R10000 reset rule is recorded only as a
+caution against assuming generic MIPS GPR zeroing, not as R5900 behavior.
+
 Public base-MIPS documentation does not by itself establish R5900-specific
 instruction inclusion, opcode differences, 128-bit GPR destination-extension
 rules, COP0 behavior, or FPU behavior. Each implementation milestone must
