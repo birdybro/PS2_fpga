@@ -92,13 +92,31 @@ milestones:
     dependencies: [M008]
     tests: [make waves]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M009): add waveform generation)"
+    commit: 8f00573
     notes: Generate ignored waveforms only on request.
+  - id: M009A
+    title: Add differential-layer smoke test
+    subsystem: verification
+    status: complete
+    dependencies: [M009]
+    tests: [make differential]
+    references: [VERIFICATION.md]
+    commit: "self (milestone(M009A): add differential smoke layer)"
+    notes: Compare common register RTL against an independent Python state model.
+  - id: M009B
+    title: Add integration-layer smoke test
+    subsystem: verification
+    status: active
+    dependencies: [M009A]
+    tests: [make integration]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Verify build, simulation, cocotb, pytest, XML, and seed propagation together.
   - id: M010
     title: Add GitHub Actions CI
     subsystem: infrastructure
-    status: active
-    dependencies: [M009]
+    status: pending
+    dependencies: [M009B]
     tests: [workflow syntax check, local CI command]
     references: [VERIFICATION.md]
     commit: null

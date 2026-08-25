@@ -71,3 +71,11 @@ runs it at the selected deterministic seed, and validates both a nonempty VCD
 and its end-of-definitions marker. The ignored trace is written to
 `build/waves/register_en/dump.vcd`. Normal test and regression targets do not
 enable tracing.
+
+## Differential smoke layer
+
+`make differential` compares register RTL transitions against the independent
+`reference/common/register_en.py` state model. The shared vector set includes
+reset priority, disabled holds, and unsigned 32-bit boundary values. The model
+uses an independently formulated tick function and masks values to its declared
+width.
