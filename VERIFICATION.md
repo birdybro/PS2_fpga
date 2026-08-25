@@ -177,6 +177,15 @@ carry exact fixed-width payloads and active-cycle numbers, and the same-cycle
 request precedes its response. The trace module also has its own strict
 interface-aware Verilator lint top.
 
+## Architectural event trace sink
+
+Two Verilator/cocotb configurations apply the same reset-time event, inactive
+gaps, and three payload-distinct active events. Disabled mode must not create a
+file. Enabled mode is compared byte-for-byte against the versioned record
+schema, including active-cycle numbers, zero-based contiguous sequence numbers,
+source and kind tags, PC, instruction, identifier, and full 128-bit value.
+Strict standalone Verilator lint covers the sink and its test wrapper.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit

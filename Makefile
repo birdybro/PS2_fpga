@@ -13,6 +13,7 @@ RTL_SOURCES := $(shell find rtl -type f -name '*.sv' -print | sort)
 MEMORY_BUS_PROTOCOL_LINT_TOP := tests/unit/memory_bus_protocol/memory_bus_protocol_top.sv
 BEHAVIORAL_RAM_LINT_TOP := tests/unit/behavioral_system_ram/behavioral_system_ram_bus_top.sv
 MEMORY_TRACE_LINT_TOP := tests/unit/memory_transaction_trace/memory_transaction_trace_top.sv
+ARCH_TRACE_LINT_TOP := tests/unit/architectural_trace_sink/architectural_trace_sink_top.sv
 SIM_SOURCES := $(shell find sim -type f -name '*.sv' -print | sort)
 SIM_LINT_TOPS := sim_clock sim_reset sim_cycle_timeout sim_termination
 VENV_PYTHON := $(VENV)/bin/python
@@ -54,6 +55,8 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VERILATOR) --lint-only -Wall --timing --top-module memory_transaction_trace_top \
 		$(VERILATOR_FLAGS) rtl/memory/memory_bus_if.sv \
 		sim/debug/memory_transaction_trace.sv $(MEMORY_TRACE_LINT_TOP)
+	$(VERILATOR) --lint-only -Wall --timing --top-module architectural_trace_sink_top \
+		$(VERILATOR_FLAGS) sim/debug/architectural_trace_sink.sv $(ARCH_TRACE_LINT_TOP)
 	@for top in $(SIM_LINT_TOPS); do \
 		$(VERILATOR) --lint-only -Wall --timing --top-module $$top \
 			$(VERILATOR_FLAGS) $(SIM_SOURCES); \

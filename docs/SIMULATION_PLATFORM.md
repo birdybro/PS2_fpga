@@ -203,6 +203,18 @@ and error. Stalls and reset-time signals are silent. If request and response
 complete together, the request record is written first. The monitor observes but
 never drives the transaction interface or architectural state.
 
+M038 adds a passive architectural event trace sink. It is disabled by default
+and therefore creates no file; an enabled instance accepts
+`+ARCH_TRACE_FILE=<path>` and otherwise uses `architectural_trace.log`. Each
+asserted `event_valid_i` outside reset produces one record containing active
+cycle, zero-based event sequence, 8-bit source and kind tags, 32-bit PC and
+instruction, a 16-bit identifier, and a 128-bit value. The source and kind tags
+are transport fields whose meaning belongs to the future subsystem adapter, so
+this milestone does not invent CPU retirement, exception, or register-number
+semantics. Inactive cycles and reset-time inputs are silent; reset restarts both
+the active-cycle and event-sequence counters. The sink has no ready signal and
+cannot stall or modify its producer.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and

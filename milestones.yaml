@@ -415,21 +415,24 @@ milestones:
       - exact versioned reset stall request response payload trace test
       - deterministic same-cycle request-before-response ordering test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M037): add memory transaction trace)"
+    commit: 1c3136e
     notes: Record accepted requests and responses only when explicitly enabled.
   - id: M038
     title: Add architectural trace sink
     subsystem: debug
-    status: active
+    status: complete
     dependencies: [M037]
-    tests: [trace sink disabled and schema tests]
+    tests:
+      - disabled no-file architectural trace test
+      - exact versioned architectural trace schema test
+      - reset gap cycle and event sequence ordering test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
-    notes: Define a switchable trace record format before CPU execution exists.
+    commit: "self (milestone(M038): add architectural trace sink)"
+    notes: Define a passive producer-tagged trace transport before CPU execution exists.
   - id: M039
     title: Integrate simulation waveform controls
     subsystem: debug
-    status: pending
+    status: active
     dependencies: [M038]
     tests: [platform waveform opt-in and silence tests]
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
