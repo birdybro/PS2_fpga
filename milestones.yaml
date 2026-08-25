@@ -1,0 +1,132 @@
+schema_version: 1
+milestones:
+  - id: M000
+    title: Inspect repository and preserve existing state
+    subsystem: infrastructure
+    status: complete
+    dependencies: []
+    tests:
+      - git diff --check
+      - baseline audit review
+    references:
+      - LICENSE
+      - repository git history
+    commit: "self (milestone(M000): audit repository baseline)"
+    notes: Bootstrap persistent state while documenting the pristine baseline.
+  - id: M001
+    title: Establish project directory structure
+    subsystem: infrastructure
+    status: active
+    dependencies: [M000]
+    tests: [structure manifest check]
+    references: [ARCHITECTURE.md]
+    commit: null
+    notes: Create tracked subsystem boundaries without build artifacts.
+  - id: M002
+    title: Establish build configuration
+    subsystem: infrastructure
+    status: pending
+    dependencies: [M001]
+    tests: [make help]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Provide stable top-level command contracts before tool-specific tests.
+  - id: M003
+    title: Add Verilator compilation smoke test
+    subsystem: verification
+    status: pending
+    dependencies: [M002]
+    tests: [make build]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Compile the smallest synthesizable SystemVerilog design.
+  - id: M004
+    title: Add cocotb smoke test
+    subsystem: verification
+    status: pending
+    dependencies: [M003]
+    tests: [make unit]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Drive and observe the smoke design through cocotb.
+  - id: M005
+    title: Integrate pytest
+    subsystem: verification
+    status: pending
+    dependencies: [M004]
+    tests: [make test]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Make pytest the Python verification orchestrator.
+  - id: M006
+    title: Add top-level test runner
+    subsystem: verification
+    status: pending
+    dependencies: [M005]
+    tests: [make test, make regression]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Expose the required stable command surface.
+  - id: M007
+    title: Add lint configuration
+    subsystem: verification
+    status: pending
+    dependencies: [M006]
+    tests: [make lint]
+    references: [CONTRIBUTING.md]
+    commit: null
+    notes: Lint HDL, Python, documentation state, and repository hygiene.
+  - id: M008
+    title: Add deterministic randomized-test infrastructure
+    subsystem: verification
+    status: pending
+    dependencies: [M007]
+    tests: [make randomized]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Make seeds explicit and reproducible.
+  - id: M009
+    title: Add waveform generation
+    subsystem: simulation
+    status: pending
+    dependencies: [M008]
+    tests: [make waves]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Generate ignored waveforms only on request.
+  - id: M010
+    title: Add GitHub Actions CI
+    subsystem: infrastructure
+    status: pending
+    dependencies: [M009]
+    tests: [workflow syntax check, local CI command]
+    references: [VERIFICATION.md]
+    commit: null
+    notes: Run all required verification layers in CI.
+  - id: M011
+    title: Add progress-state validation infrastructure
+    subsystem: infrastructure
+    status: pending
+    dependencies: [M010]
+    tests: [milestone schema validation]
+    references: [MILESTONES.md]
+    commit: null
+    notes: Validate transitions, dependencies, fields, and resume metadata.
+  - id: M012
+    title: Establish references and provenance infrastructure
+    subsystem: documentation
+    status: pending
+    dependencies: [M011]
+    tests: [reference metadata validation]
+    references: [REFERENCES.md]
+    commit: null
+    notes: Record authoritative legal technical sources and provenance rules.
+  - id: M013
+    title: Establish coding and verification conventions
+    subsystem: documentation
+    status: pending
+    dependencies: [M012]
+    tests: [documentation convention checks]
+    references: [CONTRIBUTING.md, VERIFICATION.md]
+    commit: null
+    notes: Make RTL and test review expectations explicit.
