@@ -391,21 +391,24 @@ milestones:
       - reset event sticky one-shot suppression and re-arm cocotb test
       - default standalone zero-exit and single SIM_PASS marker test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M035): add simulation PASS termination)"
+    commit: 2509cd5
     notes: Provide a simulation-only deterministic successful completion channel.
   - id: M036
     title: Add simulation FAIL termination
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M035]
-    tests: [FAIL code and priority tests]
+    tests:
+      - code event sticky reset and repeated-request cocotb tests
+      - simultaneous FAIL priority and first-terminal-result ordering tests
+      - default standalone nonzero-exit coded SIM_FAIL test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M036): add simulation FAIL termination)"
     notes: Report program failure distinctly from timeout and infrastructure errors.
   - id: M037
     title: Add memory transaction trace
     subsystem: debug
-    status: pending
+    status: active
     dependencies: [M036]
     tests: [trace disabled and deterministic record tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

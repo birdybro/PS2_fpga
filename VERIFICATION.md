@@ -157,6 +157,16 @@ event. A separate standalone Verilator binary exercises the default `$finish`
 path, requires process status zero, and checks that exactly one `SIM_PASS`
 marker appears while all fallback fatal messages remain absent.
 
+## Simulation FAIL termination
+
+One cocotb case suppresses terminal system tasks and exercises multiple reset
+epochs. It verifies reset-time request suppression, exact 32-bit code capture,
+one-cycle FAIL events, sticky failure, held/repeated-request suppression,
+simultaneous FAIL-over-PASS priority, and first-terminal-result behavior in both
+PASS-then-FAIL and FAIL-then-PASS orderings. A standalone Verilator binary drives
+simultaneous requests through the default path and requires nonzero exit, one
+coded `SIM_FAIL` marker, no `SIM_PASS`, and no fallback diagnostic.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit

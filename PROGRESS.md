@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M035 — add simulation PASS termination
-- Next milestone: M036 — add simulation FAIL termination
+- Last completed milestone: M036 — add simulation FAIL termination
+- Next milestone: M037 — add memory transaction trace
 - Current subsystem: simulation control
-- Current regression status: 178 tests pass with no skips; PASS is reset-aware one-shot and exits standalone simulation successfully
+- Current regression status: 180 tests pass with no skips; coded FAIL has deterministic priority and nonzero exit
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M035 milestone commit (this commit)
+- Most recent pushed commit: M036 milestone commit (this commit)
 
 ## Resume note
 

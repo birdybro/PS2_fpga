@@ -20,6 +20,8 @@ async def pass_is_one_shot_per_reset_epoch(dut) -> None:
     cocotb.start_soon(Clock(dut.clk_i, 10, unit="ns").start())
     dut.rst_ni.value = 0
     dut.pass_i.value = 1
+    dut.fail_i.value = 0
+    dut.fail_code_i.value = 0
     assert await sample_cycle(dut) == (0, 0)
 
     dut.rst_ni.value = 1

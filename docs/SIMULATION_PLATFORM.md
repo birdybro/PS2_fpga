@@ -185,6 +185,14 @@ outputs because cocotb correctly classifies an HDL shutdown during an active
 test as premature; the real default completion path is therefore also exercised
 as a standalone Verilator binary and must return status zero.
 
+M036 adds coded FAIL termination to the same one-result-per-reset state. The
+first FAIL captures its complete 32-bit code, emits one event, latches failure,
+prints `SIM_FAIL` with that code, and calls `$fatal` by default for nonzero exit.
+A prior PASS or FAIL makes every later request inert. If PASS and FAIL arrive on
+the same edge, FAIL has explicit priority and no PASS marker or state is emitted.
+Synchronous reset clears both result classes and the captured code. This keeps
+software failure distinct from watchdog `SIM_TIMEOUT` and infrastructure errors.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and
