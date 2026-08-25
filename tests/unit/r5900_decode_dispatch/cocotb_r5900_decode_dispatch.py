@@ -22,6 +22,7 @@ OPERATION_AND = 15
 OPERATION_OR = 16
 OPERATION_XOR = 17
 OPERATION_NOR = 18
+OPERATION_SLT = 19
 
 
 async def check_dispatch(
@@ -252,6 +253,17 @@ async def test_r5900_decode_dispatch_sends_canonical_nor_to_execute(dut) -> None
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_slt_to_execute(dut) -> None:
+    """Dispatch SLT source and destination fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x0000_002A),
+        (4, 0x0020_002A),
+        (0x0010_0000, 0x023F_F82A),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_SLT, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -> None:
     """Preserve fault PC/opcode/word while preventing execute and later writeback."""
     cases = (
@@ -266,6 +278,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (21, 0x0000_0065),
         (22, 0x0000_0066),
         (23, 0x0000_0067),
+        (24, 0x0000_006A),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),

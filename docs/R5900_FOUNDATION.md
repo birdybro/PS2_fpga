@@ -304,6 +304,16 @@ lanes; both destination aliases; identical sources; register zero; PC wrap;
 exact events; and reserved-field rejection. Twelve boundary plus 512 randomized
 cases make NOR the eighteenth complete ISA coverage entry.
 
+Canonical SLT admits every `rs`, `rt`, and `rd` under SPECIAL function `0x2a`
+when reserved `sa` is zero. It compares both low 64-bit scalar source lanes as
+signed integers, writes exactly zero or one to the destination scalar lane, and
+retains old destination bits 127:64. Directed checks cover equality, signed
+minimum and maximum, sign boundaries, and values whose 32-bit and 64-bit
+orderings conflict; ignored source upper lanes; both destination aliases;
+register zero; PC wrap; exact events; and reserved-field rejection. Twelve
+boundary plus 512 randomized cases make SLT the nineteenth complete ISA
+coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

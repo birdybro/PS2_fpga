@@ -493,6 +493,18 @@ deterministic differential/randomized test executes twelve boundary plus 512
 seeded instructions and compares PC, complete GPR state, writeback, and
 retirement after every instruction.
 
+## R5900 SLT
+
+SPECIAL function `0x2a` with reserved `sa` clear now executes SLT for every
+source and destination register field. Four directed cocotb cases cover equal,
+positive, negative, signed minimum, signed maximum, sign-bit, and deliberately
+conflicting 32-bit-versus-64-bit orderings; ignored source bits 127:64;
+preserved destination bits 127:64; exact zero-or-one scalar results; both
+destination aliases; source and destination zero; PC wrap; exact events; and
+reserved-field rejection. A deterministic differential/randomized test
+executes twelve boundary plus 512 seeded instructions and compares PC,
+complete GPR state, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

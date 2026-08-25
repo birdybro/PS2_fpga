@@ -118,11 +118,12 @@ evidence only; no source structure or text is copied.
 ### PCSX2 R5900 interpreter implementation
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate, and
-ADDU, SUBU, AND, OR, XOR, and NOR interpreter operations in this public emulator. It independently
+ADDU, SUBU, AND, OR, XOR, NOR, and SLT interpreter operations in this public emulator. It independently
 corroborates 32-bit operand selection, sign-extended scalar results, preserved
 upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word
 arithmetic wrap and 64-bit scalar logical results, including bounded complement
-for NOR. The project implements that behavior independently in
+for NOR and signed 64-bit comparison with a 0-or-1 scalar result for SLT. The
+project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
 
 <!-- ref:system-v-gabi-elf -->

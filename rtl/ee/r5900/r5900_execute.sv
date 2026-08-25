@@ -34,6 +34,9 @@ module r5900_execute (
     logic [31:0] addiu_word;
     logic [31:0] addu_word;
     logic [31:0] subu_word;
+    logic signed [63:0] slt_source_rs_scalar;
+    logic signed [63:0] slt_source_rt_scalar;
+    logic slt_result;
 
     assign sll_word = source_rt_scalar_i[31:0] << instruction_i[10:6];
     assign srl_word = source_rt_scalar_i[31:0] >> instruction_i[10:6];
@@ -46,6 +49,9 @@ module r5900_execute (
         + {{16{instruction_i[15]}}, instruction_i[15:0]};
     assign addu_word = source_rs_scalar_i[31:0] + source_rt_scalar_i[31:0];
     assign subu_word = source_rs_scalar_i[31:0] - source_rt_scalar_i[31:0];
+    assign slt_source_rs_scalar = $signed(source_rs_scalar_i);
+    assign slt_source_rt_scalar = $signed(source_rt_scalar_i);
+    assign slt_result = slt_source_rs_scalar < slt_source_rt_scalar;
 
     always_comb begin
         complete_o = 1'b0;
@@ -378,6 +384,26 @@ module r5900_execute (
                         writeback_value_o = {
                             destination_upper_i,
                             ~(source_rs_scalar_i | source_rt_scalar_i)
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_SLT: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h2a)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            63'd0,
+                            slt_result
                         };
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;

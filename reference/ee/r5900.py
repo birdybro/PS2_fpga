@@ -28,6 +28,7 @@ AND_FUNCTION = 36
 OR_FUNCTION = 37
 XOR_FUNCTION = 38
 NOR_FUNCTION = 39
+SLT_FUNCTION = 42
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -213,6 +214,14 @@ def encode_nor(destination: int, source_a: int, source_b: int) -> int:
     return (rs << 21) | (rt << 16) | (rd << 11) | NOR_FUNCTION
 
 
+def encode_slt(destination: int, source_a: int, source_b: int) -> int:
+    """Encode canonical SPECIAL SLT with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(source_a)
+    rt = _require_gpr_index(source_b)
+    return (rs << 21) | (rt << 16) | (rd << 11) | SLT_FUNCTION
+
+
 def _merge_scalar(old_destination: int, scalar: int) -> int:
     """Replace the low 64-bit scalar lane and preserve the upper GPR lane."""
     return (old_destination & (GPR_MASK ^ SCALAR_MASK)) | (scalar & SCALAR_MASK)
@@ -231,6 +240,12 @@ def _as_signed_word(value: int) -> int:
     """Interpret an already width-masked word as a signed Python integer."""
     word = value & WORD_MASK
     return word - (1 << WORD_WIDTH) if word & (1 << (WORD_WIDTH - 1)) else word
+
+
+def _as_signed_scalar(value: int) -> int:
+    """Interpret an already width-masked scalar as a signed Python integer."""
+    scalar = value & SCALAR_MASK
+    return scalar - (1 << SCALAR_WIDTH) if scalar & (1 << (SCALAR_WIDTH - 1)) else scalar
 
 
 @dataclass(frozen=True, slots=True)
@@ -404,19 +419,36 @@ class R5900State:
         result = _merge_scalar(self.read_gpr(rd), scalar)
         return self.write_gpr(rd, result)
 
-    def _step_register_alu(self, word: int, function: int) -> R5900State:
-        """Dispatch one admitted SPECIAL register ALU operation."""
-        if function == ADDU_FUNCTION:
-            return self._step_addu(word)
-        if function == SUBU_FUNCTION:
-            return self._step_subu(word)
+    def _step_slt(self, word: int) -> R5900State:
+        """Compare signed low 64-bit scalar lanes and preserve the destination upper lane."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        result = _merge_scalar(
+            self.read_gpr(rd),
+            int(_as_signed_scalar(self.read_gpr(rs)) < _as_signed_scalar(self.read_gpr(rt))),
+        )
+        return self.write_gpr(rd, result)
+
+    def _step_logical_or_compare(self, word: int, function: int) -> R5900State:
+        """Dispatch one admitted SPECIAL logical or comparison operation."""
         if function == AND_FUNCTION:
             return self._step_and(word)
         if function == OR_FUNCTION:
             return self._step_or(word)
         if function == XOR_FUNCTION:
             return self._step_xor(word)
-        return self._step_nor(word)
+        if function == NOR_FUNCTION:
+            return self._step_nor(word)
+        return self._step_slt(word)
+
+    def _step_register_alu(self, word: int, function: int) -> R5900State:
+        """Dispatch one admitted SPECIAL register ALU operation."""
+        if function == ADDU_FUNCTION:
+            return self._step_addu(word)
+        if function == SUBU_FUNCTION:
+            return self._step_subu(word)
+        return self._step_logical_or_compare(word, function)
 
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
@@ -439,6 +471,7 @@ class R5900State:
                 OR_FUNCTION,
                 XOR_FUNCTION,
                 NOR_FUNCTION,
+                SLT_FUNCTION,
             ):
                 updated = self._step_register_alu(word, function)
             elif opcode == ANDI_OPCODE:

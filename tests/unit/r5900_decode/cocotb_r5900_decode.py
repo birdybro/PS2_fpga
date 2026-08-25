@@ -22,6 +22,7 @@ OPERATION_AND = 15
 OPERATION_OR = 16
 OPERATION_XOR = 17
 OPERATION_NOR = 18
+OPERATION_SLT = 19
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -280,6 +281,21 @@ async def test_r5900_decode_recognizes_every_nor_register_field(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_every_slt_register_field(dut) -> None:
+    """Admit all SLT register fields while its reserved shift field stays zero."""
+    for rs, rt, rd in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rs << 21) | (rt << 16) | (rd << 11) | 0x2A
+        await check_decode(dut, word, True, OPERATION_SLT)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep every unsupported non-SPECIAL primary opcode space closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
@@ -296,7 +312,8 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         *range(5, 6),
         *range(8, 33),
         *range(34, 35),
-        *range(40, 64),
+        *range(40, 42),
+        *range(43, 64),
     ):
         await check_decode(dut, function, False, OPERATION_NONE)
 
@@ -311,4 +328,5 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         await check_decode(dut, (value << 6) | 0x25, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x26, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x27, False, OPERATION_NONE)
+        await check_decode(dut, (value << 6) | 0x2A, False, OPERATION_NONE)
         await check_decode(dut, (0x0F << 26) | (value << 21), False, OPERATION_NONE)

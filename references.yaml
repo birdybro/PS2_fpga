@@ -120,7 +120,9 @@ references:
     license: GPL-3.0; repository COPYING.GPLv3 reviewed before consultation
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [scalar shift LUI logical immediate ADDIU ADDU SUBU AND OR XOR and NOR interpreter operations]
+    consulted_sections:
+      - scalar shift and immediate interpreter operations
+      - ADDU SUBU AND OR XOR NOR and SLT interpreter operations
     notes: >-
       Corroborates R5900 scalar result widths and immediate or register arithmetic handling;
       no source structure was copied.
@@ -165,6 +167,7 @@ references:
       - OR instruction description
       - XOR instruction description
       - NOR instruction description
+      - SLT instruction description
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual
