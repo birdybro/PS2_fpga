@@ -16,6 +16,10 @@ dedicated roadmap-expansion boundary before R5900 implementation begins. The
 first Phase 2 expansion adds 39 independently gated milestones covering the ISA
 coverage database, reference and RTL state, fetch/decode/writeback foundations,
 22 individual scalar encodings, and three CPU/platform execution gates.
+The second Phase 2 expansion adds 36 gates: Python and RTL state for both
+`HI`/`LO` pairs, 32 individually owned doubleword and multiply/divide
+encodings, one generated-program integration test, and the next branch/jump
+planning boundary.
 
 The design contract and exit criteria for Phase 1 are documented in
 `docs/SIMULATION_PLATFORM.md`; the first CPU boundary is documented in
@@ -24,10 +28,11 @@ order, title, subsystem ownership, and one-step dependency a tested contract.
 Later major subsystems will be expanded the same way before implementation.
 
 Architectural feature status is tracked independently from roadmap completion.
-`coverage/r5900_isa.yaml` starts with the 22 scalar foundation encodings and
-separates decoded, implemented, directed-test, randomized-differential, and
-exception-test state. `scripts/check_r5900_coverage.py` validates inventory,
-roadmap ownership, source provenance, and honest summary status.
+`coverage/r5900_isa.yaml` tracks the 22 complete scalar foundation encodings
+and 32 pending integer-extension encodings. It separates decoded, implemented,
+directed-test, randomized-differential, and exception-test state.
+`scripts/check_r5900_coverage.py` validates exact inventory, roadmap ownership,
+source provenance, and honest summary status.
 
 ## Machine-readable schema
 

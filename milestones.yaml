@@ -1088,14 +1088,345 @@ milestones:
       - docs/SIMULATION_PLATFORM.md
       - ARCHITECTURE.md
       - VERIFICATION.md
-    commit: "self (milestone(M081): execute R5900 arithmetic EE ELF)"
+    commit: e7ff992
     notes: Load a generated native EE executable, run from its entry, compare state and trace, and reach PASS.
   - id: M082
     title: Expand R5900 64-bit integer roadmap
     subsystem: planning
-    status: active
+    status: complete
     dependencies: [M081]
-    tests: [64-bit instruction inventory and roadmap validation]
+    tests:
+      - exact 36-milestone extension sequence validation
+      - missing doubleword instruction and bundled HI LO dependency rejection tests
+      - exact 32-instruction coverage inventory and ownership validation
+      - generic MIPS DMULT exclusion guard
+      - source provenance validation
+    references: [REFERENCES.md, references.yaml, docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
+    commit: "self (milestone(M082): expand R5900 64-bit integer roadmap)"
+    notes: >-
+      Enumerate documented nontrapping doubleword, multiply/divide, and
+      dual-HI/LO behavior without claiming generic MIPS-only operations.
+  - id: M083
+    title: Define Python R5900 HI LO state
+    subsystem: reference
+    status: active
+    dependencies: [M082]
+    tests: [primary and secondary HI LO initialization copy and width tests]
+    references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
+    commit: null
+    notes: Add independent 64-bit HI LO HI1 and LO1 architectural state to the Python model.
+  - id: M084
+    title: Define RTL R5900 HI LO state
+    subsystem: r5900
+    status: pending
+    dependencies: [M083]
+    tests: [four-register width storage hold and simulation-initialization tests]
+    references: [docs/R5900_FOUNDATION.md, REFERENCES.md]
+    commit: null
+    notes: Add synthesizable state for both documented multiply/divide pipelines without inventing reset values.
+  - id: M085
+    title: Implement R5900 DSLL
+    subsystem: r5900
+    status: pending
+    dependencies: [M084]
+    tests: [decode boundaries aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement one immediate low-range doubleword left shift.
+  - id: M086
+    title: Implement R5900 DSRL
+    subsystem: r5900
+    status: pending
+    dependencies: [M085]
+    tests: [decode boundaries aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement one immediate low-range logical doubleword right shift.
+  - id: M087
+    title: Implement R5900 DSRA
+    subsystem: r5900
+    status: pending
+    dependencies: [M086]
+    tests: [decode sign boundaries aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement one immediate low-range arithmetic doubleword right shift.
+  - id: M088
+    title: Implement R5900 DSLL32
+    subsystem: r5900
+    status: pending
+    dependencies: [M087]
+    tests: [shift-32 shift-63 aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement the immediate high-range doubleword left shift.
+  - id: M089
+    title: Implement R5900 DSRL32
+    subsystem: r5900
+    status: pending
+    dependencies: [M088]
+    tests: [shift-32 shift-63 aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement the immediate high-range logical doubleword right shift.
+  - id: M090
+    title: Implement R5900 DSRA32
+    subsystem: r5900
+    status: pending
+    dependencies: [M089]
+    tests: [shift-32 shift-63 sign aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement the immediate high-range arithmetic doubleword right shift.
+  - id: M091
+    title: Implement R5900 DSLLV
+    subsystem: r5900
+    status: pending
+    dependencies: [M090]
+    tests: [masked-count boundaries aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement variable doubleword logical left shift.
+  - id: M092
+    title: Implement R5900 DSRLV
+    subsystem: r5900
+    status: pending
+    dependencies: [M091]
+    tests: [masked-count boundaries aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement variable doubleword logical right shift.
+  - id: M093
+    title: Implement R5900 DSRAV
+    subsystem: r5900
+    status: pending
+    dependencies: [M092]
+    tests: [masked-count sign boundaries aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement variable doubleword arithmetic right shift.
+  - id: M094
+    title: Implement R5900 DADDIU
+    subsystem: r5900
+    status: pending
+    dependencies: [M093]
+    tests: [immediate sign extension wrap aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement nontrapping 64-bit immediate addition.
+  - id: M095
+    title: Implement R5900 DADDU
+    subsystem: r5900
+    status: pending
+    dependencies: [M094]
+    tests: [carry wrap aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement nontrapping 64-bit register addition.
+  - id: M096
+    title: Implement R5900 DSUBU
+    subsystem: r5900
+    status: pending
+    dependencies: [M095]
+    tests: [borrow wrap aliases upper-lane preservation and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Implement nontrapping 64-bit register subtraction.
+  - id: M097
+    title: Implement R5900 MULT
+    subsystem: r5900
+    status: pending
+    dependencies: [M096]
+    tests: [signed extrema HI LO optional-rd and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve and implement signed word multiply on the primary HI LO path.
+  - id: M098
+    title: Implement R5900 MULTU
+    subsystem: r5900
+    status: pending
+    dependencies: [M097]
+    tests: [unsigned extrema HI LO optional-rd and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve and implement unsigned word multiply on the primary HI LO path.
+  - id: M099
+    title: Implement R5900 DIV
+    subsystem: r5900
+    status: pending
+    dependencies: [M098]
+    tests: [signed quotient remainder zero overflow and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve R5900 edge results and implement signed word divide on the primary path.
+  - id: M100
+    title: Implement R5900 DIVU
+    subsystem: r5900
+    status: pending
+    dependencies: [M099]
+    tests: [unsigned quotient remainder divide-by-zero and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve R5900 edge results and implement unsigned word divide on the primary path.
+  - id: M101
+    title: Implement R5900 MFHI
+    subsystem: r5900
+    status: pending
+    dependencies: [M100]
+    tests: [HI transfer upper-lane destination alias zero-register and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer the primary HI state to a GPR using documented scalar-lane behavior.
+  - id: M102
+    title: Implement R5900 MFLO
+    subsystem: r5900
+    status: pending
+    dependencies: [M101]
+    tests: [LO transfer upper-lane destination alias zero-register and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer the primary LO state to a GPR using documented scalar-lane behavior.
+  - id: M103
+    title: Implement R5900 MTHI
+    subsystem: r5900
+    status: pending
+    dependencies: [M102]
+    tests: [GPR-to-HI source width alias and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer a GPR scalar value into primary HI state.
+  - id: M104
+    title: Implement R5900 MTLO
+    subsystem: r5900
+    status: pending
+    dependencies: [M103]
+    tests: [GPR-to-LO source width alias and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer a GPR scalar value into primary LO state.
+  - id: M105
+    title: Implement R5900 MULT1
+    subsystem: r5900
+    status: pending
+    dependencies: [M104]
+    tests: [signed extrema HI1 LO1 isolation optional-rd and differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Implement signed word multiply on the secondary HI1 LO1 path.
+  - id: M106
+    title: Implement R5900 MULTU1
+    subsystem: r5900
+    status: pending
+    dependencies: [M105]
+    tests: [unsigned extrema HI1 LO1 isolation optional-rd and differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Implement unsigned word multiply on the secondary HI1 LO1 path.
+  - id: M107
+    title: Implement R5900 DIV1
+    subsystem: r5900
+    status: pending
+    dependencies: [M106]
+    tests: [signed edge results HI1 LO1 isolation and differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Implement signed word divide on the secondary HI1 LO1 path.
+  - id: M108
+    title: Implement R5900 DIVU1
+    subsystem: r5900
+    status: pending
+    dependencies: [M107]
+    tests: [unsigned edge results HI1 LO1 isolation and differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Implement unsigned word divide on the secondary HI1 LO1 path.
+  - id: M109
+    title: Implement R5900 MFHI1
+    subsystem: r5900
+    status: pending
+    dependencies: [M108]
+    tests: [HI1 transfer primary isolation upper-lane and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer secondary HI1 state to a GPR.
+  - id: M110
+    title: Implement R5900 MFLO1
+    subsystem: r5900
+    status: pending
+    dependencies: [M109]
+    tests: [LO1 transfer primary isolation upper-lane and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer secondary LO1 state to a GPR.
+  - id: M111
+    title: Implement R5900 MTHI1
+    subsystem: r5900
+    status: pending
+    dependencies: [M110]
+    tests: [GPR-to-HI1 primary isolation source width and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer a GPR scalar value into secondary HI1 state.
+  - id: M112
+    title: Implement R5900 MTLO1
+    subsystem: r5900
+    status: pending
+    dependencies: [M111]
+    tests: [GPR-to-LO1 primary isolation source width and differential tests]
+    references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
+    commit: null
+    notes: Transfer a GPR scalar value into secondary LO1 state.
+  - id: M113
+    title: Implement R5900 MADD
+    subsystem: r5900
+    status: pending
+    dependencies: [M112]
+    tests: [signed accumulation carry optional-rd and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve and implement signed multiply-accumulate on primary HI LO.
+  - id: M114
+    title: Implement R5900 MADDU
+    subsystem: r5900
+    status: pending
+    dependencies: [M113]
+    tests: [unsigned accumulation carry optional-rd and randomized differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve and implement unsigned multiply-accumulate on primary HI LO.
+  - id: M115
+    title: Implement R5900 MADD1
+    subsystem: r5900
+    status: pending
+    dependencies: [M114]
+    tests: [signed secondary accumulation isolation optional-rd and differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve and implement signed multiply-accumulate on secondary HI1 LO1.
+  - id: M116
+    title: Implement R5900 MADDU1
+    subsystem: r5900
+    status: pending
+    dependencies: [M115]
+    tests: [unsigned secondary accumulation isolation optional-rd and differential tests]
+    references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
+    commit: null
+    notes: Resolve and implement unsigned multiply-accumulate on secondary HI1 LO1.
+  - id: M117
+    title: Execute an R5900 dual HI LO program
+    subsystem: integration
+    status: pending
+    dependencies: [M116]
+    tests: [generated EE ELF exact retirement GPR dual-pair state trace and PASS tests]
+    references: [docs/R5900_FOUNDATION.md, VERIFICATION.md]
+    commit: null
+    notes: Exercise both multiply/divide paths and doubleword arithmetic in one deterministic program.
+  - id: M118
+    title: Expand R5900 branch and jump roadmap
+    subsystem: planning
+    status: pending
+    dependencies: [M117]
+    tests: [control-flow inventory ownership dependency and coverage validation]
     references: [REFERENCES.md, docs/R5900_FOUNDATION.md]
     commit: null
-    notes: Enumerate doubleword shifts arithmetic multiply divide and HI LO behavior.
+    notes: Enumerate control transfer and delay-slot milestones after the integer extension is green.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate granular simulation-platform and R5900 foundation roadmaps."""
+"""Validate granular simulation-platform and R5900 scalar roadmaps."""
 
 from pathlib import Path
 from typing import Any
@@ -79,7 +79,45 @@ PHASE2_FOUNDATION_ROADMAP = (
     ("M080", "Execute a sequential R5900 NOP image", "integration", "M079"),
     ("M081", "Execute an R5900 arithmetic EE ELF", "integration", "M080"),
 )
-NEXT_R5900_PHASE = ("M082", "Expand R5900 64-bit integer roadmap", "planning", "M081")
+PHASE2_INTEGER_EXTENSION_ROADMAP = (
+    ("M082", "Expand R5900 64-bit integer roadmap", "planning", "M081"),
+    ("M083", "Define Python R5900 HI LO state", "reference", "M082"),
+    ("M084", "Define RTL R5900 HI LO state", "r5900", "M083"),
+    ("M085", "Implement R5900 DSLL", "r5900", "M084"),
+    ("M086", "Implement R5900 DSRL", "r5900", "M085"),
+    ("M087", "Implement R5900 DSRA", "r5900", "M086"),
+    ("M088", "Implement R5900 DSLL32", "r5900", "M087"),
+    ("M089", "Implement R5900 DSRL32", "r5900", "M088"),
+    ("M090", "Implement R5900 DSRA32", "r5900", "M089"),
+    ("M091", "Implement R5900 DSLLV", "r5900", "M090"),
+    ("M092", "Implement R5900 DSRLV", "r5900", "M091"),
+    ("M093", "Implement R5900 DSRAV", "r5900", "M092"),
+    ("M094", "Implement R5900 DADDIU", "r5900", "M093"),
+    ("M095", "Implement R5900 DADDU", "r5900", "M094"),
+    ("M096", "Implement R5900 DSUBU", "r5900", "M095"),
+    ("M097", "Implement R5900 MULT", "r5900", "M096"),
+    ("M098", "Implement R5900 MULTU", "r5900", "M097"),
+    ("M099", "Implement R5900 DIV", "r5900", "M098"),
+    ("M100", "Implement R5900 DIVU", "r5900", "M099"),
+    ("M101", "Implement R5900 MFHI", "r5900", "M100"),
+    ("M102", "Implement R5900 MFLO", "r5900", "M101"),
+    ("M103", "Implement R5900 MTHI", "r5900", "M102"),
+    ("M104", "Implement R5900 MTLO", "r5900", "M103"),
+    ("M105", "Implement R5900 MULT1", "r5900", "M104"),
+    ("M106", "Implement R5900 MULTU1", "r5900", "M105"),
+    ("M107", "Implement R5900 DIV1", "r5900", "M106"),
+    ("M108", "Implement R5900 DIVU1", "r5900", "M107"),
+    ("M109", "Implement R5900 MFHI1", "r5900", "M108"),
+    ("M110", "Implement R5900 MFLO1", "r5900", "M109"),
+    ("M111", "Implement R5900 MTHI1", "r5900", "M110"),
+    ("M112", "Implement R5900 MTLO1", "r5900", "M111"),
+    ("M113", "Implement R5900 MADD", "r5900", "M112"),
+    ("M114", "Implement R5900 MADDU", "r5900", "M113"),
+    ("M115", "Implement R5900 MADD1", "r5900", "M114"),
+    ("M116", "Implement R5900 MADDU1", "r5900", "M115"),
+    ("M117", "Execute an R5900 dual HI LO program", "integration", "M116"),
+)
+NEXT_R5900_PHASE = ("M118", "Expand R5900 branch and jump roadmap", "planning", "M117")
 
 
 def _validate_roadmap(data: Any, expected: tuple[tuple[str, str, str, str], ...]) -> list[str]:
@@ -119,22 +157,32 @@ def validate_phase1_roadmap(data: Any) -> list[str]:
 
 def validate_phase2_foundation_roadmap(data: Any) -> list[str]:
     """Return errors in the granular R5900 functional-foundation sequence."""
-    return _validate_roadmap(data, (*PHASE2_FOUNDATION_ROADMAP, NEXT_R5900_PHASE))
+    return _validate_roadmap(
+        data, (*PHASE2_FOUNDATION_ROADMAP, PHASE2_INTEGER_EXTENSION_ROADMAP[0])
+    )
+
+
+def validate_phase2_integer_extension_roadmap(data: Any) -> list[str]:
+    """Return errors in the doubleword and dual-HI/LO sequence."""
+    return _validate_roadmap(data, (*PHASE2_INTEGER_EXTENSION_ROADMAP, NEXT_R5900_PHASE))
 
 
 def main() -> int:
     data = yaml.safe_load(MILESTONES_PATH.read_text(encoding="utf-8"))
     phase1_errors = validate_phase1_roadmap(data)
     phase2_errors = validate_phase2_foundation_roadmap(data)
-    if phase1_errors or phase2_errors:
+    integer_errors = validate_phase2_integer_extension_roadmap(data)
+    if phase1_errors or phase2_errors or integer_errors:
         print("Roadmap validation failed:")
-        for error in (*phase1_errors, *phase2_errors):
+        for error in (*phase1_errors, *phase2_errors, *integer_errors):
             print(f"  {error}")
         return 1
     print(
         "roadmaps: "
         f"Phase 1 has {len(PHASE1_ROADMAP)} milestones; "
-        f"R5900 foundation has {len(PHASE2_FOUNDATION_ROADMAP)} milestones"
+        f"R5900 foundation has {len(PHASE2_FOUNDATION_ROADMAP)} milestones; "
+        "R5900 integer extension has "
+        f"{len(PHASE2_INTEGER_EXTENSION_ROADMAP)} milestones"
     )
     return 0
 

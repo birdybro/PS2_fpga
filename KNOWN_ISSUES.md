@@ -3,26 +3,42 @@
 ## Unimplemented architecture
 
 The Phase 1 simulation platform, loaders, behavioral RAM, and debug controls are
-implemented. Phase 2 now has isolated R5900 GPR, PC, control, and instruction
-fetch request/response RTL, but these blocks are not yet composed into an
-executing CPU. This is not a claim of CPU compatibility.
+implemented. Phase 2 composes GPR, PC, control, fetch, decode, execute, and
+writeback RTL into a functional single-issue core. A generated EE ELF executes
+13 straight-line instructions and reaches deterministic PASS, but this is not
+a claim of general CPU compatibility.
 
-Instruction fetch request and response paths are independently implemented but
-not yet composed with control or RAM. Bus errors are retained as functional
-fetch status. Instruction fields are extracted and exact zero-word NOP, all six
-canonical 32-bit shifts, LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU, AND, OR, and XOR are implemented with
-PC advance and retirement trace. No other instruction executes. Illegal words
-emit a functional diagnostic and are suppressed before execution, but do not
-enter an architectural exception; COP0 remains unimplemented.
+Bus errors are retained as functional fetch status. Exact zero-word NOP, all
+six canonical 32-bit shifts, LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU, AND, OR,
+XOR, NOR, SLT, SLTU, SLTI, and SLTIU execute with PC advance, retirement trace,
+and centralized writeback. No other instruction executes. Illegal words emit a
+functional diagnostic and are suppressed before execution, but do not enter an
+architectural exception; COP0 remains unimplemented.
 
 GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-NOP, all six 32-bit shifts, LUI, ORI, ANDI, XORI, ADDIU, ADDU, SUBU, AND, OR, and
-XOR are complete; the other 5 entries in the initial R5900 ISA coverage matrix remain pending. The
-matrix records planned encodings and ownership; each remaining row must pass
-its instruction milestone before becoming complete.
+All 22 entries in the initial scalar foundation are complete. The 32 rows added
+by the doubleword and dual-HI/LO roadmap are pending; each must pass its own
+instruction milestone before becoming complete.
+
+The R5900-specific tables omit generic MIPS `DMULT`, `DMULTU`, `DDIV`, and
+`DDIVU`, so they are intentionally absent instead of inherited from the base
+manual. Trapping `DADDI`, `DADD`, and `DSUB` remain deferred until architectural
+integer-overflow exception entry exists.
+
+Public sources establish four 64-bit multiply/divide registers (`HI`, `LO`,
+`HI1`, and `LO1`) but not their post-reset values. M084 must preserve that
+unknown boundary rather than zero-initializing architectural state without
+evidence.
+
+R5900 optional-`rd` results for `MULT`, `MULTU`, `MADD`, `MADDU`, and their
+pipeline-1 forms require semantic and destination-width corroboration before
+M097, M098, M105, and M106 or M113 through M116 can complete. R5900
+signed-overflow and divide-by-zero results require the same treatment in M099,
+M100, M107, and M108. Until those milestones resolve them, these operations
+remain unimplemented rather than approximated.
 
 No consulted public R5900 source defines the post-reset values of GPR 1 through
 31. The physical storage therefore has no reset input and tests initialize every

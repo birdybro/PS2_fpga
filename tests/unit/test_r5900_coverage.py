@@ -26,8 +26,8 @@ def validate(coverage: dict) -> list[str]:
 
 
 @pytest.mark.unit
-def test_repository_r5900_foundation_coverage_is_valid() -> None:
-    """Require one well-formed coverage owner for every foundation encoding."""
+def test_repository_r5900_scalar_coverage_is_valid() -> None:
+    """Require one well-formed coverage owner for every planned scalar encoding."""
     assert validate(load_yaml("coverage/r5900_isa.yaml")) == []
 
 
@@ -81,3 +81,27 @@ def test_r5900_coverage_rejects_unknown_reference() -> None:
 
     errors = validate(coverage)
     assert "NOP.references names unknown sources: unreviewed-source" in errors
+
+
+@pytest.mark.unit
+def test_r5900_coverage_rejects_missing_integer_extension() -> None:
+    """Prevent a second-pipeline operation from silently disappearing."""
+    coverage = deepcopy(load_yaml("coverage/r5900_isa.yaml"))
+    coverage["instructions"] = [
+        entry for entry in coverage["instructions"] if entry["mnemonic"] != "DIV1"
+    ]
+
+    errors = validate(coverage)
+    assert "missing integer extension instructions: DIV1" in errors
+
+
+@pytest.mark.unit
+def test_r5900_coverage_rejects_unowned_base_mips_operation() -> None:
+    """Do not imply R5900 support merely because generic MIPS IV defines an opcode."""
+    coverage = deepcopy(load_yaml("coverage/r5900_isa.yaml"))
+    extra = deepcopy(coverage["instructions"][-1])
+    extra["mnemonic"] = "DMULT"
+    coverage["instructions"].append(extra)
+
+    errors = validate(coverage)
+    assert "unexpected scalar roadmap instructions: DMULT" in errors

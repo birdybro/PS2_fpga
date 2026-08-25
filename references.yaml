@@ -85,7 +85,11 @@ references:
       - subsystem coverage
       - EE Registers
       - EE Instruction Decoding
-    notes: Independently documents 128-bit EE GPRs and canonical scalar shift encodings.
+      - SPECIAL and MMI instruction tables
+      - HI LO HI1 and LO1 register descriptions
+    notes: >-
+      Independently documents 128-bit EE GPRs, the doubleword instruction
+      subset, and both multiply/divide register pairs.
   - id: binutils-r5900-review
     title: GNU Binutils R5900 support review
     url: https://sourceware.org/pipermail/binutils/2013-January/079862.html
@@ -93,13 +97,17 @@ references:
     role: toolchain
     subsystems: [r5900, fpu, mmi, elf, software]
     license: Mailing-list text; linked patch code is GNU project licensed
-    source_code_consulted: false
+    source_code_consulted: true
     redistribution: link-only
     consulted_sections:
       - architecture review summary and accepted target support
       - R5900 subset exclusions
       - single-precision FPU and opcode divergence discussion
-    notes: Toolchain evidence and planning guardrail; not a substitute for hardware semantics.
+      - linked R5900 opcode table additions
+      - linked R5900 assembler encoding tests
+    notes: >-
+      GNU-licensed opcode and test patch source was inspected for inventory and
+      encoding corroboration only; no implementation structure was copied.
   - id: qemu-r5900-overview
     title: QEMU R5900 multimedia instruction overview patch review
     url: https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/bcc29487f67d12865795c6a357203c41a8027c23.1540134918.git.noring@nocrew.org/
@@ -109,8 +117,10 @@ references:
     license: GPL-2.0-or-later QEMU project contribution
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [R5900 128-bit GPR overview comment]
-    notes: Corroborates that ordinary scalar operations do not consume the upper GPR lane.
+    consulted_sections:
+      - R5900 128-bit GPR overview comment
+      - pipeline 1 multiply divide and HI1 LO1 operation inventory
+    notes: Corroborates scalar-lane use and the independently encoded second multiply/divide path.
   - id: pcsx2-r5900-interpreter
     title: PCSX2 R5900 interpreter implementation
     url: https://github.com/PCSX2/pcsx2/blob/master/pcsx2/R5900OpcodeImpl.cpp
@@ -171,8 +181,13 @@ references:
       - SLTU instruction description
       - SLTI instruction description
       - SLTIU instruction description
+      - DSLL DSRL DSRA DSLL32 DSRL32 and DSRA32 instruction descriptions
+      - DSLLV DSRLV and DSRAV instruction descriptions
+      - DADDIU DADDU and DSUBU instruction descriptions
+      - MULT MULTU DIV DIVU MFHI MFLO MTHI and MTLO instruction descriptions
+      - multiply divide HI and LO result conventions
       - load store ALU jump branch miscellaneous and coprocessor summaries
-    notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
+    notes: Public base-ISA semantics manual; PS2Tek and GNU R5900 tables separately establish inclusion and exclusions.
   - id: mips-r10000-manual
     title: MIPS R10000 Microprocessor User's Manual
     url: https://techpubs.jurassic.nl/library/manuals/2000/007-2490-001/pdf/007-2490-001.pdf

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M081 — execute an R5900 arithmetic EE ELF
-- Next milestone: M082 — expand the R5900 64-bit integer roadmap
-- Current subsystem: R5900 64-bit integer planning
-- Current regression status: 483 tests pass with no skips; generated EE ELF entry, 13 retirements, 12 writebacks, final GPR state, automatic trace, and deterministic PASS are green
-- Known architectural inaccuracies: only the 22-instruction straight-line scalar foundation is integrated; branches, data memory, exceptions, and compiled C are absent
+- Last completed milestone: M082 — expand the R5900 64-bit integer roadmap
+- Next milestone: M083 — define Python R5900 HI LO state
+- Current subsystem: R5900 multiply/divide architectural reference state
+- Current regression status: 488 tests pass with no skips; the 36-milestone integer extension and exact 54-row scalar ISA coverage inventory are green
+- Known architectural inaccuracies: only the 22-instruction straight-line scalar foundation executes; 32 doubleword and dual-HI/LO operations are planned but pending, and branches, data memory, exceptions, and compiled C are absent
 - Known timing inaccuracies: the core uses a deliberately functional five-state sequence, registered request handoff, and one-entry fetch buffer; pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M081 milestone commit (this commit)
+- Most recent pushed commit: M082 milestone commit (this commit)
 
 ## Resume note
 
@@ -22,4 +22,5 @@ GPR blocks now form a functional core. A generated native EE ELF loads into
 behavioral RAM, begins at its published entry, executes 13 straight-line words,
 matches exact retirement, writeback, final GPR, and architectural trace state,
 then reaches the simulator PASS latch. Resume with the single active milestone
-in `milestones.yaml` to expand the 64-bit integer roadmap.
+in `milestones.yaml` to add independently verified `HI`, `LO`, `HI1`, and `LO1`
+state to the Python reference model.

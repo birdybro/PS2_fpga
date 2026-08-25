@@ -37,6 +37,44 @@ evidence for its exact R5900 encoding, affected GPR width, extension rule, and
 exception behavior before its coverage entry can become implemented. Unknowns
 remain pending rather than inheriting generic MIPS behavior silently.
 
+## 64-bit integer and dual-HI/LO roadmap
+
+M082 expands the next functional integer boundary into 36 independently gated
+milestones. The machine-readable ISA matrix now owns 32 additional encodings:
+
+- immediate doubleword shifts: `DSLL`, `DSRL`, `DSRA`, `DSLL32`, `DSRL32`,
+  and `DSRA32`;
+- variable doubleword shifts: `DSLLV`, `DSRLV`, and `DSRAV`;
+- nontrapping doubleword arithmetic: `DADDIU`, `DADDU`, and `DSUBU`;
+- primary multiply/divide and transfers: `MULT`, `MULTU`, `DIV`, `DIVU`,
+  `MFHI`, `MFLO`, `MTHI`, and `MTLO`;
+- secondary-path equivalents: `MULT1`, `MULTU1`, `DIV1`, `DIVU1`, `MFHI1`,
+  `MFLO1`, `MTHI1`, and `MTLO1`; and
+- multiply-accumulate operations: `MADD`, `MADDU`, `MADD1`, and `MADDU1`.
+
+PS2Tek's SPECIAL and MMI tables establish the R5900-specific inclusion and
+encodings, while the public MIPS IV manual supplies base semantics where the
+operation is shared. GNU assembler opcode and encoding tests independently
+corroborate the inventory, including optional `rd` forms for R5900 multiply and
+multiply-accumulate instructions. The QEMU R5900 overview corroborates the
+separate pipeline-1 operation set. These sources are recorded with consultation
+and license metadata in `references.yaml`.
+
+Generic MIPS III/IV `DMULT`, `DMULTU`, `DDIV`, and `DDIVU` are deliberately not
+in the R5900 roadmap: their SPECIAL function positions are absent in the
+R5900-specific table, and the GNU target excludes them. Conversely, trapping
+`DADDI`, `DADD`, and `DSUB` are documented R5900 encodings but are deferred to
+the exception roadmap so they cannot be implemented as silently nontrapping
+operations. Branch and jump expansion begins only after the planned
+doubleword/dual-HI/LO integration gate.
+
+The roadmap does not turn uncertain behavior into a specification. The
+optional-`rd` result and destination-width rules must be corroborated during
+the corresponding multiply milestone. Signed overflow and divide-by-zero
+results must be resolved for the R5900 before either divide path is admitted.
+Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
+also unproven, so M084 must not invent a reset value.
+
 ## Initial architectural state
 
 The timing-free Python reference state contains 32 general-purpose registers
@@ -52,9 +90,9 @@ writeback event as those milestones arrive. Its type package already fixes a
 writeback and reserved-instruction records. The debug interface exposes these
 types through producer and monitor views, but does not implement storage. Those
 timing and diagnostic fields do not belong in the reference model's
-architectural snapshot. HI/LO-family state, COP0, exception entry, branches and
-delay slots, data-memory operations, FPU, and MMI state are added only by later
-granular roadmaps.
+architectural snapshot. HI/LO-family state begins with M083 and M084; COP0,
+exception entry, branches and delay slots, data-memory operations, FPU, and the
+remaining MMI state are added only by later granular roadmaps.
 
 The first physical GPR storage block has two combinational read ports, one
 synchronous write port, and a packed debug snapshot. It deliberately does not

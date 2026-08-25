@@ -62,7 +62,10 @@ VIF, VU, GS, IOP, and SIF coverage. The upstream repository does not state a
 license, so it is link-only and architectural details require corroboration.
 Its EE register section identifies 32 128-bit GPRs and the hardwired-zero
 register, and its instruction table identifies the canonical scalar shift
-encodings; it does not document post-reset contents for the other GPRs.
+encodings. Its SPECIAL and MMI tables separately enumerate the R5900
+doubleword shifts, nontrapping doubleword arithmetic, primary multiply/divide
+operations, and the second `HI1`/`LO1` path. It does not document post-reset
+contents for those registers.
 
 <!-- ref:mips-iv-instruction-set -->
 ### MIPS IV Instruction Set, Revision 3.2
@@ -72,7 +75,10 @@ functional groups, instruction formats, encoding tables, per-instruction
 operations, and documented exceptions guide the scalar foundation. It is not
 treated as proof that the R5900 implements every MIPS III or MIPS IV feature;
 PS2-specific inclusion, encoding, width, and exception behavior require
-separate evidence.
+separate evidence. In particular, the manual supplies the base semantics for
+doubleword shifts, nontrapping arithmetic, primary `HI`/`LO` transfers, and
+word multiply/divide, while the R5900-specific tables determine which of those
+operations actually belong in this implementation.
 
 <!-- ref:mips-r10000-manual -->
 ### MIPS R10000 Microprocessor User's Manual
@@ -103,8 +109,10 @@ synthesizable RTL.
 Public GNU maintainer discussion of accepted R5900 target support, including
 the ISA subset, known missing base instructions, FPU limitations, MMI support,
 opcode divergences, and ELF targets. It is used as a roadmap guardrail, not as
-hardware-semantics authority. Linked patch source has not been copied or used
-as RTL implementation source.
+hardware-semantics authority. The GNU-licensed linked opcode additions and
+assembler tests were inspected to corroborate encodings, optional destination
+forms, and the omission of generic MIPS `DMULT`, `DMULTU`, `DDIV`, and `DDIVU`;
+no implementation text or source structure was copied.
 
 <!-- ref:qemu-r5900-overview -->
 ### QEMU R5900 multimedia instruction overview patch review
@@ -112,7 +120,10 @@ as RTL implementation source.
 Public QEMU patch review whose R5900 overview states that GPR bits 127:64 are
 used only by quadword loads/stores and selected multimedia instructions. The
 GPL-2.0-or-later contribution is consulted as corroborating architecture
-evidence only; no source structure or text is copied.
+evidence only. Its operation inventory also corroborates that `MULT1`,
+`MULTU1`, `DIV1`, `DIVU1`, `MADD1`, `MADDU1`, `MFHI1`, `MFLO1`, `MTHI1`, and
+`MTLO1` use the second multiply/divide path. No source structure or text is
+copied.
 
 <!-- ref:pcsx2-r5900-interpreter -->
 ### PCSX2 R5900 interpreter implementation

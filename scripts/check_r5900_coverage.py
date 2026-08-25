@@ -51,6 +51,41 @@ FOUNDATION_INSTRUCTIONS = (
     ("SLTI", "M077"),
     ("SLTIU", "M078"),
 )
+INTEGER_EXTENSION_INSTRUCTIONS = (
+    ("DSLL", "M085"),
+    ("DSRL", "M086"),
+    ("DSRA", "M087"),
+    ("DSLL32", "M088"),
+    ("DSRL32", "M089"),
+    ("DSRA32", "M090"),
+    ("DSLLV", "M091"),
+    ("DSRLV", "M092"),
+    ("DSRAV", "M093"),
+    ("DADDIU", "M094"),
+    ("DADDU", "M095"),
+    ("DSUBU", "M096"),
+    ("MULT", "M097"),
+    ("MULTU", "M098"),
+    ("DIV", "M099"),
+    ("DIVU", "M100"),
+    ("MFHI", "M101"),
+    ("MFLO", "M102"),
+    ("MTHI", "M103"),
+    ("MTLO", "M104"),
+    ("MULT1", "M105"),
+    ("MULTU1", "M106"),
+    ("DIV1", "M107"),
+    ("DIVU1", "M108"),
+    ("MFHI1", "M109"),
+    ("MFLO1", "M110"),
+    ("MTHI1", "M111"),
+    ("MTLO1", "M112"),
+    ("MADD", "M113"),
+    ("MADDU", "M114"),
+    ("MADD1", "M115"),
+    ("MADDU1", "M116"),
+)
+INSTRUCTION_ROADMAP = (*FOUNDATION_INSTRUCTIONS, *INTEGER_EXTENSION_INSTRUCTIONS)
 
 
 def _validate_text_fields(mnemonic: str, entry: dict[str, Any]) -> list[str]:
@@ -156,8 +191,8 @@ def _validate_metadata(data: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if data.get("architecture") != "r5900":
         errors.append("architecture must be r5900")
-    if data.get("scope") != "scalar-functional-foundation":
-        errors.append("scope must be scalar-functional-foundation")
+    if data.get("scope") != "scalar-functional-roadmap":
+        errors.append("scope must be scalar-functional-roadmap")
     states = data.get("coverage_states")
     if states != {"feature": list(FEATURE_STATES), "test": list(TEST_STATES)}:
         errors.append("coverage_states must publish the validator's feature and test states")
@@ -165,20 +200,30 @@ def _validate_metadata(data: dict[str, Any]) -> list[str]:
 
 
 def _validate_inventory(mnemonics: list[str]) -> list[str]:
-    """Validate exact foundation membership and roadmap order."""
+    """Validate exact scalar-roadmap membership and order."""
     errors: list[str] = []
     duplicates = sorted(name for name, count in Counter(mnemonics).items() if count > 1)
     if duplicates:
         errors.append(f"duplicate instruction mnemonics: {', '.join(duplicates)}")
-    expected_names = [mnemonic for mnemonic, _ in FOUNDATION_INSTRUCTIONS]
-    missing = [mnemonic for mnemonic in expected_names if mnemonic not in mnemonics]
+    foundation_names = [mnemonic for mnemonic, _ in FOUNDATION_INSTRUCTIONS]
+    extension_names = [mnemonic for mnemonic, _ in INTEGER_EXTENSION_INSTRUCTIONS]
+    expected_names = [mnemonic for mnemonic, _ in INSTRUCTION_ROADMAP]
+    missing_foundation = [name for name in foundation_names if name not in mnemonics]
+    missing_extension = [name for name in extension_names if name not in mnemonics]
     unexpected = [mnemonic for mnemonic in mnemonics if mnemonic not in expected_names]
-    if missing:
-        errors.append(f"missing foundation instructions: {', '.join(missing)}")
+    if missing_foundation:
+        errors.append(f"missing foundation instructions: {', '.join(missing_foundation)}")
+    if missing_extension:
+        errors.append(f"missing integer extension instructions: {', '.join(missing_extension)}")
     if unexpected:
-        errors.append(f"unexpected foundation instructions: {', '.join(unexpected)}")
-    if not missing and not unexpected and mnemonics != expected_names:
-        errors.append("foundation instructions are out of roadmap order")
+        errors.append(f"unexpected scalar roadmap instructions: {', '.join(unexpected)}")
+    if (
+        not missing_foundation
+        and not missing_extension
+        and not unexpected
+        and mnemonics != expected_names
+    ):
+        errors.append("scalar roadmap instructions are out of roadmap order")
     return errors
 
 
@@ -190,7 +235,7 @@ def _validate_ownership(
     milestone_ids = _known_ids(milestones, "milestones", "id")
     reference_ids = _known_ids(references, "references", "id")
     entries_by_name = {entry.get("mnemonic"): entry for entry in entries}
-    for mnemonic, expected_milestone in FOUNDATION_INSTRUCTIONS:
+    for mnemonic, expected_milestone in INSTRUCTION_ROADMAP:
         entry = entries_by_name.get(mnemonic)
         if entry is None:
             continue
@@ -240,7 +285,7 @@ def main() -> int:
         for error in errors:
             print(f"  {error}")
         return 1
-    print(f"R5900 ISA coverage: {len(coverage['instructions'])} foundation encodings valid")
+    print(f"R5900 ISA coverage: {len(coverage['instructions'])} tracked encodings valid")
     return 0
 
 

@@ -116,15 +116,24 @@ instruction cannot silently disappear or be bundled into a neighboring gate.
 The planning document also separates base MIPS evidence from R5900-specific
 behavior and defers unsupported or unproven ISA groups explicitly.
 
+The integer extension adds a second validated sequence of 36 milestones for
+dual-HI/LO state, nine doubleword shifts, three nontrapping doubleword
+arithmetic operations, both multiply/divide paths, four multiply-accumulate
+operations, and one integration program. Mutation tests remove DSLL32 and
+bypass MULT1's immediate dependency to prevent instruction loss or milestone
+bundling. The next branch/jump planning boundary is part of the checked chain.
+
 ## R5900 ISA coverage validation
 
-`coverage/r5900_isa.yaml` contains the exact 22-encoding foundation inventory in
-roadmap order. Each entry names its milestone and cataloged evidence, and tracks
+`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 22
+complete foundation operations and 32 pending doubleword or dual-HI/LO
+operations. Each entry names its milestone and cataloged evidence, and tracks
 decode, implementation, directed testing, randomized differential testing, and
 exception testing independently. Summary states cannot become `partial` or
-`complete` unless their detailed fields justify the claim. Six directed
-mutation tests prove that a missing or duplicate instruction, false completion,
-wrong milestone owner, and unknown source all fail verification.
+`complete` unless their detailed fields justify the claim. Eight directed
+mutation tests prove that a missing foundation or extension instruction,
+duplicate mnemonic, false completion, wrong owner, unknown source, and an
+unowned generic-MIPS `DMULT` row all fail verification.
 
 ## R5900 architectural reference state
 

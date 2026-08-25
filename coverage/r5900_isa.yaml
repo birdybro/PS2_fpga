@@ -1,6 +1,6 @@
 schema_version: 1
 architecture: r5900
-scope: scalar-functional-foundation
+scope: scalar-functional-roadmap
 coverage_states:
   feature: [pending, partial, complete]
   test: [pending, complete, not-applicable]
@@ -293,3 +293,411 @@ instructions:
     status: complete
     references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
     notes: Sign-extends the immediate before unsigned scalar comparison and preserves destination bits 127:64.
+  - mnemonic: DSLL
+    category: 64-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x38
+    milestone: M085
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned low-64-bit logical left shift with the immediate shift-count range resolved by its milestone.
+  - mnemonic: DSRL
+    category: 64-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x3a
+    milestone: M086
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned low-64-bit logical right shift with the immediate shift-count range resolved by its milestone.
+  - mnemonic: DSRA
+    category: 64-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x3b
+    milestone: M087
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned low-64-bit arithmetic right shift with sign behavior resolved by its milestone.
+  - mnemonic: DSLL32
+    category: 64-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x3c
+    milestone: M088
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned logical left shift using the upper half of the 64-bit immediate shift-count range.
+  - mnemonic: DSRL32
+    category: 64-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x3e
+    milestone: M089
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned logical right shift using the upper half of the 64-bit immediate shift-count range.
+  - mnemonic: DSRA32
+    category: 64-bit shift immediate
+    encoding: SPECIAL opcode 0x00, function 0x3f
+    milestone: M090
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned arithmetic right shift using the upper half of the 64-bit immediate shift-count range.
+  - mnemonic: DSLLV
+    category: 64-bit shift variable
+    encoding: SPECIAL opcode 0x00, function 0x14
+    milestone: M091
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned variable logical left shift over the low 64-bit scalar lane.
+  - mnemonic: DSRLV
+    category: 64-bit shift variable
+    encoding: SPECIAL opcode 0x00, function 0x16
+    milestone: M092
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned variable logical right shift over the low 64-bit scalar lane.
+  - mnemonic: DSRAV
+    category: 64-bit shift variable
+    encoding: SPECIAL opcode 0x00, function 0x17
+    milestone: M093
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned variable arithmetic right shift over the low 64-bit scalar lane.
+  - mnemonic: DADDIU
+    category: 64-bit arithmetic immediate
+    encoding: primary opcode 0x19
+    milestone: M094
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned nontrapping doubleword addition of a sign-extended immediate.
+  - mnemonic: DADDU
+    category: 64-bit arithmetic register
+    encoding: SPECIAL opcode 0x00, function 0x2d
+    milestone: M095
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned nontrapping doubleword addition of low-64-bit source operands.
+  - mnemonic: DSUBU
+    category: 64-bit arithmetic register
+    encoding: SPECIAL opcode 0x00, function 0x2f
+    milestone: M096
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned nontrapping doubleword subtraction of low-64-bit source operands.
+  - mnemonic: MULT
+    category: multiply divide pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x18
+    milestone: M097
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned signed word multiply targeting the primary HI and LO pair;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: MULTU
+    category: multiply divide pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x19
+    milestone: M098
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned unsigned word multiply targeting the primary HI and LO pair;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: DIV
+    category: multiply divide pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x1a
+    milestone: M099
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned signed word divide targeting the primary HI and LO pair; edge
+      results require R5900-specific evidence.
+  - mnemonic: DIVU
+    category: multiply divide pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x1b
+    milestone: M100
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned unsigned word divide targeting the primary HI and LO pair;
+      divide-by-zero results require R5900-specific evidence.
+  - mnemonic: MFHI
+    category: HI LO transfer pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x10
+    milestone: M101
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned transfer from the primary HI register to a GPR scalar lane.
+  - mnemonic: MFLO
+    category: HI LO transfer pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x12
+    milestone: M102
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned transfer from the primary LO register to a GPR scalar lane.
+  - mnemonic: MTHI
+    category: HI LO transfer pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x11
+    milestone: M103
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned transfer from a GPR scalar lane to the primary HI register.
+  - mnemonic: MTLO
+    category: HI LO transfer pipeline 0
+    encoding: SPECIAL opcode 0x00, function 0x13
+    milestone: M104
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
+    notes: Planned transfer from a GPR scalar lane to the primary LO register.
+  - mnemonic: MULT1
+    category: multiply divide pipeline 1
+    encoding: MMI opcode 0x1c, function 0x18
+    milestone: M105
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned signed word multiply targeting the secondary HI1 and LO1 pair;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: MULTU1
+    category: multiply divide pipeline 1
+    encoding: MMI opcode 0x1c, function 0x19
+    milestone: M106
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned unsigned word multiply targeting the secondary HI1 and LO1 pair;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: DIV1
+    category: multiply divide pipeline 1
+    encoding: MMI opcode 0x1c, function 0x1a
+    milestone: M107
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned signed word divide targeting the secondary HI1 and LO1 pair;
+      edge results require R5900-specific evidence.
+  - mnemonic: DIVU1
+    category: multiply divide pipeline 1
+    encoding: MMI opcode 0x1c, function 0x1b
+    milestone: M108
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned unsigned word divide targeting the secondary HI1 and LO1 pair;
+      divide-by-zero results require R5900-specific evidence.
+  - mnemonic: MFHI1
+    category: HI LO transfer pipeline 1
+    encoding: MMI opcode 0x1c, function 0x10
+    milestone: M109
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: Planned transfer from the secondary HI1 register to a GPR scalar lane.
+  - mnemonic: MFLO1
+    category: HI LO transfer pipeline 1
+    encoding: MMI opcode 0x1c, function 0x12
+    milestone: M110
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: Planned transfer from the secondary LO1 register to a GPR scalar lane.
+  - mnemonic: MTHI1
+    category: HI LO transfer pipeline 1
+    encoding: MMI opcode 0x1c, function 0x11
+    milestone: M111
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: Planned transfer from a GPR scalar lane to the secondary HI1 register.
+  - mnemonic: MTLO1
+    category: HI LO transfer pipeline 1
+    encoding: MMI opcode 0x1c, function 0x13
+    milestone: M112
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: Planned transfer from a GPR scalar lane to the secondary LO1 register.
+  - mnemonic: MADD
+    category: multiply accumulate pipeline 0
+    encoding: MMI opcode 0x1c, function 0x00
+    milestone: M113
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned signed word multiply-accumulate targeting primary HI and LO;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: MADDU
+    category: multiply accumulate pipeline 0
+    encoding: MMI opcode 0x1c, function 0x01
+    milestone: M114
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned unsigned word multiply-accumulate targeting primary HI and LO;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: MADD1
+    category: multiply accumulate pipeline 1
+    encoding: MMI opcode 0x1c, function 0x20
+    milestone: M115
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned signed word multiply-accumulate targeting secondary HI1 and LO1;
+      optional rd behavior requires milestone evidence.
+  - mnemonic: MADDU1
+    category: multiply accumulate pipeline 1
+    encoding: MMI opcode 0x1c, function 0x21
+    milestone: M116
+    decoded: false
+    implemented: false
+    directed_test: pending
+    random_differential_test: pending
+    exception_tests: pending
+    status: pending
+    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    notes: >-
+      Planned unsigned word multiply-accumulate targeting secondary HI1 and
+      LO1; optional rd behavior requires milestone evidence.
