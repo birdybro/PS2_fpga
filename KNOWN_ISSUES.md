@@ -10,7 +10,7 @@ executing CPU. This is not a claim of CPU compatibility.
 Instruction fetch request and response paths are independently implemented but
 not yet composed with control or RAM. Bus errors are retained as functional
 fetch status. Instruction fields are extracted and exact zero-word NOP plus
-all six canonical 32-bit shifts are implemented with PC advance and retirement
+all six canonical 32-bit shifts plus LUI are implemented with PC advance and retirement
 trace. No other instruction executes. Illegal words emit a functional diagnostic and are
 suppressed before execution, but do not enter an architectural exception; COP0
 remains unimplemented.
@@ -19,7 +19,7 @@ GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-NOP and all six 32-bit shifts are complete; the other 15 entries in the initial R5900
+NOP, all six 32-bit shifts, and LUI are complete; the other 14 entries in the initial R5900
 ISA coverage matrix remain pending. The matrix records planned encodings and ownership; each
 remaining row must pass its instruction milestone before becoming complete.
 

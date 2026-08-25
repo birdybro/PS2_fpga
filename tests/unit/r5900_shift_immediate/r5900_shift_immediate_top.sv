@@ -127,7 +127,11 @@ module r5900_shift_immediate_top (
         .clk_i,
         .read_index_a_i(instruction_i[20:16]),
         .read_value_a_o(source_rt_value_o),
-        .read_index_b_i(instruction_i[15:11]),
+        .read_index_b_i(
+            instruction_i[31:26] == 6'h0f
+                ? instruction_i[20:16]
+                : instruction_i[15:11]
+        ),
         .read_value_b_o(destination_value_o),
         .write_valid_i(gpr_write_enable),
         .write_index_i(gpr_write_index),

@@ -10,6 +10,7 @@ from reference.ee.r5900 import (
     PC_MASK,
     R5900State,
     UnsupportedInstructionError,
+    encode_lui,
     encode_sll,
     encode_sllv,
     encode_sra,
@@ -32,6 +33,7 @@ ALIASED_SRLV_RESULT = 0xCAFE_BABE_1234_5678_0000_0000_0800_0001
 ALIASED_SRLV_RS_RESULT = 0x0123_4567_89AB_CDEF_0000_0000_4000_0000
 ALIASED_SRAV_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_F800_0001
 ALIASED_SRAV_RS_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_C000_0000
+ENCODED_LUI_EXAMPLE = 0x3C1F_1234
 
 
 @pytest.mark.unit
@@ -517,6 +519,45 @@ def test_r5900_reference_srav_protects_zero_and_encodes_reserved_sa() -> None:
     assert discarded.gprs[1:] == state.gprs[1:]
     assert discarded.pc == ONE_INSTRUCTION_PC
     assert encode_srav(31, 17, 9) == (9 << 21) | (17 << 16) | (31 << 11) | 7
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("immediate", "expected_scalar"),
+    [
+        (0x0000, 0x0000_0000_0000_0000),
+        (0x0001, 0x0000_0000_0001_0000),
+        (0x7FFF, 0x0000_0000_7FFF_0000),
+        (0x8000, 0xFFFF_FFFF_8000_0000),
+        (0xFFFF, 0xFFFF_FFFF_FFFF_0000),
+    ],
+)
+def test_r5900_reference_lui_forms_signed_word_and_preserves_upper_lane(
+    immediate: int,
+    expected_scalar: int,
+) -> None:
+    """Place the immediate in word bits 31:16 and retain destination bits 127:64."""
+    old_destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3).write_gpr(5, old_destination)
+
+    updated = state.step(encode_lui(5, immediate))
+
+    assert updated.read_gpr(5) == (old_destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_lui_protects_zero_and_validates_encoding() -> None:
+    """Suppress LUI to GPR zero and reject values outside the immediate field."""
+    state = R5900State.initial().write_gpr(3, 0x55)
+    discarded = state.step(encode_lui(0, 0xFFFF))
+    assert discarded.gprs == state.gprs
+    assert discarded.pc == ONE_INSTRUCTION_PC
+    assert encode_lui(31, 0x1234) == ENCODED_LUI_EXAMPLE
+    for immediate in (-1, 0x1_0000, True):
+        error = TypeError if type(immediate) is bool else ValueError
+        with pytest.raises(error):
+            encode_lui(1, immediate)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

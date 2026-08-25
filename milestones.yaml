@@ -808,21 +808,27 @@ milestones:
       - docs/R5900_FOUNDATION.md
       - coverage/r5900_isa.yaml
       - REFERENCES.md
-    commit: "self (milestone(M063): implement R5900 SRAV)"
+    commit: 6a5ad73
     notes: Interpret rt low word as signed after masking the runtime count to rs bits 4:0.
   - id: M064
     title: Implement R5900 LUI
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M063]
-    tests: [directed LUI immediate boundaries, randomized LUI differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Verify placement and R5900 upper-bit extension independently.
+    tests:
+      - canonical primary opcode and reserved rs rejection tests
+      - zero one 0x7fff 0x8000 and 0xffff immediate boundaries
+      - scalar sign-extension and destination upper-lane preservation tests
+      - GPR-zero suppression PC wrap and exact event tests
+      - independent Python model validation tests
+      - deterministic 517-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M064): implement R5900 LUI)"
+    notes: Place the immediate in word bits 31:16 before the shared scalar merge.
   - id: M065
     title: Implement R5900 ORI
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M064]
     tests: [directed ORI zero-extension boundaries, randomized ORI differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

@@ -179,6 +179,26 @@ module r5900_execute (
                         retirement_o.instruction = instruction_i;
                     end
                 end
+                R5900_OPERATION_LUI: begin
+                    if (
+                        (instruction_i[31:26] == 6'h0f)
+                        && (instruction_i[25:21] == 5'h00)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[20:16];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            {32{instruction_i[15]}},
+                            instruction_i[15:0],
+                            16'd0
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
                 default: begin
                 end
             endcase

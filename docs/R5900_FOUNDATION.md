@@ -216,6 +216,13 @@ and event checks complete the directed layer. Nine boundary plus 512 randomized
 cases make SRAV the seventh complete ISA coverage entry and complete the initial
 32-bit shift family.
 
+Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
+requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
+the resulting word is sign-extended through bits 63:32, while old `rt` bits
+127:64 remain intact. Five boundary plus 512 randomized cases cover immediate
+extrema, destination zero, reserved encoding, PC wrap, and exact events, making
+LUI the eighth complete ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

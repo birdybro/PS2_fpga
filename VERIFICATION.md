@@ -370,6 +370,16 @@ differential/randomized test executes nine boundary plus 512 seeded instructions
 and compares PC, complete GPR state, operand selection, writeback, and retirement
 after every instruction.
 
+## R5900 LUI
+
+Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.
+Three directed cocotb cases cover immediate values zero, one, `0x7fff`,
+`0x8000`, and `0xffff`; word placement; scalar sign extension; preserved
+destination bits 127:64; GPR-zero suppression; reserved-field rejection; PC
+wrap; and exact events. A deterministic differential/randomized test executes
+five boundary plus 512 seeded instructions and compares PC, complete GPR state,
+writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

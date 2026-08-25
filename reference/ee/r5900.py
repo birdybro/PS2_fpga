@@ -17,6 +17,7 @@ SRA_FUNCTION = 3
 SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
+LUI_OPCODE = 15
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -115,6 +116,13 @@ def encode_srav(destination: int, source: int, shift_register: int) -> int:
     return (rs << 21) | (rt << 16) | (rd << 11) | SRAV_FUNCTION
 
 
+def encode_lui(destination: int, immediate: int) -> int:
+    """Encode canonical LUI with its reserved source field clear."""
+    rt = _require_gpr_index(destination)
+    value = _require_unsigned("immediate", immediate, 0xFFFF)
+    return (LUI_OPCODE << 26) | (rt << 16) | value
+
+
 def _merge_scalar_word(old_destination: int, word: int) -> int:
     """Sign-extend one word through the scalar lane and preserve the upper lane."""
     normalized_word = word & WORD_MASK
@@ -209,6 +217,12 @@ class R5900State:
         result = _merge_scalar_word(self.read_gpr(rd), shifted_word)
         return self.write_gpr(rd, result)
 
+    def _step_lui(self, word: int) -> R5900State:
+        """Form one sign-extended upper-immediate word without advancing PC."""
+        rt = (word >> 16) & 0x1F
+        result = _merge_scalar_word(self.read_gpr(rt), (word & 0xFFFF) << 16)
+        return self.write_gpr(rt, result)
+
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
@@ -221,7 +235,9 @@ class R5900State:
             function = word & 0x3F
             immediate = opcode == SPECIAL_OPCODE and reserved_rs == 0
             variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
-            if immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
+            if opcode == LUI_OPCODE and reserved_rs == 0:
+                updated = self._step_lui(word)
+            elif immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
                 updated = self._step_immediate_shift(word, function)
             elif variable and function in (SLLV_FUNCTION, SRLV_FUNCTION, SRAV_FUNCTION):
                 updated = self._step_variable_shift(word, function)

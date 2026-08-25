@@ -62,6 +62,12 @@ module r5900_decode (
         ) begin
             legal_o = 1'b1;
             operation_o = R5900_OPERATION_SRAV;
+        end else if (
+            (instruction_i[31:26] == 6'h0f)
+            && (instruction_i[25:21] == 5'h00)
+        ) begin
+            legal_o = 1'b1;
+            operation_o = R5900_OPERATION_LUI;
         end
     end
 

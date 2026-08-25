@@ -117,14 +117,14 @@ instructions:
     category: immediate constant
     encoding: primary opcode 0x0f
     milestone: M064
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, binutils-r5900-review]
-    notes: The full 128-bit GPR result rule requires R5900-specific milestone evidence.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    notes: Places immediate in bits 31:16, sign-extends it, and preserves rt bits 127:64.
   - mnemonic: ORI
     category: logical immediate
     encoding: primary opcode 0x0d

@@ -11,6 +11,7 @@ OPERATION_SRA = 4
 OPERATION_SLLV = 5
 OPERATION_SRLV = 6
 OPERATION_SRAV = 7
+OPERATION_LUI = 8
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -115,10 +116,18 @@ async def test_r5900_decode_recognizes_canonical_srav_encodings(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_canonical_lui_encodings(dut) -> None:
+    """Admit every LUI destination and immediate with reserved rs clear."""
+    for rt, immediate in ((0, 0), (1, 0), (31, 0xFFFF), (17, 0x8000), (9, 0x1234)):
+        word = (0x0F << 26) | (rt << 16) | immediate
+        await check_decode(dut, word, True, OPERATION_LUI)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep all 63 non-SPECIAL primary opcode spaces closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
-    for opcode in range(1, 64):
+    for opcode in (*range(1, 15), *range(16, 64)):
         for payload in payloads:
             await check_decode(dut, (opcode << 26) | payload, False, OPERATION_NONE)
 
@@ -134,3 +143,4 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         await check_decode(dut, (value << 6) | 4, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 6, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 7, False, OPERATION_NONE)
+        await check_decode(dut, (0x0F << 26) | (value << 21), False, OPERATION_NONE)
