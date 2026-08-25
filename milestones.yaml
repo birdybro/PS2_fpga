@@ -368,21 +368,24 @@ milestones:
       - complete image data BSS and segment-metadata test
       - immutable completed-image result test
     references: [docs/SIMULATION_PLATFORM.md, REFERENCES.md]
-    commit: "self (milestone(M033): publish ELF entry point)"
+    commit: a38bf32
     notes: Expose the validated EE start address to the future CPU harness.
   - id: M034
     title: Add simulation cycle timeout
     subsystem: simulation
-    status: active
+    status: complete
     dependencies: [M033]
-    tests: [timeout boundary and disabled-timeout tests]
+    tests:
+      - disabled first-cycle and four-cycle exact-boundary tests
+      - sticky count and synchronous reset-clear tests
+      - default fatal termination and diagnostic-marker test
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M034): add simulation cycle timeout)"
     notes: Terminate hung tests deterministically at a configured cycle limit.
   - id: M035
     title: Add simulation PASS termination
     subsystem: simulation
-    status: pending
+    status: active
     dependencies: [M034]
     tests: [PASS status and one-shot termination tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

@@ -168,6 +168,14 @@ status. Memory and architectural traces are optional and silent by default.
 Waveform controls reuse the existing ignored build-output policy. Trace or debug
 logic must not change architectural state.
 
+M034 provides the simulation-only cycle watchdog. `MAX_CYCLES=0` disables it;
+otherwise the first rising edge with reset deasserted is active cycle 1 and the
+watchdog times out exactly on active cycle N. Timeout status and the saturated
+32-bit count remain sticky until synchronous active-low reset. The platform
+configuration is fatal by default with a stable `SIM_TIMEOUT` diagnostic. A
+separate fatal-suppression parameter exists only so isolated verification can
+observe the boundary outputs; it is not an architectural control.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and

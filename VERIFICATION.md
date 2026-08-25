@@ -138,6 +138,16 @@ parameterized rising-edge count. Its isolated test composes the clock and reset
 models, verifies reset before the first edge, samples every asserted edge,
 checks exact falling-edge release, and observes three additional stable cycles.
 
+## Simulation cycle timeout
+
+Four Verilator/cocotb cases cover disabled, first-cycle, and four-cycle watchdog
+configurations plus the default fatal path. Observable cases verify the first
+post-reset edge counts as one, timeout asserts exactly on configured cycle N,
+the count saturates with sticky status, reset clears both outputs, and a zero
+limit remains disabled across eight active edges. The fatal case requires
+simulator failure at cycle three and checks the stable `SIM_TIMEOUT` message;
+the test fails if simulation continues beyond the boundary.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit
