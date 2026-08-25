@@ -8,6 +8,7 @@ module r5900_execute (
     input r5900_types_pkg::r5900_pc_t               pc_i,
     input r5900_types_pkg::r5900_instruction_t      instruction_i,
     input r5900_types_pkg::r5900_shift_amount_t     source_rs_shift_i,
+    input logic [63:0]                               source_rs_scalar_i,
     input logic [31:0]                               source_rt_word_i,
     input logic [63:0]                               destination_upper_i,
     output logic                                     complete_o,
@@ -193,6 +194,21 @@ module r5900_execute (
                             {32{instruction_i[15]}},
                             instruction_i[15:0],
                             16'd0
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_ORI: begin
+                    if (instruction_i[31:26] == 6'h0d) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[20:16];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            source_rs_scalar_i | {48'd0, instruction_i[15:0]}
                         };
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;

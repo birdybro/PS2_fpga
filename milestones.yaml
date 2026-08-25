@@ -823,21 +823,27 @@ milestones:
       - independent Python model validation tests
       - deterministic 517-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M064): implement R5900 LUI)"
+    commit: af6012d
     notes: Place the immediate in word bits 31:16 before the shared scalar merge.
   - id: M065
     title: Implement R5900 ORI
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M064]
-    tests: [directed ORI zero-extension boundaries, randomized ORI differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Zero-extend the immediate and preserve source bits exactly.
+    tests:
+      - complete primary-opcode source destination and immediate decode tests
+      - zero one 0x7fff 0x8000 and 0xffff immediate boundaries
+      - independent source and destination scalar-lane tests
+      - source-destination alias GPR-zero PC-wrap and exact-event tests
+      - independent Python model validation tests
+      - deterministic 520-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M065): implement R5900 ORI)"
+    notes: OR the zero-extended immediate with rs bits 63:0 while preserving rt bits 127:64.
   - id: M066
     title: Implement R5900 ANDI
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M065]
     tests: [directed ANDI zero-extension boundaries, randomized ANDI differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]

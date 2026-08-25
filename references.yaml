@@ -120,8 +120,8 @@ references:
     license: GPL-3.0; repository COPYING.GPLv3 reviewed before consultation
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [scalar shift and LUI interpreter operations]
-    notes: Corroborates R5900 scalar result widths and count masking; no source structure was copied.
+    consulted_sections: [scalar shift LUI and ORI interpreter operations]
+    notes: Corroborates R5900 scalar result widths and immediate handling; no source structure was copied.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format
     url: https://gabi.xinuos.com/elf/02-eheader.html
@@ -153,6 +153,7 @@ references:
       - CPU instruction formats and encoding tables
       - SLLV SRLV and SRAV instruction descriptions
       - LUI instruction description
+      - ORI instruction description
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual

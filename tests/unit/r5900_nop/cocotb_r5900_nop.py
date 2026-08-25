@@ -106,7 +106,7 @@ async def test_r5900_nop_preserves_every_architectural_gpr(dut) -> None:
 async def test_r5900_nop_requires_exact_zero_word(dut) -> None:
     """Keep near-zero SPECIAL and unrelated primary encodings out of execution."""
     await initialize(dut, 0x1000)
-    for instruction in (1, 0x20_0000, 0x20_0040, 0x3405_1234, 0xFFFF_FFFF):
+    for instruction in (1, 0x20_0000, 0x20_0040, 0x3005_1234, 0xFFFF_FFFF):
         before_pc = int(dut.pc_o.value)
         dut.instruction_i.value = instruction
         dut.instruction_valid_i.value = 1

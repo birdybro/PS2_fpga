@@ -12,6 +12,7 @@ OPERATION_SLLV = 5
 OPERATION_SRLV = 6
 OPERATION_SRAV = 7
 OPERATION_LUI = 8
+OPERATION_ORI = 9
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -124,10 +125,24 @@ async def test_r5900_decode_recognizes_canonical_lui_encodings(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_every_ori_register_and_immediate_field(dut) -> None:
+    """Admit ORI across the complete architectural rs and rt field ranges."""
+    for rs, rt, immediate in (
+        (0, 0, 0),
+        (1, 0, 1),
+        (0, 1, 0x7FFF),
+        (31, 31, 0xFFFF),
+        (17, 9, 0x8000),
+    ):
+        word = (0x0D << 26) | (rs << 21) | (rt << 16) | immediate
+        await check_decode(dut, word, True, OPERATION_ORI)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
-    """Keep all 63 non-SPECIAL primary opcode spaces closed."""
+    """Keep every unsupported non-SPECIAL primary opcode space closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
-    for opcode in (*range(1, 15), *range(16, 64)):
+    for opcode in (*range(1, 13), 14, *range(16, 64)):
         for payload in payloads:
             await check_decode(dut, (opcode << 26) | payload, False, OPERATION_NONE)
 

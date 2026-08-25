@@ -12,6 +12,7 @@ OPERATION_SLLV = 5
 OPERATION_SRLV = 6
 OPERATION_SRAV = 7
 OPERATION_LUI = 8
+OPERATION_ORI = 9
 
 
 async def check_dispatch(
@@ -132,6 +133,17 @@ async def test_r5900_decode_dispatch_sends_canonical_lui_to_execute(dut) -> None
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_ori_to_execute(dut) -> None:
+    """Dispatch ORI source, destination, and immediate fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x3400_0000),
+        (4, 0x3421_8000),
+        (0x0010_0000, 0x37FF_FFFF),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_ORI, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -> None:
     """Preserve fault PC/opcode/word while preventing execute and later writeback."""
     cases = (
@@ -141,7 +153,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (12, 0x0000_0046),
         (16, 0x0000_0047),
         (20, 0x3C20_0000),
-        (0x0010_0000, 0x3405_1234),
+        (0x0010_0000, 0x3005_1234),
         (0x8000_0180, 0x0400_0000),
         (0xFFFF_FFFC, 0xFFFF_FFFF),
     )

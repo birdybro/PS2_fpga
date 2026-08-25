@@ -13,6 +13,7 @@ SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 LUI_OPCODE = 15
+ORI_OPCODE = 13
 IMMEDIATE_OPERATIONS = {0: 2, SRL_FUNCTION: 3, SRA_FUNCTION: 4}
 VARIABLE_OPERATIONS = {SLLV_FUNCTION: 5, SRLV_FUNCTION: 6, SRAV_FUNCTION: 7}
 
@@ -28,6 +29,8 @@ def decoded_operation(word: int) -> int:
             operation = IMMEDIATE_OPERATIONS.get(function, 0)
         if operation == 0 and reserved_shift == 0:
             operation = VARIABLE_OPERATIONS.get(function, 0)
+    elif word >> 26 == ORI_OPCODE:
+        operation = 9
     elif word >> 26 == LUI_OPCODE and ((word >> 21) & 0x1F) == 0:
         operation = 8
     return operation
@@ -59,8 +62,11 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 64, 0x3C00_0000),
         (True, 68, 0x3C1F_FFFF),
         (True, 72, 0x3C20_0000),
+        (True, 76, 0x3400_0000),
+        (True, 80, 0x3421_8000),
+        (True, 84, 0x37FF_FFFF),
         (True, 4, 1),
-        (True, 0x0010_0000, 0x3405_1234),
+        (True, 0x0010_0000, 0x3005_1234),
         (True, 0xFFFF_FFFC, 0xFFFF_FFFF),
     )
     random_cases = tuple(

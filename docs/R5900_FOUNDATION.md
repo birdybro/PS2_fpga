@@ -223,6 +223,13 @@ the resulting word is sign-extended through bits 63:32, while old `rt` bits
 extrema, destination zero, reserved encoding, PC wrap, and exact events, making
 LUI the eighth complete ISA coverage entry.
 
+Canonical ORI admits every `rs`, `rt`, and 16-bit immediate under primary opcode
+`0x0d`. It zero-extends the immediate and ORs it with source bits 63:0; old
+destination bits 127:64 remain intact. Separate source and destination values,
+both alias directions, source and destination zero, PC wrap, exact events, and
+the five immediate boundary classes are directed checks. Eight boundary plus
+512 randomized cases make ORI the ninth complete ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

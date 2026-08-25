@@ -380,6 +380,17 @@ wrap; and exact events. A deterministic differential/randomized test executes
 five boundary plus 512 seeded instructions and compares PC, complete GPR state,
 writeback, and retirement after every instruction.
 
+## R5900 ORI
+
+Primary opcode `0x0d` now executes ORI for every source, destination, and
+16-bit immediate field. Three directed cocotb cases cover zero-extension;
+immediate values zero, one, `0x7fff`, `0x8000`, and `0xffff`; independent and
+aliased operands; ignored source bits 127:64; preserved destination bits
+127:64; source and destination zero; PC wrap; and exact events. A deterministic
+differential/randomized test executes eight boundary plus 512 seeded
+instructions and compares PC, complete GPR state, writeback, and retirement
+after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

@@ -9,12 +9,12 @@ from cocotb_tools.runner import get_runner
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TESTBENCH_DIR = Path(__file__).resolve().parent / "r5900_decode"
-COCOTB_TEST_COUNT = 10
+COCOTB_TEST_COUNT = 11
 
 
 @pytest.mark.unit
 def test_r5900_decode_admission_skeleton() -> None:
-    """Admit exact NOP, SLL, and SRL while unsupported spaces remain closed."""
+    """Admit implemented operations while unsupported spaces remain closed."""
     build_root = Path(os.environ.get("PS2_BUILD_ROOT", REPO_ROOT / "build"))
     build_dir = build_root / "pytest" / "r5900_decode_directed"
     results_path = build_root / "results" / "cocotb-r5900-decode-directed.xml"

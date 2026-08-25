@@ -18,6 +18,7 @@ SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 LUI_OPCODE = 15
+ORI_OPCODE = 13
 SCALAR_WIDTH = 64
 WORD_WIDTH = 32
 SCALAR_MASK = (1 << SCALAR_WIDTH) - 1
@@ -123,13 +124,26 @@ def encode_lui(destination: int, immediate: int) -> int:
     return (LUI_OPCODE << 26) | (rt << 16) | value
 
 
+def encode_ori(destination: int, source: int, immediate: int) -> int:
+    """Encode ORI with a zero-extended 16-bit immediate."""
+    rt = _require_gpr_index(destination)
+    rs = _require_gpr_index(source)
+    value = _require_unsigned("immediate", immediate, 0xFFFF)
+    return (ORI_OPCODE << 26) | (rs << 21) | (rt << 16) | value
+
+
+def _merge_scalar(old_destination: int, scalar: int) -> int:
+    """Replace the low 64-bit scalar lane and preserve the upper GPR lane."""
+    return (old_destination & (GPR_MASK ^ SCALAR_MASK)) | (scalar & SCALAR_MASK)
+
+
 def _merge_scalar_word(old_destination: int, word: int) -> int:
     """Sign-extend one word through the scalar lane and preserve the upper lane."""
     normalized_word = word & WORD_MASK
     scalar_result = normalized_word
     if normalized_word & (1 << (WORD_WIDTH - 1)):
         scalar_result |= SCALAR_MASK ^ WORD_MASK
-    return (old_destination & (GPR_MASK ^ SCALAR_MASK)) | scalar_result
+    return _merge_scalar(old_destination, scalar_result)
 
 
 def _as_signed_word(value: int) -> int:
@@ -223,6 +237,14 @@ class R5900State:
         result = _merge_scalar_word(self.read_gpr(rt), (word & 0xFFFF) << 16)
         return self.write_gpr(rt, result)
 
+    def _step_ori(self, word: int) -> R5900State:
+        """OR a zero-extended immediate into one source scalar lane."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        scalar = (self.read_gpr(rs) & SCALAR_MASK) | (word & 0xFFFF)
+        result = _merge_scalar(self.read_gpr(rt), scalar)
+        return self.write_gpr(rt, result)
+
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
@@ -235,7 +257,9 @@ class R5900State:
             function = word & 0x3F
             immediate = opcode == SPECIAL_OPCODE and reserved_rs == 0
             variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
-            if opcode == LUI_OPCODE and reserved_rs == 0:
+            if opcode == ORI_OPCODE:
+                updated = self._step_ori(word)
+            elif opcode == LUI_OPCODE and reserved_rs == 0:
                 updated = self._step_lui(word)
             elif immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
                 updated = self._step_immediate_shift(word, function)
