@@ -238,6 +238,14 @@ PC wrap, exact events, and the five immediate boundary classes are directed
 checks. Eight boundary plus 512 randomized cases make ANDI the tenth complete
 ISA coverage entry.
 
+Canonical XORI admits every `rs`, `rt`, and 16-bit immediate under primary
+opcode `0x0e`. It XORs source bits 63:0 with the zero-extended immediate, while
+old destination bits 127:64 remain intact. Separate source and destination
+values, aliasing, source and destination zero, PC wrap, exact events, and the
+five immediate boundary classes are directed checks. Eight boundary plus 512
+randomized cases make XORI the eleventh complete ISA coverage entry and finish
+the initial logical-immediate family.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

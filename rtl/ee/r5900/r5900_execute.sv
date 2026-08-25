@@ -230,6 +230,21 @@ module r5900_execute (
                         retirement_o.instruction = instruction_i;
                     end
                 end
+                R5900_OPERATION_XORI: begin
+                    if (instruction_i[31:26] == 6'h0e) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[20:16];
+                        writeback_value_o = {
+                            destination_upper_i,
+                            source_rs_scalar_i ^ {48'd0, instruction_i[15:0]}
+                        };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
                 default: begin
                 end
             endcase

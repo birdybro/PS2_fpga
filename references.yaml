@@ -120,7 +120,7 @@ references:
     license: GPL-3.0; repository COPYING.GPLv3 reviewed before consultation
     source_code_consulted: true
     redistribution: link-only
-    consulted_sections: [scalar shift LUI ORI and ANDI interpreter operations]
+    consulted_sections: [scalar shift LUI ORI ANDI and XORI interpreter operations]
     notes: Corroborates R5900 scalar result widths and immediate handling; no source structure was copied.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format
@@ -155,6 +155,7 @@ references:
       - LUI instruction description
       - ORI instruction description
       - ANDI instruction description
+      - XORI instruction description
       - load store ALU jump branch miscellaneous and coprocessor summaries
     notes: Public base-ISA manual; every R5900-specific inclusion or deviation needs evidence.
   - id: mips-r10000-manual

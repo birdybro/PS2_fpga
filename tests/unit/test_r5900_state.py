@@ -19,6 +19,7 @@ from reference.ee.r5900 import (
     encode_srav,
     encode_srl,
     encode_srlv,
+    encode_xori,
 )
 
 EE_PROGRAM_START = 0x0010_0000
@@ -38,6 +39,7 @@ ALIASED_SRAV_RS_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_C000_0000
 ENCODED_LUI_EXAMPLE = 0x3C1F_1234
 ENCODED_ORI_EXAMPLE = 0x36FF_1234
 ENCODED_ANDI_EXAMPLE = 0x32FF_1234
+ENCODED_XORI_EXAMPLE = 0x3AFF_1234
 
 
 @pytest.mark.unit
@@ -640,10 +642,48 @@ def test_r5900_reference_andi_handles_aliases_zero_and_encoder_validation() -> N
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize("immediate", [0, 1, 0x7FFF, 0x8000, 0xFFFF])
+def test_r5900_reference_xori_zero_extends_and_preserves_destination_upper_lane(
+    immediate: int,
+) -> None:
+    """XOR rs bits 63:0 with the unsigned immediate and preserve rt bits 127:64."""
+    source = 0xFFFF_FFFF_FFFF_FFFF_FEDC_BA98_7654_F0F0
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(4, source).write_gpr(5, destination)
+
+    updated = state.step(encode_xori(5, 4, immediate))
+
+    expected = (destination & ~((1 << 64) - 1)) | ((source & ((1 << 64) - 1)) ^ immediate)
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(4) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_xori_handles_aliases_zero_and_encoder_validation() -> None:
+    """Cover source aliasing, both zero roles, and exact XORI encoding."""
+    aliased = 0xCAFE_BABE_1234_5678_FEDC_BA98_7654_F0F0
+    state = R5900State.initial().write_gpr(31, aliased)
+    updated = state.step(encode_xori(31, 31, 0xFFFF))
+    assert updated.read_gpr(31) == aliased ^ 0xFFFF
+    discarded = updated.step(encode_xori(0, 31, 0x1234))
+    assert discarded.gprs == updated.gprs
+    assert discarded.pc == TWO_INSTRUCTION_PC
+    zero_source = discarded.step(encode_xori(31, 0, 0x8000))
+    assert zero_source.read_gpr(31) == (aliased & ~((1 << 64) - 1)) | 0x8000
+    assert encode_xori(31, 23, 0x1234) == ENCODED_XORI_EXAMPLE
+    for immediate in (-1, 0x1_0000, True):
+        error = TypeError if type(immediate) is bool else ValueError
+        with pytest.raises(error):
+            encode_xori(1, 2, immediate)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
 def test_r5900_reference_step_rejects_unsupported_and_invalid_words() -> None:
     """Keep unimplemented encodings and malformed instruction inputs outside the model."""
     state = R5900State.initial()
-    for instruction in (1, 0x0020_0000, 0x3805_1234, PC_MASK):
+    for instruction in (1, 0x0020_0000, 0x0405_1234, PC_MASK):
         with pytest.raises(UnsupportedInstructionError):
             state.step(instruction)
     for instruction, error in ((-1, ValueError), (PC_MASK + 1, ValueError), (True, TypeError)):
