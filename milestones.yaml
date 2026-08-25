@@ -128,21 +128,21 @@ milestones:
     dependencies: [M010]
     tests: [milestone schema validation]
     references: [MILESTONES.md]
-    commit: "self (milestone(M011): validate persistent milestone state)"
+    commit: 113c8eb
     notes: Validate transitions, dependencies, fields, and resume metadata.
   - id: M012
     title: Establish references and provenance infrastructure
     subsystem: documentation
-    status: active
+    status: complete
     dependencies: [M011]
-    tests: [reference metadata validation]
-    references: [REFERENCES.md]
-    commit: null
-    notes: Record authoritative legal technical sources and provenance rules.
+    tests: [reference metadata validation, reference policy directed tests]
+    references: [references.yaml, REFERENCES.md]
+    commit: "self (milestone(M012): establish reference provenance catalog)"
+    notes: Record public technical sources and enforce clean-room provenance rules.
   - id: M013
     title: Establish coding and verification conventions
     subsystem: documentation
-    status: pending
+    status: active
     dependencies: [M012]
     tests: [documentation convention checks]
     references: [CONTRIBUTING.md, VERIFICATION.md]

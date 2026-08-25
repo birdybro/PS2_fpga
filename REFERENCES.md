@@ -1,39 +1,112 @@
 # References and Provenance
 
-This project is a clean reimplementation. Significant sources will be recorded
-with URL, relevant subsystem, known license, whether source code was consulted,
-and provenance notes before they guide implementation.
+`references.yaml` is the authoritative machine-readable source catalog. Every
+source records its URL, role, relevant subsystems, known license, whether source
+code was consulted, redistribution treatment, consulted sections, and
+provenance notes. This document explains how those records may be used.
 
-No BIOS, game image, proprietary SDK material, leaked source, confidential
-documentation, key, or circumvention material may be downloaded or committed.
+## Clean reimplementation policy
 
-Primary technical references will be researched and recorded in milestone
-M012.
+Architectural decisions should prefer public first-party publications, public
+standards, and independently authored hardware research. A single secondary
+source is not enough evidence for uncertain or unusual behavior; such behavior
+must be corroborated, isolated by a test, or recorded in `KNOWN_ISSUES.md` with
+a `TODO-ACCURACY` marker.
+
+The project does not download, inspect, or redistribute BIOS images, game
+images, proprietary SDK material, leaked source, confidential documentation,
+cryptographic keys, or circumvention material. Public mirrors describing their
+contents as confidential are excluded even when readily accessible. A future
+user-supplied BIOS must remain external to the repository.
+
+Documents without clear redistribution permission remain link-only. Any useful
+local download must live in an ignored cache and be reproducibly fetched; it
+must never be committed merely because it is publicly reachable. Emulator
+implementation source requires an explicit license and provenance review before
+consultation. No emulator source has guided this implementation so far.
+
+## Architecture and hardware
+
+<!-- ref:sony-ee-announcement -->
+### Sony Computer Entertainment Emotion Engine announcement
+
+Official public overview of the Emotion Engine and published system
+specifications. It establishes context, not detailed instruction behavior.
+
+<!-- ref:toshiba-ee-announcement -->
+### Toshiba Emotion Engine announcement
+
+Official public Toshiba announcement used as an independent first-party check
+of the joint design and high-level specifications.
+
+<!-- ref:date2001-ee-cpu -->
+### CPU for PlayStation 2
+
+Public DATE 2001 paper authored by Sony Computer Entertainment and Toshiba
+engineers. It covers the EE system architecture, CPU core, vector units,
+on-chip interfaces, and the original design verification strategy.
+
+<!-- ref:toshiba-2000-highlights -->
+### Toshiba Review 2000 technical highlights
+
+Official Toshiba technical overview used to corroborate the major EE block
+relationships. The PDF is linked rather than copied.
+
+<!-- ref:ps2tek -->
+### PS2Tek
+
+Independently authored PS2 hardware documentation with broad EE, DMAC, GIF,
+VIF, VU, GS, IOP, and SIF coverage. The upstream repository does not state a
+license, so it is link-only and architectural details require corroboration.
+
+<!-- ref:sgi-mips-iv-index -->
+### SGI MIPS IV Instruction Set archive index
+
+Public archive index for the base MIPS IV instruction-set manual. It is useful
+for base semantics only; R5900-specific deviations require PS2-specific
+evidence.
+
+## Homebrew software and toolchain
+
+<!-- ref:ps2sdk -->
+### PS2SDK
+
+The public PS2 homebrew SDK is licensed under the Academic Free License 2.0.
+Its README, API documentation, and license are approved inputs for software and
+register-interface planning. Its implementation source has not guided RTL.
+
+<!-- ref:binutils-r5900-review -->
+### GNU Binutils R5900 support review
+
+Public GNU maintainer discussion of accepted R5900 target support, including
+the ISA subset, FPU limitations, MMI support, and ELF targets. Linked patch
+source has not been copied or used as RTL implementation source.
 
 ## Verification tooling
 
-### cocotb documentation and source distribution
+<!-- ref:cocotb-development-docs -->
+### Cocotb development documentation
 
-- URL: <https://docs.cocotb.org/en/development/master-notes.html>
-- Relevant subsystem: verification infrastructure
-- License: BSD-3-Clause
-- Source code consulted: no; an exact official source revision is installed as
-  a development dependency because it adds host Python 3.14 support
-- Provenance notes: dependency revision is pinned in `requirements-dev.txt`;
-  fetched content remains outside Git in `.venv`
+The official development documentation records Python 3.14 support. The exact
+compatible revision is pinned in `requirements-dev.txt` and installed only in
+the ignored `.venv`.
 
+<!-- ref:verilator-install-docs -->
 ### Verilator installation and container documentation
 
-- URL: <https://verilator.org/guide/latest/install.html>
-- Relevant subsystem: build and continuous-integration infrastructure
-- License: LGPL-3.0-or-later OR Artistic-2.0 for the Verilator implementation
-- Source code consulted: no
-- Provenance notes: CI uses the official release container pinned to `v5.050`
+Official documentation for the release containers used to pin CI to Verilator
+5.050.
 
+<!-- ref:setup-python-docs -->
 ### GitHub setup-python documentation
 
-- URL: <https://github.com/actions/setup-python>
-- Relevant subsystem: continuous-integration infrastructure
-- License: MIT
-- Source code consulted: no
-- Provenance notes: CI pins the v6 action commit and Python 3.14
+Official documentation for the commit-pinned CI action and Python version
+selection.
+
+## Updating the catalog
+
+Before a source guides implementation, add it to `references.yaml` and add its
+matching reference marker entry here. Record source-code consultation as
+`true` only when implementation source was actually inspected for the relevant
+behavior. Changes must pass `scripts/check_references.py`, unit tests, strict
+lint, and the full regression.

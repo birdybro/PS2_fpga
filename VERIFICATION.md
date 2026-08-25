@@ -104,3 +104,12 @@ commit references, and exactly one active milestone. It also cross-checks the
 last complete, next active, and most recently pushed resume pointers in
 `PROGRESS.md`. Directed unit tests prove stale progress and incomplete active
 dependencies are rejected.
+
+## Reference provenance validation
+
+`make lint` validates the schema and clean-room policy in `references.yaml`,
+requires public credential-free HTTPS source links, and cross-checks every
+machine-readable source against a unique marker in `REFERENCES.md`. Directed
+unit tests prove duplicate IDs, weakened prohibited-material policy, unsafe
+URLs, and stale human documentation are rejected. Uncertain-license documents
+remain link-only, while any future local cache is ignored by Git.

@@ -1,18 +1,18 @@
 # Progress
 
-- Last completed milestone: M011 — add progress-state validation infrastructure
-- Next milestone: M012 — establish references and provenance infrastructure
+- Last completed milestone: M012 — establish references and provenance infrastructure
+- Next milestone: M013 — establish coding and verification conventions
 - Current subsystem: repository infrastructure
-- Current regression status: 9 tests pass with no skips; milestone/resume schema and strict lint pass
+- Current regression status: 13 tests pass with no skips; strict lint and provenance policy validation pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M011 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M012 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
-The repository baseline was clean on `main`, matched `origin/main`, and had no
-repository-local `AGENTS.md`. The configured remote is
-`https://github.com/birdybro/PS2_fpga.git`. Verilator 5.050 and GNU Make 4.4.1
-are installed. Cocotb and pytest are not installed globally and will be
-provided through project-local tooling in later milestones.
+Development is on `main` with remote
+`https://github.com/birdybro/PS2_fpga.git`. The pinned local environment uses
+Verilator 5.050, Python 3.14, cocotb, and pytest. `make ci` is the complete
+local verification gate. Architecture implementation has not started; resume
+with the single active milestone in `milestones.yaml`.

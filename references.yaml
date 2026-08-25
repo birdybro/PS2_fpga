@@ -1,0 +1,134 @@
+schema_version: 1
+policy:
+  prohibited_material:
+    - bios-images
+    - game-images
+    - proprietary-sdk-material
+    - leaked-source-code
+    - confidential-documentation
+    - cryptographic-keys
+    - circumvention-material
+  local_cache_policy: untracked-only
+  emulator_source_policy: license-review-required
+references:
+  - id: sony-ee-announcement
+    title: Sony Computer Entertainment Emotion Engine announcement
+    url: https://sonyinteractive.com/jp/press-releases/1999/990302_3-2/
+    source_class: official-publication
+    role: architecture
+    subsystems: [system, ee, vu, gs]
+    license: Copyright Sony Interactive Entertainment; public web page
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [processor overview, published specifications]
+    notes: Official high-level announcement; not an instruction-semantics source.
+  - id: toshiba-ee-announcement
+    title: Toshiba Emotion Engine announcement
+    url: https://www.global.toshiba/ww/news/corporate/1999/03/pr0401.html
+    source_class: official-publication
+    role: architecture
+    subsystems: [system, ee, vu, gs]
+    license: Copyright Toshiba Corporation; public web page
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [processor overview, published specifications]
+    notes: Independent official confirmation of the Sony and Toshiba design summary.
+  - id: date2001-ee-cpu
+    title: CPU for PlayStation 2
+    url: https://past.date-conference.com/proceedings-archive/2001/DATE01/PDFFILES/09E_1.PDF
+    source_class: official-publication
+    role: architecture
+    subsystems: [system, ee, r5900, vu, dmac, ipu, memory]
+    license: Copyright conference paper; redistribution rights not assumed
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [system architecture, cpu core, vector units, verification]
+    notes: Public paper by Sony Computer Entertainment and Toshiba engineers.
+  - id: toshiba-2000-highlights
+    title: Toshiba Review 2000 technical highlights
+    url: https://www.global.toshiba/content/dam/toshiba/migration/corp/techReviewAssets/tech/review/2000/high2000/pdf/h0006.pdf
+    source_class: official-publication
+    role: architecture
+    subsystems: [system, ee, r5900, vu, dmac, ipu, memory]
+    license: Copyright Toshiba Corporation; redistribution rights not assumed
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [emotion engine architecture overview]
+    notes: Official technical overview used to corroborate system block relationships.
+  - id: ps2sdk
+    title: PS2SDK homebrew development kit
+    url: https://github.com/ps2dev/ps2sdk
+    source_class: official-project
+    role: toolchain
+    subsystems: [ee, iop, dmac, gif, gs, sif, spu2, software]
+    license: Academic Free License 2.0
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [README, public API documentation, license]
+    notes: Open-source homebrew SDK; implementation source has not guided RTL.
+  - id: ps2tek
+    title: PS2Tek PlayStation 2 technical documentation
+    url: https://psi-rockin.github.io/ps2tek/index.html
+    source_class: independent-documentation
+    role: architecture
+    subsystems: [ee, r5900, cop0, dmac, timers, gif, vif, vu, gs, iop, sif]
+    license: Not specified by the upstream documentation repository
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [documentation index, subsystem coverage]
+    notes: Independently authored hardware documentation; each behavior needs corroboration.
+  - id: binutils-r5900-review
+    title: GNU Binutils R5900 support review
+    url: https://sourceware.org/pipermail/binutils/2013-January/079862.html
+    source_class: public-mailing-list
+    role: toolchain
+    subsystems: [r5900, fpu, mmi, elf, software]
+    license: Mailing-list text; linked patch code is GNU project licensed
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [architecture review summary, accepted target support]
+    notes: Public maintainer review is useful for ISA subset and ELF target corroboration.
+  - id: sgi-mips-iv-index
+    title: SGI MIPS IV Instruction Set archive index
+    url: https://techpubs.jurassic.nl/manuals/hdwr/developer/
+    source_class: public-archive
+    role: architecture
+    subsystems: [r5900, cop0, fpu]
+    license: Copyright MIPS Technologies; redistribution rights not assumed
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [MIPS IV instruction set catalog entry]
+    notes: Public documentation archive for the base ISA; R5900 deviations need PS2 evidence.
+  - id: cocotb-development-docs
+    title: Cocotb development documentation
+    url: https://docs.cocotb.org/en/development/master-notes.html
+    source_class: tool-documentation
+    role: verification
+    subsystems: [verification]
+    license: BSD-3-Clause
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [Python 3.14 support notes]
+    notes: The exact compatible source revision is pinned as an untracked dependency.
+  - id: verilator-install-docs
+    title: Verilator installation and container documentation
+    url: https://verilator.org/guide/latest/install.html
+    source_class: tool-documentation
+    role: verification
+    subsystems: [build, verification, ci]
+    license: LGPL-3.0-or-later OR Artistic-2.0
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [official release containers]
+    notes: CI uses the official Verilator v5.050 container.
+  - id: setup-python-docs
+    title: GitHub setup-python documentation
+    url: https://github.com/actions/setup-python
+    source_class: tool-documentation
+    role: verification
+    subsystems: [ci, verification]
+    license: MIT
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections: [version selection, action pinning]
+    notes: CI pins the v6 action commit and selects Python 3.14.
