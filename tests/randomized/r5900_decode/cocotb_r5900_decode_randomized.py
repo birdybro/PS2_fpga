@@ -16,6 +16,7 @@ LUI_OPCODE = 15
 ORI_OPCODE = 13
 ANDI_OPCODE = 12
 XORI_OPCODE = 14
+ADDIU_OPCODE = 9
 IMMEDIATE_OPERATIONS = {0: 2, SRL_FUNCTION: 3, SRA_FUNCTION: 4}
 VARIABLE_OPERATIONS = {SLLV_FUNCTION: 5, SRLV_FUNCTION: 6, SRAV_FUNCTION: 7}
 
@@ -31,6 +32,8 @@ def expected_operation(word: int) -> int:
             operation = IMMEDIATE_OPERATIONS.get(function, 0)
         if operation == 0 and reserved_shift == 0:
             operation = VARIABLE_OPERATIONS.get(function, 0)
+    elif word >> 26 == ADDIU_OPCODE:
+        operation = 12
     elif word >> 26 == ANDI_OPCODE:
         operation = 10
     elif word >> 26 == XORI_OPCODE:
@@ -76,6 +79,9 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x3800_0000,
         0x3821_8000,
         0x3BFF_FFFF,
+        0x2400_0000,
+        0x2421_8000,
+        0x27FF_FFFF,
         0x0000_0800,
         0x0001_0000,
         0x0020_0000,

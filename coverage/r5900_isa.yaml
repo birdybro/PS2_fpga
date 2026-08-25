@@ -165,14 +165,14 @@ instructions:
     category: 32-bit arithmetic immediate
     encoding: primary opcode 0x09
     milestone: M068
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, binutils-r5900-review]
-    notes: Sign extension, wrapping, no-overflow behavior, and GPR extension need explicit tests.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: complete
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    notes: Adds signed immediate modulo 32 bits, sign-extends result, and never traps on overflow.
   - mnemonic: ADDU
     category: 32-bit arithmetic register
     encoding: SPECIAL opcode 0x00, function 0x21

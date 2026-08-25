@@ -33,18 +33,19 @@ package r5900_types_pkg;
     } r5900_control_state_t;
 
     typedef enum logic [4:0] {
-        R5900_OPERATION_NONE = 5'd0,
-        R5900_OPERATION_NOP  = 5'd1,
-        R5900_OPERATION_SLL  = 5'd2,
-        R5900_OPERATION_SRL  = 5'd3,
-        R5900_OPERATION_SRA  = 5'd4,
-        R5900_OPERATION_SLLV = 5'd5,
-        R5900_OPERATION_SRLV = 5'd6,
-        R5900_OPERATION_SRAV = 5'd7,
-        R5900_OPERATION_LUI  = 5'd8,
-        R5900_OPERATION_ORI  = 5'd9,
-        R5900_OPERATION_ANDI = 5'd10,
-        R5900_OPERATION_XORI = 5'd11
+        R5900_OPERATION_NONE  = 5'd0,
+        R5900_OPERATION_NOP   = 5'd1,
+        R5900_OPERATION_SLL   = 5'd2,
+        R5900_OPERATION_SRL   = 5'd3,
+        R5900_OPERATION_SRA   = 5'd4,
+        R5900_OPERATION_SLLV  = 5'd5,
+        R5900_OPERATION_SRLV  = 5'd6,
+        R5900_OPERATION_SRAV  = 5'd7,
+        R5900_OPERATION_LUI   = 5'd8,
+        R5900_OPERATION_ORI   = 5'd9,
+        R5900_OPERATION_ANDI  = 5'd10,
+        R5900_OPERATION_XORI  = 5'd11,
+        R5900_OPERATION_ADDIU = 5'd12
     } r5900_operation_t;
 
     typedef struct packed {

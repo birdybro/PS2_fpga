@@ -15,6 +15,7 @@ OPERATION_LUI = 8
 OPERATION_ORI = 9
 OPERATION_ANDI = 10
 OPERATION_XORI = 11
+OPERATION_ADDIU = 12
 
 
 async def check_dispatch(
@@ -165,6 +166,17 @@ async def test_r5900_decode_dispatch_sends_canonical_xori_to_execute(dut) -> Non
         (0x0010_0000, 0x3BFF_FFFF),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_XORI, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_addiu_to_execute(dut) -> None:
+    """Dispatch ADDIU source, destination, and immediate fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x2400_0000),
+        (4, 0x2421_8000),
+        (0x0010_0000, 0x27FF_FFFF),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_ADDIU, False))
 
 
 @cocotb.test()

@@ -246,6 +246,14 @@ five immediate boundary classes are directed checks. Eight boundary plus 512
 randomized cases make XORI the eleventh complete ISA coverage entry and finish
 the initial logical-immediate family.
 
+Canonical ADDIU admits every `rs`, `rt`, and 16-bit immediate under primary
+opcode `0x09`. It sign-extends the immediate, adds it to source bits 31:0 modulo
+32 bits without an overflow exception, sign-extends the result through bits
+63:32, and retains old destination bits 127:64. Directed checks cover immediate
+extrema, positive and negative wrap, ignored source high bits, aliasing,
+destination zero, PC wrap, and exact events. Twelve boundary plus 512 randomized
+cases make ADDIU the twelfth complete ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

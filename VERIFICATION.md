@@ -413,6 +413,17 @@ zero; PC wrap; and exact events. A deterministic differential/randomized test
 executes eight boundary plus 512 seeded instructions and compares PC, complete
 GPR state, writeback, and retirement after every instruction.
 
+## R5900 ADDIU
+
+Primary opcode `0x09` now executes ADDIU for every source, destination, and
+16-bit immediate field. Three directed cocotb cases cover signed-immediate zero,
+one, `0x7fff`, `0x8000`, and `0xffff`; positive and negative 32-bit wrap without
+an overflow exception; scalar sign extension; ignored source bits 127:32;
+preserved destination bits 127:64; aliased operands; source and destination zero;
+PC wrap; and exact events. A deterministic differential/randomized test executes
+twelve boundary plus 512 seeded instructions and compares PC, complete GPR
+state, writeback, and retirement after every instruction.
+
 ## Reference provenance validation
 
 `make lint` validates the schema and clean-room policy in `references.yaml`,

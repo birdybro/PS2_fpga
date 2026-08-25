@@ -10,6 +10,7 @@ from reference.ee.r5900 import (
     PC_MASK,
     R5900State,
     UnsupportedInstructionError,
+    encode_addiu,
     encode_andi,
     encode_lui,
     encode_ori,
@@ -40,6 +41,8 @@ ENCODED_LUI_EXAMPLE = 0x3C1F_1234
 ENCODED_ORI_EXAMPLE = 0x36FF_1234
 ENCODED_ANDI_EXAMPLE = 0x32FF_1234
 ENCODED_XORI_EXAMPLE = 0x3AFF_1234
+ENCODED_ADDIU_EXAMPLE = 0x26FF_1234
+ALIASED_ADDIU_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0000
 
 
 @pytest.mark.unit
@@ -677,6 +680,56 @@ def test_r5900_reference_xori_handles_aliases_zero_and_encoder_validation() -> N
         error = TypeError if type(immediate) is bool else ValueError
         with pytest.raises(error):
             encode_xori(1, 2, immediate)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("source_word", "immediate", "expected_scalar"),
+    [
+        (0x0000_0000, 0x0000, 0x0000_0000_0000_0000),
+        (0x0000_0000, 0x0001, 0x0000_0000_0000_0001),
+        (0x0000_0000, 0x7FFF, 0x0000_0000_0000_7FFF),
+        (0x0000_0000, 0x8000, 0xFFFF_FFFF_FFFF_8000),
+        (0x0000_0000, 0xFFFF, 0xFFFF_FFFF_FFFF_FFFF),
+        (0x7FFF_FFFF, 0x0001, 0xFFFF_FFFF_8000_0000),
+        (0x8000_0000, 0xFFFF, 0x0000_0000_7FFF_FFFF),
+        (0xFFFF_FFFF, 0x0001, 0x0000_0000_0000_0000),
+    ],
+)
+def test_r5900_reference_addiu_wraps_word_and_preserves_destination_upper_lane(
+    source_word: int,
+    immediate: int,
+    expected_scalar: int,
+) -> None:
+    """Add the signed immediate modulo one word and merge the signed result."""
+    source = 0xFFFF_FFFF_FFFF_FFFF_1234_5678_0000_0000 | source_word
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(4, source).write_gpr(5, destination)
+
+    updated = state.step(encode_addiu(5, 4, immediate))
+
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(4) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_addiu_handles_alias_zero_and_encoder_validation() -> None:
+    """Cover source aliasing, the zero destination, and exact ADDIU encoding."""
+    aliased = 0xCAFE_BABE_1234_5678_AAAA_BBBB_7FFF_FFFF
+    state = R5900State.initial().write_gpr(31, aliased)
+    updated = state.step(encode_addiu(31, 31, 1))
+    assert updated.read_gpr(31) == ALIASED_ADDIU_RESULT
+    discarded = updated.step(encode_addiu(0, 31, 0xFFFF))
+    assert discarded.gprs == updated.gprs
+    assert discarded.pc == TWO_INSTRUCTION_PC
+    assert encode_addiu(31, 23, 0x1234) == ENCODED_ADDIU_EXAMPLE
+    for immediate in (-1, 0x1_0000, True):
+        error = TypeError if type(immediate) is bool else ValueError
+        with pytest.raises(error):
+            encode_addiu(1, 2, immediate)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

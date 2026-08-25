@@ -15,6 +15,7 @@ OPERATION_LUI = 8
 OPERATION_ORI = 9
 OPERATION_ANDI = 10
 OPERATION_XORI = 11
+OPERATION_ADDIU = 12
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -169,10 +170,24 @@ async def test_r5900_decode_recognizes_every_xori_register_and_immediate_field(d
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_every_addiu_register_and_immediate_field(dut) -> None:
+    """Admit ADDIU across the complete architectural rs and rt field ranges."""
+    for rs, rt, immediate in (
+        (0, 0, 0),
+        (1, 0, 1),
+        (0, 1, 0x7FFF),
+        (31, 31, 0xFFFF),
+        (17, 9, 0x8000),
+    ):
+        word = (0x09 << 26) | (rs << 21) | (rt << 16) | immediate
+        await check_decode(dut, word, True, OPERATION_ADDIU)
+
+
+@cocotb.test()
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep every unsupported non-SPECIAL primary opcode space closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
-    for opcode in (*range(1, 12), *range(16, 64)):
+    for opcode in (*range(1, 9), *range(10, 12), *range(16, 64)):
         for payload in payloads:
             await check_decode(dut, (opcode << 26) | payload, False, OPERATION_NONE)
 

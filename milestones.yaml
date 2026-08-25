@@ -868,21 +868,27 @@ milestones:
       - independent Python model validation tests
       - deterministic 520-case sequential randomized differential test
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
-    commit: "self (milestone(M067): implement R5900 XORI)"
+    commit: b2f3e1f
     notes: XOR rs bits 63:0 with the zero-extended immediate while preserving rt bits 127:64.
   - id: M068
     title: Implement R5900 ADDIU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M067]
-    tests: [directed ADDIU wrap boundaries, randomized ADDIU differential]
-    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
-    commit: null
-    notes: Sign-extend the immediate and wrap without an overflow exception.
+    tests:
+      - complete primary-opcode source destination and immediate decode tests
+      - signed-immediate zero one extrema and minus-one tests
+      - positive and negative 32-bit wrap tests without overflow exceptions
+      - source-high-bit alias GPR-zero PC-wrap and exact-event tests
+      - independent Python model validation tests
+      - deterministic 524-case sequential randomized differential test
+    references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml, REFERENCES.md]
+    commit: "self (milestone(M068): implement R5900 ADDIU)"
+    notes: Add the signed immediate modulo 32 bits and sign-extend the word result.
   - id: M069
     title: Implement R5900 ADDU
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M068]
     tests: [directed ADDU carry wrap boundaries, randomized ADDU differential]
     references: [docs/R5900_FOUNDATION.md, coverage/r5900_isa.yaml]
