@@ -490,6 +490,14 @@ through 63 without sign fill. Directed tests cover effective counts 32, 33,
 reserved `rs`; and exact events. A 524-case seeded differential stream compares
 PC and all 32 complete 128-bit GPRs after every instruction.
 
+## R5900 DSRA32
+
+Function `0x3f` arithmetically shifts the signed low doubleword by effective
+counts 32 through 63. Directed tests cover both signs, sign fill at counts 32,
+33, 62, and 63, preserved destination bits 127:64, aliasing, GPR zero, PC wrap,
+reserved `rs`, and exact events. A 524-case seeded differential stream compares
+PC and the complete GPR file after every operation.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.

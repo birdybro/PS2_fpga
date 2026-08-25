@@ -38,6 +38,7 @@ module r5900_execute (
     logic [5:0] high_shift_amount;
     logic [63:0] dsll32_scalar;
     logic [63:0] dsrl32_scalar;
+    logic [63:0] dsra32_scalar;
     logic [31:0] addiu_word;
     logic [31:0] addu_word;
     logic [31:0] subu_word;
@@ -64,6 +65,7 @@ module r5900_execute (
     assign high_shift_amount = {1'b1, instruction_i[10:6]};
     assign dsll32_scalar = source_rt_scalar_i << high_shift_amount;
     assign dsrl32_scalar = source_rt_scalar_i >> high_shift_amount;
+    assign dsra32_scalar = dsra_source_scalar >>> high_shift_amount;
     assign addiu_word = source_rs_scalar_i[31:0]
         + {{16{instruction_i[15]}}, instruction_i[15:0]};
     assign addu_word = source_rs_scalar_i[31:0] + source_rt_scalar_i[31:0];
@@ -292,6 +294,22 @@ module r5900_execute (
                         writeback_commit_o = 1'b1;
                         writeback_destination_o = instruction_i[15:11];
                         writeback_value_o = {destination_upper_i, dsrl32_scalar};
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_DSRA32: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[25:21] == 5'h00)
+                        && (instruction_i[5:0] == 6'h3f)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {destination_upper_i, dsra32_scalar};
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;
                         retirement_o.instruction = instruction_i;

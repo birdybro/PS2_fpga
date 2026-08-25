@@ -9,7 +9,7 @@ from cocotb_tools.runner import get_runner
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TESTBENCH_DIR = Path(__file__).resolve().parent / "r5900_decode"
-COCOTB_TEST_COUNT = 29
+COCOTB_TEST_COUNT = 30
 
 
 @pytest.mark.unit

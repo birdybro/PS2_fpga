@@ -22,6 +22,7 @@ DSRL_FUNCTION = 58
 DSRA_FUNCTION = 59
 DSLL32_FUNCTION = 60
 DSRL32_FUNCTION = 62
+DSRA32_FUNCTION = 63
 LUI_OPCODE = 15
 ORI_OPCODE = 13
 ANDI_OPCODE = 12
@@ -151,6 +152,14 @@ def encode_dsrl32(destination: int, source: int, shift_amount: int) -> int:
     rt = _require_gpr_index(source)
     sa = _require_shift_amount(shift_amount)
     return (rt << 16) | (rd << 11) | (sa << 6) | DSRL32_FUNCTION
+
+
+def encode_dsra32(destination: int, source: int, shift_amount: int) -> int:
+    """Encode canonical SPECIAL DSRA32 with its low five count bits."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    sa = _require_shift_amount(shift_amount)
+    return (rt << 16) | (rd << 11) | (sa << 6) | DSRA32_FUNCTION
 
 
 def encode_sllv(destination: int, source: int, shift_register: int) -> int:
@@ -435,7 +444,7 @@ class R5900State:
         rt = (word >> 16) & 0x1F
         rd = (word >> 11) & 0x1F
         shift_amount = (word >> 6) & 0x1F
-        if function in (DSLL32_FUNCTION, DSRL32_FUNCTION):
+        if function in (DSLL32_FUNCTION, DSRL32_FUNCTION, DSRA32_FUNCTION):
             shift_amount += 32
         source_scalar = self.read_gpr(rt) & SCALAR_MASK
         if function in (DSLL_FUNCTION, DSLL32_FUNCTION):
@@ -672,6 +681,7 @@ class R5900State:
                 DSRA_FUNCTION,
                 DSLL32_FUNCTION,
                 DSRL32_FUNCTION,
+                DSRA32_FUNCTION,
             ):
                 updated = self._step_immediate_doubleword_shift(word, function)
             elif immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):

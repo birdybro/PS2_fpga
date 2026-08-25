@@ -137,9 +137,10 @@ references:
       - DSRA interpreter operation
       - DSLL32 interpreter operation
       - DSRL32 interpreter operation
+      - DSRA32 interpreter operation
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
     notes: >-
-      Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 and DSRL32
+      Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 DSRL32 and DSRA32
       low-doubleword results with preserved upper lanes, high-range shift
       counts, and immediate or register arithmetic handling; no source structure
       was copied.

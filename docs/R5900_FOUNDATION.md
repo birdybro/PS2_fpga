@@ -336,6 +336,11 @@ DSRL32 function `0x3e` uses the same widened count for logical-right shifts,
 zero-fills the low doubleword, and preserves the destination upper lane.
 Directed and 524-case randomized differential checks make it the twenty-seventh
 complete ISA coverage entry.
+DSRA32 function `0x3f` completes the high-range immediate doubleword trio. It
+uses signed arithmetic right shift for effective counts 32 through 63, retaining
+source sign fill only within the low doubleword and preserving destination bits
+127:64. Positive, negative, alias, zero-register, exact-event, and 524-case
+differential checks make it the twenty-eighth complete ISA coverage entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
