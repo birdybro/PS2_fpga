@@ -110,21 +110,21 @@ milestones:
     dependencies: [M009A]
     tests: [make integration]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M009B): add integration smoke layer)"
+    commit: 318c0ea
     notes: Verify build, simulation, cocotb, pytest, XML, and seed propagation together.
   - id: M010
     title: Add GitHub Actions CI
     subsystem: infrastructure
-    status: active
+    status: complete
     dependencies: [M009B]
     tests: [workflow syntax check, local CI command]
     references: [VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M010): add GitHub Actions CI)"
     notes: Run all required verification layers in CI.
   - id: M011
     title: Add progress-state validation infrastructure
     subsystem: infrastructure
-    status: pending
+    status: active
     dependencies: [M010]
     tests: [milestone schema validation]
     references: [MILESTONES.md]

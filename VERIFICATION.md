@@ -87,3 +87,12 @@ register instances. Its cocotb test checks reset fanout, nonblocking one-cycle
 propagation, and upstream hold behavior. The pytest wrapper also verifies the
 cocotb XML result and confirms that the requested deterministic seed reached
 the simulator.
+
+## Continuous integration
+
+GitHub Actions runs in the official pinned Verilator 5.050 container with
+Python 3.14 and pinned Python dependencies. CI executes lint, build, unit,
+differential, randomized, integration, and full regression as separate fatal
+steps. Actions are pinned to commit hashes and repository permissions are
+read-only. `make ci` runs the same checks serially on a local machine, while
+`scripts/check_ci_workflow.py` validates the workflow contract itself.

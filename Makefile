@@ -9,13 +9,13 @@ VENV ?= .venv
 
 SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
-RTL_SOURCES := $(shell rg --files rtl -g '*.sv' | sort)
+RTL_SOURCES := $(shell find rtl -type f -name '*.sv' -print | sort)
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.requirements-dev.stamp
 TEST_RUNNER := $(VENV_PYTHON) scripts/run_tests.py
 WAVE_FILE := $(BUILD_DIR)/waves/register_en/dump.vcd
 
-.PHONY: help venv structure build lint test unit differential randomized integration regression software waves clean
+.PHONY: help venv structure build lint test unit differential randomized integration regression software waves ci clean
 
 help: ## Show available development commands.
 	@awk 'BEGIN {FS = ":.*## "; printf "PS2_fpga development commands:\n\n"} /^[a-zA-Z0-9_-]+:.*## / {printf "  %-14s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -43,8 +43,9 @@ lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	$(VERILATOR) --lint-only -Wall $(VERILATOR_FLAGS) $(RTL_SOURCES)
 	$(VENV_PYTHON) -m ruff check scripts tests reference
 	$(VENV_PYTHON) -m ruff format --check scripts tests reference
-	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml
+	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml .github/workflows/ci.yml
 	$(VENV_PYTHON) scripts/check_tracked_files.py
+	$(VENV_PYTHON) scripts/check_ci_workflow.py
 
 test: structure build venv ## Run the routine pytest gate.
 	$(TEST_RUNNER) test --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"
@@ -75,6 +76,15 @@ waves: venv ## Run a directed test and generate a Verilator VCD trace.
 	@test -s $(WAVE_FILE)
 	@grep -q '$$enddefinitions $$end' $(WAVE_FILE)
 	@echo "waveform: $(WAVE_FILE)"
+
+ci: venv ## Run the complete local equivalent of required CI verification.
+	$(MAKE) lint
+	$(MAKE) build
+	$(MAKE) unit
+	$(MAKE) differential
+	$(MAKE) randomized
+	$(MAKE) integration
+	$(MAKE) regression
 
 clean: ## Remove ignored local build outputs.
 	@rm -rf -- build obj_dir sim_build

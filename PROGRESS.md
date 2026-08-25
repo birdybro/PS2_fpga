@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M009B — add integration-layer smoke test
-- Next milestone: M010 — add GitHub Actions CI
-- Current subsystem: verification infrastructure
-- Current regression status: unit, differential, randomized, and integration layers pass; full regression and strict lint pass
+- Last completed milestone: M010 — add GitHub Actions CI
+- Next milestone: M011 — add progress-state validation infrastructure
+- Current subsystem: repository infrastructure
+- Current regression status: local CI mirror passes all 7 required build/verification commands with no skips
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M009B milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M010 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 
