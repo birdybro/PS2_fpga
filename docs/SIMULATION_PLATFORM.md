@@ -25,6 +25,10 @@ interfaces. It does not model RDRAM timing and does not yet execute a CPU.
   is little-endian in bits 31:0 with upper response bits zero. Responses remain
   stable under backpressure; writes, other sizes, misalignment, and out-of-range
   requests are not accepted.
+- M021 adds aligned full-word 32-bit writes when `req_wstrb` is exactly
+  `16'h000f`. The low four write-data lanes update little-endian storage and the
+  registered completion response carries zero data. Partial strobes remain
+  unaccepted for M022.
 
 ## Planned boundaries
 

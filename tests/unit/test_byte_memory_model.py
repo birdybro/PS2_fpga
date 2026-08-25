@@ -32,3 +32,21 @@ def test_byte_memory_model_rejects_invalid_byte_writes() -> None:
     for address, value in ((-1, 0), (8, 0), (0, -1), (0, 0x100)):
         with pytest.raises(ValueError):
             model.write_byte(address, value)
+
+
+@pytest.mark.unit
+def test_byte_memory_model_writes_little_endian_word() -> None:
+    """Decompose a word through Python's independent byte conversion semantics."""
+    model = ByteMemoryModel(8)
+    model.write32(4, EXPECTED_WORD)
+    assert tuple(model.data[4:8]) == (0x01, 0x23, 0x45, 0x67)
+    assert model.read32(4) == EXPECTED_WORD
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("address,value", ((-4, 0), (2, 0), (8, 0), (0, -1), (0, 1 << 32)))
+def test_byte_memory_model_rejects_invalid_write32(address: int, value: int) -> None:
+    """Reject invalid word addresses and values outside 32 bits."""
+    model = ByteMemoryModel(8)
+    with pytest.raises(ValueError):
+        model.write32(address, value)

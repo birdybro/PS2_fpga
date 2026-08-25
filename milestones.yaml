@@ -212,21 +212,24 @@ milestones:
       - exhaustive aligned-word Python differential test
       - byte-memory reference-model boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: "self (milestone(M020): implement aligned 32-bit RAM reads)"
+    commit: f78c320
     notes: Read one aligned little-endian 32-bit word per accepted request.
   - id: M021
     title: Implement aligned 32-bit RAM writes
     subsystem: memory
-    status: active
+    status: complete
     dependencies: [M020]
-    tests: [directed 32-bit RAM write and readback tests]
+    tests:
+      - directed full-word write endian bounds backpressure and readback test
+      - exhaustive aligned-word write and readback Python differential test
+      - byte-memory write32 boundary tests
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]
-    commit: null
+    commit: "self (milestone(M021): implement aligned 32-bit RAM writes)"
     notes: Write complete aligned 32-bit words before adding partial lanes.
   - id: M022
     title: Implement RAM write byte enables
     subsystem: memory
-    status: pending
+    status: active
     dependencies: [M021]
     tests: [all 32-bit byte-enable pattern tests]
     references: [docs/SIMULATION_PLATFORM.md, docs/CONVENTIONS.md]

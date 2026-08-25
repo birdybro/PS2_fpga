@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M020 — implement aligned 32-bit RAM reads
-- Next milestone: M021 — implement aligned 32-bit RAM writes
+- Last completed milestone: M021 — implement aligned 32-bit RAM writes
+- Next milestone: M022 — implement RAM write byte enables
 - Current subsystem: behavioral system memory
-- Current regression status: 39 tests pass with no skips; directed and exhaustive differential read32 gates pass
+- Current regression status: 47 tests pass with no skips; directed and exhaustive differential write32 gates pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no PS2 architectural timing model exists
 - External blockers: none
-- Most recent pushed commit: M020 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M021 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

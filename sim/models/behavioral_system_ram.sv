@@ -27,13 +27,20 @@ module behavioral_system_ram #(
     logic                  rsp_error_q;
 
     logic read32_request;
+    logic write32_request;
+    logic supported_request;
     logic response_slot_available;
     logic request_fire;
 
+    localparam int unsigned STROBE_WIDTH = DATA_WIDTH / 8;
     localparam logic [ADDR_WIDTH-1:0] LAST_READ32_ADDR = SIZE_BYTES - 4;
     localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_1 = INDEX_WIDTH'(1);
     localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_2 = INDEX_WIDTH'(2);
     localparam logic [INDEX_WIDTH-1:0] BYTE_OFFSET_3 = INDEX_WIDTH'(3);
+    localparam logic [STROBE_WIDTH-1:0] WRITE32_FULL_STROBE = {
+        {(STROBE_WIDTH - 4) {1'b0}},
+        4'b1111
+    };
 
     initial begin
         if (SIZE_BYTES < 4) begin
@@ -51,8 +58,14 @@ module behavioral_system_ram #(
         && (bus.req_size == 3'd2)
         && (bus.req_addr[1:0] == 2'b00)
         && (bus.req_addr <= LAST_READ32_ADDR);
+    assign write32_request = bus.req_write
+        && (bus.req_size == 3'd2)
+        && (bus.req_addr[1:0] == 2'b00)
+        && (bus.req_addr <= LAST_READ32_ADDR)
+        && (bus.req_wstrb == WRITE32_FULL_STROBE);
+    assign supported_request = read32_request || write32_request;
     assign response_slot_available = !rsp_valid_q || bus.rsp_ready;
-    assign bus.req_ready = rst_ni && response_slot_available && read32_request;
+    assign bus.req_ready = rst_ni && response_slot_available && supported_request;
     assign request_fire = bus.req_valid && bus.req_ready;
 
     assign bus.rsp_valid = rsp_valid_q;
@@ -79,6 +92,8 @@ module behavioral_system_ram #(
                 assert (!$isunknown(bus.req_wstrb))
                 else $fatal(1, "RAM_WRITE_STROBE_UNKNOWN: write strobes must be known while valid");
             end
+            assert (!(backdoor_write_i && request_fire && bus.req_write))
+            else $fatal(1, "RAM_WRITE_CONFLICT: backdoor and bus writes must not coincide");
 
             if (backdoor_write_i && backdoor_in_bounds_o) begin
                 storage[backdoor_addr_i[INDEX_WIDTH-1:0]] <= backdoor_wdata_i;
@@ -90,14 +105,25 @@ module behavioral_system_ram #(
 
             if (request_fire) begin
                 rsp_valid_q <= 1'b1;
-                rsp_rdata_q <= {
-                    {(DATA_WIDTH - 32) {1'b0}},
-                    storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3],
-                    storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_2],
-                    storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_1],
-                    storage[bus.req_addr[INDEX_WIDTH-1:0]]
-                };
                 rsp_error_q <= 1'b0;
+                if (bus.req_write) begin
+                    storage[bus.req_addr[INDEX_WIDTH-1:0]] <= bus.req_wdata[7:0];
+                    storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_1]
+                        <= bus.req_wdata[15:8];
+                    storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_2]
+                        <= bus.req_wdata[23:16];
+                    storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3]
+                        <= bus.req_wdata[31:24];
+                    rsp_rdata_q <= '0;
+                end else begin
+                    rsp_rdata_q <= {
+                        {(DATA_WIDTH - 32) {1'b0}},
+                        storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_3],
+                        storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_2],
+                        storage[bus.req_addr[INDEX_WIDTH-1:0] + BYTE_OFFSET_1],
+                        storage[bus.req_addr[INDEX_WIDTH-1:0]]
+                    };
+                end
             end
         end
     end

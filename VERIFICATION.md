@@ -174,3 +174,13 @@ An independent Python model uses `bytearray` slicing and `int.from_bytes`, with
 unit coverage for its bounds and alignment errors. Differential simulation
 initializes all 256 bytes to a non-symmetric deterministic pattern and compares
 every aligned 32-bit word against that model.
+
+## Aligned 32-bit behavioral RAM writes
+
+The directed write test covers first, interior, and final words with asymmetric
+data, byte-by-byte backdoor inspection, architectural readback, response
+backpressure, and rejection of partial strobes, wrong sizes, misalignment, and
+out-of-range addresses. The Python model decomposes words with `int.to_bytes`
+and validates address and value domains. Differential simulation writes every
+aligned word through the RTL bus, then reads and compares the complete RAM image
+against the independent model.
