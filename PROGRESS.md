@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M006 — add top-level test runner
-- Next milestone: M007 — add lint configuration
+- Last completed milestone: M007 — add lint configuration
+- Next milestone: M008 — add deterministic randomized-test infrastructure
 - Current subsystem: repository infrastructure
-- Current regression status: authoritative runner reports 2 pytest passes, 0 failures/errors/skips; cocotb inner test and build pass
+- Current regression status: 2 regression passes with no failures/errors/skips; Verilator, Ruff, yamllint, and hygiene checks pass
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: no timing model exists
 - External blockers: none
-- Most recent pushed commit: M006 milestone commit (current `HEAD`; exact hash in `git log`)
+- Most recent pushed commit: M007 milestone commit (current `HEAD`; exact hash in `git log`)
 
 ## Resume note
 

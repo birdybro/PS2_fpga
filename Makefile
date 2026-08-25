@@ -9,6 +9,7 @@ VENV ?= .venv
 
 SMOKE_RTL := rtl/common/register_en.sv
 SMOKE_MDIR := $(BUILD_DIR)/verilator_smoke
+RTL_SOURCES := $(shell rg --files rtl -g '*.sv' | sort)
 VENV_PYTHON := $(VENV)/bin/python
 VENV_STAMP := $(VENV)/.requirements-dev.stamp
 TEST_RUNNER := $(VENV_PYTHON) scripts/run_tests.py
@@ -36,8 +37,13 @@ $(SMOKE_MDIR)/Vregister_en__ALL.a: $(SMOKE_RTL)
 		--top-module register_en --prefix Vregister_en \
 		-Wall $(VERILATOR_FLAGS) $(SMOKE_RTL)
 
-lint: structure ## Run the currently available static repository checks.
+lint: structure venv ## Run HDL, Python, YAML, whitespace, and hygiene checks.
 	@git diff HEAD --check -- .
+	$(VERILATOR) --lint-only -Wall $(VERILATOR_FLAGS) $(RTL_SOURCES)
+	$(VENV_PYTHON) -m ruff check scripts tests reference
+	$(VENV_PYTHON) -m ruff format --check scripts tests reference
+	$(VENV_PYTHON) -m yamllint -c .yamllint.yaml milestones.yaml
+	$(VENV_PYTHON) scripts/check_tracked_files.py
 
 test: structure build venv ## Run the routine pytest gate.
 	$(TEST_RUNNER) test --seed "$(RANDOM_SEED)" --build-root "$(abspath $(BUILD_DIR))"

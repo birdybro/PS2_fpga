@@ -65,21 +65,21 @@ milestones:
     dependencies: [M005]
     tests: [make test, make regression]
     references: [VERIFICATION.md]
-    commit: "self (milestone(M006): add top-level test runner)"
+    commit: aac0b4d
     notes: Expose the required stable command surface.
   - id: M007
     title: Add lint configuration
     subsystem: verification
-    status: active
+    status: complete
     dependencies: [M006]
     tests: [make lint]
     references: [CONTRIBUTING.md]
-    commit: null
+    commit: "self (milestone(M007): add lint configuration)"
     notes: Lint HDL, Python, documentation state, and repository hygiene.
   - id: M008
     title: Add deterministic randomized-test infrastructure
     subsystem: verification
-    status: pending
+    status: active
     dependencies: [M007]
     tests: [make randomized]
     references: [VERIFICATION.md]

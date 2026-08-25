@@ -14,3 +14,7 @@ Use milestone commit subjects such as:
 ```text
 milestone(M023): implement R5900 ADDIU
 ```
+
+Run `make lint` before every milestone commit. It treats Verilator warnings as
+errors, checks and formats Python with Ruff, validates YAML, rejects whitespace
+errors, and prevents generated or prohibited binary paths from being tracked.

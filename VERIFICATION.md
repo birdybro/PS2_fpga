@@ -47,3 +47,10 @@ selects the directed unit layer only.
 named suites to strict pytest markers, forwards the deterministic seed and
 isolated build root, writes JUnit results, and audits the report. A requested
 suite fails when it collects zero tests or contains any failure, error, or skip.
+
+## Static checks
+
+`make lint` runs Verilator `-Wall` lint over synthesizable RTL, Ruff checks and
+format validation over Python, yamllint over machine-readable state, Git
+whitespace validation, and a tracked-file hygiene audit. All checks are fatal;
+there is no warning-only lint path.

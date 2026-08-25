@@ -7,7 +7,6 @@ from xml.etree import ElementTree
 import pytest
 from cocotb_tools.runner import get_runner
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TESTBENCH_DIR = Path(__file__).resolve().parent / "register_en"
 

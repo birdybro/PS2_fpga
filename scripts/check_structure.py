@@ -3,7 +3,6 @@
 
 from pathlib import Path
 
-
 REQUIRED_DIRECTORIES = (
     ".github/workflows",
     "docs",
