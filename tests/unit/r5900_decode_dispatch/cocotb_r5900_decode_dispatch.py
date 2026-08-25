@@ -16,6 +16,7 @@ OPERATION_ORI = 9
 OPERATION_ANDI = 10
 OPERATION_XORI = 11
 OPERATION_ADDIU = 12
+OPERATION_ADDU = 13
 
 
 async def check_dispatch(
@@ -180,6 +181,17 @@ async def test_r5900_decode_dispatch_sends_canonical_addiu_to_execute(dut) -> No
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_addu_to_execute(dut) -> None:
+    """Dispatch ADDU source and destination fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x0000_0021),
+        (4, 0x0020_0021),
+        (0x0010_0000, 0x023F_F821),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_ADDU, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -> None:
     """Preserve fault PC/opcode/word while preventing execute and later writeback."""
     cases = (
@@ -188,6 +200,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (8, 0x0000_0044),
         (12, 0x0000_0046),
         (16, 0x0000_0047),
+        (18, 0x0000_0061),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),

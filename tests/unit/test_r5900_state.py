@@ -11,6 +11,7 @@ from reference.ee.r5900 import (
     R5900State,
     UnsupportedInstructionError,
     encode_addiu,
+    encode_addu,
     encode_andi,
     encode_lui,
     encode_ori,
@@ -42,7 +43,11 @@ ENCODED_ORI_EXAMPLE = 0x36FF_1234
 ENCODED_ANDI_EXAMPLE = 0x32FF_1234
 ENCODED_XORI_EXAMPLE = 0x3AFF_1234
 ENCODED_ADDIU_EXAMPLE = 0x26FF_1234
+ENCODED_ADDU_EXAMPLE = 0x02F1_F821
 ALIASED_ADDIU_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0000
+ALIASED_ADDU_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0000
+ALIASED_ADDU_RT_RESULT = 0x0123_4567_89AB_CDEF_FFFF_FFFF_8000_0000
+DOUBLED_ADDU_SOURCE_RESULT = 2
 
 
 @pytest.mark.unit
@@ -730,6 +735,64 @@ def test_r5900_reference_addiu_handles_alias_zero_and_encoder_validation() -> No
         error = TypeError if type(immediate) is bool else ValueError
         with pytest.raises(error):
             encode_addiu(1, 2, immediate)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("source_a_word", "source_b_word", "expected_scalar"),
+    [
+        (0x0000_0000, 0x0000_0000, 0x0000_0000_0000_0000),
+        (0x0000_0000, 0x0000_0001, 0x0000_0000_0000_0001),
+        (0x0000_0000, 0x7FFF_FFFF, 0x0000_0000_7FFF_FFFF),
+        (0x0000_0000, 0x8000_0000, 0xFFFF_FFFF_8000_0000),
+        (0x0000_0000, 0xFFFF_FFFF, 0xFFFF_FFFF_FFFF_FFFF),
+        (0x7FFF_FFFF, 0x0000_0001, 0xFFFF_FFFF_8000_0000),
+        (0x8000_0000, 0xFFFF_FFFF, 0x0000_0000_7FFF_FFFF),
+        (0xFFFF_FFFF, 0x0000_0001, 0x0000_0000_0000_0000),
+    ],
+)
+def test_r5900_reference_addu_wraps_word_and_preserves_destination_upper_lane(
+    source_a_word: int,
+    source_b_word: int,
+    expected_scalar: int,
+) -> None:
+    """Add source low words modulo 32 bits and merge the signed result into rd."""
+    source_a = 0xFFFF_FFFF_FFFF_FFFF_1234_5678_0000_0000 | source_a_word
+    source_b = 0xAAAA_AAAA_AAAA_AAAA_8765_4321_0000_0000 | source_b_word
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, source_a).write_gpr(4, source_b).write_gpr(5, destination)
+
+    updated = state.step(encode_addu(5, 3, 4))
+
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(3) == source_a
+    assert updated.read_gpr(4) == source_b
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_addu_handles_all_aliases_zero_and_encoder_validation() -> None:
+    """Cover both source aliases, identical sources, zero, and exact ADDU encoding."""
+    source_a = 0xCAFE_BABE_1234_5678_AAAA_BBBB_7FFF_FFFF
+    source_b = 0x0123_4567_89AB_CDEF_1111_2222_0000_0001
+    state = R5900State.initial().write_gpr(31, source_a).write_gpr(30, source_b)
+    rd_is_rs = state.step(encode_addu(31, 31, 30))
+    assert rd_is_rs.read_gpr(31) == ALIASED_ADDU_RESULT
+    rd_is_rt = state.step(encode_addu(30, 31, 30))
+    assert rd_is_rt.read_gpr(30) == ALIASED_ADDU_RT_RESULT
+    same_sources = state.step(encode_addu(29, 30, 30))
+    assert same_sources.read_gpr(29) == DOUBLED_ADDU_SOURCE_RESULT
+    discarded = state.step(encode_addu(0, 31, 30))
+    assert discarded.gprs == state.gprs
+    zero_sources = state.step(encode_addu(29, 0, 0))
+    assert zero_sources.read_gpr(29) == 0
+    assert encode_addu(31, 23, 17) == ENCODED_ADDU_EXAMPLE
+    for fields in ((-1, 0, 0), (0, GPR_COUNT, 0), (0, 0, True)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_addu(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

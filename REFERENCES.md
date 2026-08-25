@@ -117,12 +117,12 @@ evidence only; no source structure or text is copied.
 <!-- ref:pcsx2-r5900-interpreter -->
 ### PCSX2 R5900 interpreter implementation
 
-The GPL-3.0 license was reviewed before consulting the scalar-shift portion of
-this public emulator. It independently corroborates 32-bit shift inputs,
-sign-extended scalar results, preserved upper GPR lanes, and low-five-bit SLLV
-count selection. The project implements that documented behavior independently
-in SystemVerilog and Python without copying source text or implementation
-structure.
+The GPL-3.0 license was reviewed before consulting scalar shift, immediate, and
+ADDU interpreter operations in this public emulator. It independently
+corroborates 32-bit operand selection, sign-extended scalar results, preserved
+upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word-add
+wrap. The project implements that documented behavior independently in
+SystemVerilog and Python without copying source text or implementation structure.
 
 <!-- ref:system-v-gabi-elf -->
 ### System V generic ABI ELF object file format

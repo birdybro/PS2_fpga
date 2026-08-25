@@ -177,14 +177,14 @@ instructions:
     category: 32-bit arithmetic register
     encoding: SPECIAL opcode 0x00, function 0x21
     milestone: M069
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, binutils-r5900-review]
-    notes: Wrapping, no-overflow behavior, and 128-bit GPR extension need explicit tests.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: complete
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    notes: Adds source low words modulo 32 bits, sign-extends result, and never traps on overflow.
   - mnemonic: SUBU
     category: 32-bit arithmetic register
     encoding: SPECIAL opcode 0x00, function 0x23

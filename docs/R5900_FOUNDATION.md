@@ -254,6 +254,14 @@ extrema, positive and negative wrap, ignored source high bits, aliasing,
 destination zero, PC wrap, and exact events. Twelve boundary plus 512 randomized
 cases make ADDIU the twelfth complete ISA coverage entry.
 
+Canonical ADDU admits every `rs`, `rt`, and `rd` under SPECIAL function `0x21`
+when reserved `sa` is zero. It adds source bits 31:0 modulo 32 bits without an
+overflow exception, sign-extends the result through bits 63:32, and retains old
+destination bits 127:64. Directed checks cover signed extrema, carry wrap,
+ignored source high bits, both destination aliases, identical sources, register
+zero, PC wrap, exact events, and reserved-field rejection. Twelve boundary plus
+512 randomized cases make ADDU the thirteenth complete ISA coverage entry.
+
 The functional sequence is not a pipeline model. Instruction latency, dual
 issue, forwarding, hazards, cache timing, branch timing, and exception timing
 remain explicitly inaccurate until later timing milestones.

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M068 — implement R5900 ADDIU
-- Next milestone: M069 — implement R5900 ADDU
+- Last completed milestone: M069 — implement R5900 ADDU
+- Next milestone: M070 — implement R5900 SUBU
 - Current subsystem: R5900 32-bit arithmetic register execution
-- Current regression status: 365 tests pass with no skips; ADDIU directed/reference checks and 524-case sequential randomized differential coverage are green
-- Known architectural inaccuracies: only NOP, six 32-bit shifts, LUI, ORI, ANDI, XORI, and ADDIU execute; reserved words emit diagnostics but do not enter COP0 exceptions
+- Current regression status: 376 tests pass with no skips; ADDU directed/reference checks and 524-case sequential randomized differential coverage are green
+- Known architectural inaccuracies: only NOP, six 32-bit shifts, LUI, ORI, ANDI, XORI, ADDIU, and ADDU execute; reserved words emit diagnostics but do not enter COP0 exceptions
 - Known timing inaccuracies: fetch uses functional ready/valid handshakes and a one-entry buffer; CPU pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M068 milestone commit (this commit)
+- Most recent pushed commit: M069 milestone commit (this commit)
 
 ## Resume note
 
@@ -18,6 +18,6 @@ local verification gate. Architectural GPR, PC, functional control state, and
 independently tested fetch request and response blocks now exist. Instruction
 fields are extracted, exact zero-word NOP is admitted, and unsupported words are
 blocked with diagnostic context. Exact zero-word NOP plus all six canonical
-32-bit shift instructions plus LUI, ORI, ANDI, XORI, and ADDIU now execute,
+32-bit shift instructions plus LUI, ORI, ANDI, XORI, ADDIU, and ADDU now execute,
 advance PC, and emit exact retirement records; resume with the single active
 milestone in `milestones.yaml`.

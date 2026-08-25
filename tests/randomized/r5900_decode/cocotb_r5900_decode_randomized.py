@@ -17,12 +17,18 @@ ORI_OPCODE = 13
 ANDI_OPCODE = 12
 XORI_OPCODE = 14
 ADDIU_OPCODE = 9
+ADDU_FUNCTION = 33
 IMMEDIATE_OPERATIONS = {0: 2, SRL_FUNCTION: 3, SRA_FUNCTION: 4}
-VARIABLE_OPERATIONS = {SLLV_FUNCTION: 5, SRLV_FUNCTION: 6, SRAV_FUNCTION: 7}
+REGISTER_OPERATIONS = {
+    SLLV_FUNCTION: 5,
+    SRLV_FUNCTION: 6,
+    SRAV_FUNCTION: 7,
+    ADDU_FUNCTION: 13,
+}
 
 
 def expected_operation(word: int) -> int:
-    """Model admitted constant and variable shifts independently from the RTL."""
+    """Model admitted immediate and register operations independently from RTL."""
     operation = 1 if word == 0 else 0
     if word != 0 and word >> 26 == 0:
         reserved_rs = (word >> 21) & 0x1F
@@ -31,7 +37,7 @@ def expected_operation(word: int) -> int:
         if reserved_rs == 0:
             operation = IMMEDIATE_OPERATIONS.get(function, 0)
         if operation == 0 and reserved_shift == 0:
-            operation = VARIABLE_OPERATIONS.get(function, 0)
+            operation = REGISTER_OPERATIONS.get(function, 0)
     elif word >> 26 == ADDIU_OPCODE:
         operation = 12
     elif word >> 26 == ANDI_OPCODE:
@@ -82,6 +88,9 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x2400_0000,
         0x2421_8000,
         0x27FF_FFFF,
+        0x0000_0021,
+        0x023F_F821,
+        0x0000_0061,
         0x0000_0800,
         0x0001_0000,
         0x0020_0000,
