@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M040 — assemble simulation platform top
-- Next milestone: M041 — add raw binary platform integration test
-- Current subsystem: simulation loader and RAM integration
-- Current regression status: 188 tests pass with no skips; composed platform elaboration and one/four-cycle reset integration are green
+- Last completed milestone: M041 — add raw binary platform integration test
+- Next milestone: M042 — add ELF loader and RAM integration test
+- Current subsystem: EE ELF and simulation RAM integration
+- Current regression status: 189 tests pass with no skips; external raw-file placement reads back byte-exactly through 32/64/128-bit platform transactions
 - Known architectural inaccuracies: all PS2 architecture is unimplemented
 - Known timing inaccuracies: RAM latency is configurable but does not model physical RDRAM timing
 - External blockers: none
-- Most recent pushed commit: M040 milestone commit (this commit)
+- Most recent pushed commit: M041 milestone commit (this commit)
 
 ## Resume note
 

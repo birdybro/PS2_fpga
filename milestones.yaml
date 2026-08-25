@@ -452,21 +452,25 @@ milestones:
       - reset RAM gating and post-reset idle state test
       - composed disabled observability silence test
     references: [docs/SIMULATION_PLATFORM.md, ARCHITECTURE.md]
-    commit: "self (milestone(M040): assemble simulation platform top)"
+    commit: 5c87c09
     notes: Compose clock, reset, memory, termination, tracing, and waveform controls.
   - id: M041
     title: Add raw binary platform integration test
     subsystem: integration
-    status: active
+    status: complete
     dependencies: [M040]
-    tests: [binary loader through RAM transaction readback]
+    tests:
+      - temporary external raw-file and atomic range metadata test
+      - sentinel-preserving backdoor overlay integration test
+      - 32-bit 64-bit and 128-bit transaction readback test
+      - payload adjacency and final RAM boundary readback test
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]
-    commit: null
+    commit: "self (milestone(M041): integrate raw binary platform loading)"
     notes: Prove byte-exact external binary placement through the composed platform.
   - id: M042
     title: Add ELF loader and RAM integration test
     subsystem: integration
-    status: pending
+    status: active
     dependencies: [M041]
     tests: [ELF segments zero-fill and entry-point integration test]
     references: [docs/SIMULATION_PLATFORM.md, VERIFICATION.md]

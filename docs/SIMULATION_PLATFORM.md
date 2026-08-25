@@ -238,6 +238,15 @@ synthesizable architecture. Reset fans out to every stateful component, and RAM
 request readiness remains low until the reset sequencer releases on a falling
 edge.
 
+M041 connects the existing raw-file loader to that platform in verification.
+The test builds a sentinel-filled host memory image, loads a temporary external
+raw file into one interior half-open range, initializes RTL RAM to the same
+sentinel, and overlays only the loader-selected bytes through the backdoor.
+Normal 32-, 64-, and 128-bit memory transactions then read payload, adjacent,
+and upper-bound windows byte-for-byte. This proves the current simulation load
+path without adding a hardware-visible loader port or committing a binary
+fixture. The backdoor remains inactive during every transaction read.
+
 ## Phase 1 exit
 
 Phase 1 exits with two integration tests: one places a raw binary into RAM and

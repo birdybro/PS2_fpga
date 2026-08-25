@@ -199,6 +199,19 @@ first active rising edge. Three later edges remain idle. Disabled memory trace,
 architectural trace, and waveform paths must create no requested files. A
 dedicated whole-hierarchy Verilator lint invocation includes assertions.
 
+## Raw binary platform integration
+
+One integration test creates a deterministic 32-byte raw file only under the
+ignored build root and loads it at address 32 into a 128-byte sentinel-filled
+host image with `load_raw_binary_file`. The immutable range metadata is checked
+before simulation. Cocotb independently reconstructs the expected host image,
+initializes RTL RAM to the sentinel, overlays only the loaded half-open range
+through the simulation backdoor, and reads boundary windows through the normal
+memory transaction interface. Aligned 32-, 64-, and 128-bit reads cover the
+first and second payload halves, bytes immediately before and after the load,
+and the final legal 128-bit RAM window. Full 128-bit response comparison also
+checks zero extension of narrower reads.
+
 ## Internal memory transaction interface
 
 `memory_bus_if` separates initiator- and target-driven signals with explicit
