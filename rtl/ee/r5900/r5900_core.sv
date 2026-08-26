@@ -56,6 +56,10 @@ module r5900_core (
     r5900_hilo_t                 execute_write_hi_value;
     logic                        execute_write_lo_valid;
     r5900_hilo_t                 execute_write_lo_value;
+    logic                        execute_write_hi1_valid;
+    r5900_hilo_t                 execute_write_hi1_value;
+    logic                        execute_write_lo1_valid;
+    r5900_hilo_t                 execute_write_lo1_value;
     r5900_hilo_t                 hi;
     r5900_hilo_t                 lo;
     r5900_hilo_t                 hi1;
@@ -95,7 +99,7 @@ module r5900_core (
     assign writeback_done = (state == R5900_WRITEBACK)
         && (!writeback_pending_q || writeback_commit_accepted);
 
-    assign destination_index = (instruction_q[31:26] == 6'h00)
+    assign destination_index = (instruction_q[31:26] inside {6'h00, 6'h1c})
         ? instruction_q[15:11]
         : instruction_q[20:16];
 
@@ -204,6 +208,10 @@ module r5900_core (
         .write_hi_value_o(execute_write_hi_value),
         .write_lo_valid_o(execute_write_lo_valid),
         .write_lo_value_o(execute_write_lo_value),
+        .write_hi1_valid_o(execute_write_hi1_valid),
+        .write_hi1_value_o(execute_write_hi1_value),
+        .write_lo1_valid_o(execute_write_lo1_valid),
+        .write_lo1_value_o(execute_write_lo1_value),
         .retirement_o(execute_retirement)
     );
 
@@ -213,10 +221,10 @@ module r5900_core (
         .write_hi_value_i(execute_write_hi_value),
         .write_lo_valid_i(execute_write_lo_valid),
         .write_lo_value_i(execute_write_lo_value),
-        .write_hi1_valid_i(1'b0),
-        .write_hi1_value_i('0),
-        .write_lo1_valid_i(1'b0),
-        .write_lo1_value_i('0),
+        .write_hi1_valid_i(execute_write_hi1_valid),
+        .write_hi1_value_i(execute_write_hi1_value),
+        .write_lo1_valid_i(execute_write_lo1_valid),
+        .write_lo1_value_i(execute_write_lo1_value),
         .hi_o(hi),
         .lo_o(lo),
         .hi1_o(hi1),

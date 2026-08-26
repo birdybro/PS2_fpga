@@ -45,6 +45,8 @@ MFHI_FUNCTION = 16
 MTHI_FUNCTION = 17
 MFLO_FUNCTION = 18
 MTLO_FUNCTION = 19
+MMI_OPCODE = 28
+MULT1_FUNCTION = 24
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -363,6 +365,14 @@ def encode_mtlo(source: int) -> int:
     """Encode canonical R5900 SPECIAL MTLO with all reserved fields clear."""
     rs = _require_gpr_index(source)
     return (rs << 21) | MTLO_FUNCTION
+
+
+def encode_mult1(destination: int, multiplicand: int, multiplier: int) -> int:
+    """Encode canonical R5900 MMI MULT1 with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(multiplicand)
+    rt = _require_gpr_index(multiplier)
+    return (MMI_OPCODE << 26) | (rs << 21) | (rt << 16) | (rd << 11) | MULT1_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -741,6 +751,19 @@ class R5900State:
             updated = updated.write_gpr(rd, _merge_scalar(self.read_gpr(rd), lo))
         return updated
 
+    def _step_mult1(self, word: int) -> R5900State:
+        """Multiply signed source words into secondary HI1 and LO1."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        product = _as_signed_word(self.read_gpr(rs)) * _as_signed_word(self.read_gpr(rt))
+        lo1 = _as_signed_word(product) & SCALAR_MASK
+        hi1 = _as_signed_word(product >> WORD_WIDTH) & SCALAR_MASK
+        updated = self.write_hi1(hi1).write_lo1(lo1)
+        if rd != 0:
+            updated = updated.write_gpr(rd, _merge_scalar(self.read_gpr(rd), lo1))
+        return updated
+
     def _step_div(self, word: int) -> R5900State:
         """Divide signed source words into primary LO quotient and HI remainder."""
         rs = (word >> 21) & 0x1F
@@ -968,6 +991,8 @@ class R5900State:
                 updated = self._step_signed_immediate_group(word, opcode)
             elif opcode == SPECIAL_OPCODE:
                 updated = self._step_special(word)
+            elif opcode == MMI_OPCODE and (word & 0x7C0) == 0 and (word & 0x3F) == MULT1_FUNCTION:
+                updated = self._step_mult1(word)
             elif opcode == ANDI_OPCODE:
                 updated = self._step_andi(word)
             elif opcode == XORI_OPCODE:

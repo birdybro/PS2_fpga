@@ -28,6 +28,10 @@ module r5900_mult_top (
     output logic [63:0]   execute_write_hi_value_o,
     output logic          execute_write_lo_valid_o,
     output logic [63:0]   execute_write_lo_value_o,
+    output logic          execute_write_hi1_valid_o,
+    output logic [63:0]   execute_write_hi1_value_o,
+    output logic          execute_write_lo1_valid_o,
+    output logic [63:0]   execute_write_lo1_value_o,
     output logic          commit_accepted_o,
     output logic          writeback_valid_o,
     output logic [4:0]    writeback_destination_o,
@@ -64,6 +68,10 @@ module r5900_mult_top (
     r5900_hilo_t                 hilo_write_hi_value;
     logic                         hilo_write_lo_valid;
     r5900_hilo_t                 hilo_write_lo_value;
+    logic                         hilo_write_hi1_valid;
+    r5900_hilo_t                 hilo_write_hi1_value;
+    logic                         hilo_write_lo1_valid;
+    r5900_hilo_t                 hilo_write_lo1_value;
 
     assign writeback_valid_o = writeback.valid;
     assign writeback_destination_o = writeback.destination;
@@ -79,6 +87,10 @@ module r5900_mult_top (
     assign hilo_write_hi_value = seed_hilo_commit_i ? seed_hi_i : execute_write_hi_value_o;
     assign hilo_write_lo_valid = seed_hilo_commit_i || execute_write_lo_valid_o;
     assign hilo_write_lo_value = seed_hilo_commit_i ? seed_lo_i : execute_write_lo_value_o;
+    assign hilo_write_hi1_valid = seed_hilo_commit_i || execute_write_hi1_valid_o;
+    assign hilo_write_hi1_value = seed_hilo_commit_i ? seed_hi1_i : execute_write_hi1_value_o;
+    assign hilo_write_lo1_valid = seed_hilo_commit_i || execute_write_lo1_valid_o;
+    assign hilo_write_lo1_value = seed_hilo_commit_i ? seed_lo1_i : execute_write_lo1_value_o;
 
     r5900_decode_dispatch u_decode_dispatch (
         .decode_valid_i(instruction_valid_i),
@@ -109,6 +121,10 @@ module r5900_mult_top (
         .write_hi_value_o(execute_write_hi_value_o),
         .write_lo_valid_o(execute_write_lo_valid_o),
         .write_lo_value_o(execute_write_lo_value_o),
+        .write_hi1_valid_o(execute_write_hi1_valid_o),
+        .write_hi1_value_o(execute_write_hi1_value_o),
+        .write_lo1_valid_o(execute_write_lo1_valid_o),
+        .write_lo1_value_o(execute_write_lo1_value_o),
         .retirement_o(retirement)
     );
 
@@ -155,10 +171,10 @@ module r5900_mult_top (
         .write_hi_value_i(hilo_write_hi_value),
         .write_lo_valid_i(hilo_write_lo_valid),
         .write_lo_value_i(hilo_write_lo_value),
-        .write_hi1_valid_i(seed_hilo_commit_i),
-        .write_hi1_value_i(seed_hi1_i),
-        .write_lo1_valid_i(seed_hilo_commit_i),
-        .write_lo1_value_i(seed_lo1_i),
+        .write_hi1_valid_i(hilo_write_hi1_valid),
+        .write_hi1_value_i(hilo_write_hi1_value),
+        .write_lo1_valid_i(hilo_write_lo1_valid),
+        .write_lo1_value_i(hilo_write_lo1_value),
         .hi_o,
         .lo_o,
         .hi1_o,

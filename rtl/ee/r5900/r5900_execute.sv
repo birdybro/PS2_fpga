@@ -22,6 +22,10 @@ module r5900_execute (
     output r5900_types_pkg::r5900_hilo_t            write_hi_value_o,
     output logic                                     write_lo_valid_o,
     output r5900_types_pkg::r5900_hilo_t            write_lo_value_o,
+    output logic                                     write_hi1_valid_o,
+    output r5900_types_pkg::r5900_hilo_t            write_hi1_value_o,
+    output logic                                     write_lo1_valid_o,
+    output r5900_types_pkg::r5900_hilo_t            write_lo1_value_o,
     output r5900_types_pkg::r5900_retirement_t      retirement_o
 );
 
@@ -153,6 +157,10 @@ module r5900_execute (
         write_hi_value_o = '0;
         write_lo_valid_o = 1'b0;
         write_lo_value_o = '0;
+        write_hi1_valid_o = 1'b0;
+        write_hi1_value_o = '0;
+        write_lo1_valid_o = 1'b0;
+        write_lo1_value_o = '0;
         retirement_o = '0;
 
         if (execute_valid_i) begin
@@ -307,6 +315,26 @@ module r5900_execute (
                         pc_advance_o = 1'b1;
                         write_lo_valid_o = 1'b1;
                         write_lo_value_o = source_rs_scalar_i;
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_MULT1: begin
+                    if (
+                        (instruction_i[31:26] == 6'h1c)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h18)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = instruction_i[15:11] != 5'd0;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {destination_upper_i, mult_lo};
+                        write_hi1_valid_o = 1'b1;
+                        write_hi1_value_o = mult_hi;
+                        write_lo1_valid_o = 1'b1;
+                        write_lo1_value_o = mult_lo;
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;
                         retirement_o.instruction = instruction_i;

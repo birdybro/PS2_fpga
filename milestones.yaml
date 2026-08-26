@@ -1339,21 +1339,21 @@ milestones:
     dependencies: [M103]
     tests: [GPR-to-LO source width alias and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M104): implement R5900 MTLO)"
+    commit: "5d98821"
     notes: Transfer a GPR scalar value into primary LO state.
   - id: M105
     title: Implement R5900 MULT1
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M104]
     tests: [signed extrema HI1 LO1 isolation optional-rd and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M105): implement R5900 MULT1)"
     notes: Implement signed word multiply on the secondary HI1 LO1 path.
   - id: M106
     title: Implement R5900 MULTU1
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M105]
     tests: [unsigned extrema HI1 LO1 isolation optional-rd and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]

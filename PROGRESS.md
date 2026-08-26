@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M104 — implement R5900 MTLO
-- Next milestone: M105 — implement R5900 MULT1
+- Last completed milestone: M105 — implement R5900 MULT1
+- Next milestone: M106 — implement R5900 MULTU1
 - Current subsystem: R5900 multiply/divide execution
-- Current regression status: 713 tests pass with no failures, errors, or skips; full lint and regression gates pass
-- Known architectural inaccuracies: the 22-instruction scalar foundation plus twenty doubleword and dual-HI/LO operations execute; 12 extension operations remain pending, and branches, data memory, exceptions, and compiled C are absent
+- Current regression status: M105 authoritative gate passes lint and all 724 tests with deterministic seed 1; zero failures, errors, or skips
+- Known architectural inaccuracies: the 22-instruction scalar foundation plus twenty-one doubleword and dual-HI/LO operations execute; 11 extension operations remain pending, and branches, data memory, exceptions, and compiled C are absent
 - Known timing inaccuracies: the core uses a deliberately functional five-state sequence, registered request handoff, and one-entry fetch buffer; pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M104 milestone commit (this commit)
+- Most recent pushed commit: M105 milestone commit (this commit)
 
 ## Resume note
 
@@ -22,5 +22,5 @@ GPR blocks now form a functional core. A generated native EE ELF loads into
 behavioral RAM, begins at its published entry, executes 13 straight-line words,
 matches exact retirement, writeback, final GPR, and architectural trace state,
 then reaches the simulator PASS latch. Resume with the single active milestone
-in `milestones.yaml` to implement the secondary-path word multiply `MULT1` with
-directed and randomized differential verification.
+in `milestones.yaml` to implement the secondary-path unsigned word multiply
+`MULTU1` with directed and randomized differential verification.

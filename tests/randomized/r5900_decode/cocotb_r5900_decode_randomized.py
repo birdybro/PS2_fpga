@@ -29,6 +29,7 @@ ADDIU_OPCODE = 9
 DADDIU_OPCODE = 25
 SLTI_OPCODE = 10
 SLTIU_OPCODE = 11
+MMI_OPCODE = 28
 ADDU_FUNCTION = 33
 DADDU_FUNCTION = 45
 DSUBU_FUNCTION = 47
@@ -40,6 +41,7 @@ MFHI_FUNCTION = 16
 MTHI_FUNCTION = 17
 MFLO_FUNCTION = 18
 MTLO_FUNCTION = 19
+MULT1_FUNCTION = 24
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -122,6 +124,8 @@ def expected_operation(word: int) -> int:
         operation = 9
     elif word >> 26 == LUI_OPCODE and ((word >> 21) & 0x1F) == 0:
         operation = 8
+    elif word >> 26 == MMI_OPCODE and ((word >> 6) & 0x1F) == 0:
+        operation = 43 if (word & 0x3F) == MULT1_FUNCTION else 0
     return operation
 
 
@@ -225,6 +229,10 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x0001_0013,
         0x0000_0813,
         0x0000_0053,
+        0x7000_0018,
+        0x72FF_F818,
+        0x7000_0058,
+        0x7000_0019,
         0x0000_0061,
         0x0000_0023,
         0x023F_F823,

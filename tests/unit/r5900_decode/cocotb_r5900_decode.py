@@ -46,6 +46,7 @@ OPERATION_MFHI = 39
 OPERATION_MFLO = 40
 OPERATION_MTHI = 41
 OPERATION_MTLO = 42
+OPERATION_MULT1 = 43
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -486,6 +487,14 @@ async def test_r5900_decode_recognizes_canonical_mtlo_encodings(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_canonical_mult1_encodings(dut) -> None:
+    """Admit all MULT1 register fields under MMI when reserved sa is clear."""
+    for rs, rt, rd in ((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), (31, 31, 31)):
+        word = (0x1C << 26) | (rs << 21) | (rt << 16) | (rd << 11) | 0x18
+        await check_decode(dut, word, True, OPERATION_MULT1)
+
+
+@cocotb.test()
 async def test_r5900_decode_recognizes_every_subu_register_field(dut) -> None:
     """Admit all SUBU register fields while its reserved shift field stays zero."""
     for rs, rt, rd in (
@@ -594,9 +603,16 @@ async def test_r5900_decode_recognizes_every_sltu_register_field(dut) -> None:
 async def test_r5900_decode_rejects_every_other_primary_opcode(dut) -> None:
     """Keep every unsupported non-SPECIAL primary opcode space closed."""
     payloads = (0, 1, 0x0155_5555, 0x02AA_AAAA, 0x03FF_FFFF)
-    for opcode in (*range(1, 9), *range(16, 25), *range(26, 64)):
+    for opcode in (*range(1, 9), *range(16, 25), *range(26, 28), *range(29, 64)):
         for payload in payloads:
             await check_decode(dut, (opcode << 26) | payload, False, OPERATION_NONE)
+
+
+@cocotb.test()
+async def test_r5900_decode_rejects_unsupported_or_reserved_mmi_encodings(dut) -> None:
+    """Keep unsupported MMI functions and nonzero MULT1 shift fields closed."""
+    for word in (0x7000_0000, 0x7000_0019, 0x7000_0058, 0x72FF_F858):
+        await check_decode(dut, word, False, OPERATION_NONE)
 
 
 @cocotb.test()

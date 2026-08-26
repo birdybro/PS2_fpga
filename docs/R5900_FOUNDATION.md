@@ -64,8 +64,11 @@ encodings, while the public MIPS IV manual supplies base semantics where the
 operation is shared. GNU assembler opcode and encoding tests independently
 corroborate the inventory, including optional `rd` forms for R5900 multiply and
 multiply-accumulate instructions. The QEMU R5900 overview corroborates the
-separate pipeline-1 operation set. These sources are recorded with consultation
-and license metadata in `references.yaml`.
+separate pipeline-1 operation set. Its reviewed MULT1 implementation and
+architectural test further establish primary-MULT-equivalent signed word,
+optional-`rd`, and result-extension behavior routed to HI1 and LO1. These
+sources are recorded with consultation and license metadata in
+`references.yaml`.
 
 Generic MIPS III/IV `DMULT`, `DMULTU`, `DDIV`, and `DDIVU` are deliberately not
 in the R5900 roadmap: their SPECIAL function positions are absent in the
@@ -78,7 +81,8 @@ doubleword/dual-HI/LO integration gate.
 The roadmap does not turn uncertain behavior into a specification. The
 optional-`rd` result and destination-width rules must be corroborated during
 each corresponding multiply milestone; M097 and M098 resolve that boundary for
-the primary MULT and MULTU pair only. M099 and M100 resolve result extension,
+the primary MULT and MULTU pair, and M105 resolves it for MULT1. M099 and M100
+resolve result extension,
 overflow, and divide-by-zero behavior for primary DIV and DIVU; secondary-path
 divide operations remain pending their own evidence gates.
 Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
@@ -107,8 +111,8 @@ testbench writes all four registers before reading any of them, so deterministic
 simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
-DIV, DIVU, MTHI, and MTLO. HI1 and LO1 remain isolated until the secondary-path
-instruction milestones. MFHI and MFLO read primary HI and LO respectively
+DIV, DIVU, MTHI, and MTLO. Secondary HI1/LO1 writes are connected for MULT1.
+MFHI and MFLO read primary HI and LO respectively
 without modifying any accumulator field; MTHI replaces only primary HI from a
 GPR's low 64-bit scalar lane, and MTLO applies the same rule to primary LO.
 
@@ -456,6 +460,14 @@ varying the complete 128-bit source and `rs` make it the forty-second complete
 ISA entry. Functional coverage does not claim the base manual's HI/LO
 instruction-spacing hazard timing.
 
+MULT1 MMI function `0x18` applies MULT's signed low-word multiplication,
+independent 32-to-64-bit half extension, and optional-`rd` low-scalar result to
+the second multiply/divide path. It writes HI1 and LO1 while preserving primary
+HI and LO; destination zero suppresses only the GPR write. Signed extrema,
+half-extension boundaries, every relevant alias, ignored source upper lanes,
+primary/secondary isolation, reserved-field legality, exact events, and a
+524-case differential stream make it the forty-third complete ISA entry.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -601,7 +613,7 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries and 20 extension entries are complete; they began pending
+foundation entries and 21 extension entries are complete; they began pending
 because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and
