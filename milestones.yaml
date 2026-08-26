@@ -1384,7 +1384,7 @@ milestones:
     dependencies: [M108]
     tests: [reference catalog ISA coverage lint and full regression]
     references: [REFERENCES.md, references.yaml, coverage/r5900_isa.yaml]
-    commit: "self (milestone(M108A): correct R5900 source provenance)"
+    commit: "388064d"
     notes: >-
       Remove historical QEMU patch citations and independently revalidate the
       affected behavior against PS2Tek GNU R5900 encodings and current PCSX2
@@ -1392,16 +1392,16 @@ milestones:
   - id: M109
     title: Implement R5900 MFHI1
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M108]
     tests: [HI1 transfer primary isolation upper-lane and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M109): implement R5900 MFHI1)"
     notes: Transfer secondary HI1 state to a GPR.
   - id: M110
     title: Implement R5900 MFLO1
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M109]
     tests: [LO1 transfer primary isolation upper-lane and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

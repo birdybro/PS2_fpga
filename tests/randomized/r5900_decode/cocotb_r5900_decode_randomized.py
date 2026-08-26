@@ -45,6 +45,7 @@ MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
 DIV1_FUNCTION = 26
 DIVU1_FUNCTION = 27
+MFHI1_FUNCTION = 16
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -106,6 +107,19 @@ def expected_special_operation(word: int) -> int:
     return operation
 
 
+def expected_mmi_operation(word: int) -> int:
+    """Model the admitted MMI primary functions independently from RTL."""
+    function = word & 0x3F
+    operation = 0
+    if ((word >> 6) & 0x1F) == 0:
+        operation = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}.get(function, 0)
+    if (word & 0xFFC0) == 0:
+        operation = {DIV1_FUNCTION: 45, DIVU1_FUNCTION: 46}.get(function, operation)
+    if (word & 0x03FF_07C0) == 0 and function == MFHI1_FUNCTION:
+        operation = 47
+    return operation
+
+
 def expected_operation(word: int) -> int:
     """Model admitted immediate and register operations independently from RTL."""
     operation = 1 if word == 0 else 0
@@ -128,12 +142,7 @@ def expected_operation(word: int) -> int:
     elif word >> 26 == LUI_OPCODE and ((word >> 21) & 0x1F) == 0:
         operation = 8
     elif word >> 26 == MMI_OPCODE:
-        function = word & 0x3F
-        if ((word >> 6) & 0x1F) == 0:
-            mmi_operations = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}
-            operation = mmi_operations.get(function, 0)
-        if (word & 0xFFC0) == 0:
-            operation = {DIV1_FUNCTION: 45, DIVU1_FUNCTION: 46}.get(function, operation)
+        operation = expected_mmi_operation(word)
     return operation
 
 
@@ -251,6 +260,12 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x73FF_001B,
         0x7000_005B,
         0x7000_081B,
+        0x7000_0010,
+        0x7000_0810,
+        0x7000_F810,
+        0x7020_0010,
+        0x7001_0010,
+        0x7000_0050,
         0x0000_0061,
         0x0000_0023,
         0x023F_F823,

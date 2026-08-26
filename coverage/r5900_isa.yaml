@@ -641,14 +641,17 @@ instructions:
     category: HI LO transfer pipeline 1
     encoding: MMI opcode 0x1c, function 0x10
     milestone: M109
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
     references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
-    notes: Planned transfer from the secondary HI1 register to a GPR scalar lane.
+    notes: >-
+      Copies all 64 secondary HI1 bits into rd bits 63:0, preserves rd bits
+      127:64, suppresses destination zero, and leaves every HI LO register
+      unchanged.
   - mnemonic: MFLO1
     category: HI LO transfer pipeline 1
     encoding: MMI opcode 0x1c, function 0x12

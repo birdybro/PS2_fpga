@@ -45,6 +45,7 @@ MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
 DIV1_FUNCTION = 26
 DIVU1_FUNCTION = 27
+MFHI1_FUNCTION = 16
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -106,6 +107,19 @@ def decoded_special_operation(word: int) -> int:
     return operation
 
 
+def decoded_mmi_operation(word: int) -> int:
+    """Model the admitted MMI primary functions independently from RTL."""
+    function = word & 0x3F
+    operation = 0
+    if ((word >> 6) & 0x1F) == 0:
+        operation = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}.get(function, 0)
+    if (word & 0xFFC0) == 0:
+        operation = {DIV1_FUNCTION: 45, DIVU1_FUNCTION: 46}.get(function, operation)
+    if (word & 0x03FF_07C0) == 0 and function == MFHI1_FUNCTION:
+        operation = 47
+    return operation
+
+
 def decoded_operation(word: int) -> int:
     """Model admitted immediate and register operations independently from RTL."""
     operation = 1 if word == 0 else 0
@@ -128,12 +142,7 @@ def decoded_operation(word: int) -> int:
     elif word >> 26 == LUI_OPCODE and ((word >> 21) & 0x1F) == 0:
         operation = 8
     elif word >> 26 == MMI_OPCODE:
-        function = word & 0x3F
-        if ((word >> 6) & 0x1F) == 0:
-            mmi_operations = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}
-            operation = mmi_operations.get(function, 0)
-        if (word & 0xFFC0) == 0:
-            operation = {DIV1_FUNCTION: 45, DIVU1_FUNCTION: 46}.get(function, operation)
+        operation = decoded_mmi_operation(word)
     return operation
 
 
@@ -252,6 +261,12 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 180, 0x73FF_001B),
         (True, 181, 0x7000_005B),
         (True, 182, 0x7000_081B),
+        (True, 183, 0x7000_0010),
+        (True, 184, 0x7000_0810),
+        (True, 185, 0x7000_F810),
+        (True, 186, 0x7020_0010),
+        (True, 187, 0x7001_0010),
+        (True, 188, 0x7000_0050),
         (True, 132, 0x0000_0061),
         (True, 136, 0x0000_0023),
         (True, 140, 0x023F_F823),

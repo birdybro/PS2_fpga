@@ -32,6 +32,7 @@ from reference.ee.r5900 import (
     encode_dsubu,
     encode_lui,
     encode_mfhi,
+    encode_mfhi1,
     encode_mflo,
     encode_mthi,
     encode_mtlo,
@@ -121,6 +122,7 @@ ENCODED_MULT1_EXAMPLE = 0x72F1_F818
 ENCODED_MULTU1_EXAMPLE = 0x72F1_F819
 ENCODED_DIV1_EXAMPLE = 0x72F1_001A
 ENCODED_DIVU1_EXAMPLE = 0x72F1_001B
+ENCODED_MFHI1_EXAMPLE = 0x7000_F810
 
 
 @pytest.mark.unit
@@ -2111,6 +2113,59 @@ def test_r5900_reference_mfhi_zero_and_encoder_validation() -> None:
         error = TypeError if type(destination) is bool else IndexError
         with pytest.raises(error):
             encode_mfhi(destination)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "hi1_value",
+    [
+        0,
+        1,
+        0x7FFF_FFFF,
+        0x8000_0000,
+        0xFFFF_FFFF,
+        0x8000_0000_0000_0000,
+        0xFFFF_FFFF_FFFF_FFFF,
+        0x0123_4567_89AB_CDEF,
+    ],
+)
+def test_r5900_reference_mfhi1_copies_full_scalar_and_preserves_upper_lane(
+    hi1_value: int,
+) -> None:
+    """Transfer every HI1 width class without changing any accumulator."""
+    destination = 0xCAFE_BABE_1234_5678_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(
+        start_pc=PC_MASK - 3,
+        hi=0x1111,
+        lo=0x2222,
+        hi1=hi1_value,
+        lo1=0x4444,
+    ).write_gpr(31, destination)
+
+    updated = state.step(encode_mfhi1(31))
+
+    assert updated.read_gpr(31) == (destination & ~((1 << 64) - 1)) | hi1_value
+    assert (updated.hi, updated.lo, updated.hi1, updated.lo1) == (
+        state.hi,
+        state.lo,
+        state.hi1,
+        state.lo1,
+    )
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_mfhi1_zero_and_encoder_validation() -> None:
+    """Suppress destination zero and validate the exact MMI encoder."""
+    state = R5900State.initial(hi=1, lo=2, hi1=0x0123_4567_89AB_CDEF, lo1=4)
+    updated = state.step(encode_mfhi1(0))
+    assert updated.gprs == state.gprs
+    assert (updated.hi, updated.lo, updated.hi1, updated.lo1) == (1, 2, state.hi1, 4)
+    assert encode_mfhi1(31) == ENCODED_MFHI1_EXAMPLE
+    for destination in (-1, GPR_COUNT, True):
+        error = TypeError if type(destination) is bool else IndexError
+        with pytest.raises(error):
+            encode_mfhi1(destination)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

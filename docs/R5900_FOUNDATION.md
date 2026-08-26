@@ -116,6 +116,8 @@ MULTU1, DIV1, and DIVU1.
 MFHI and MFLO read primary HI and LO respectively
 without modifying any accumulator field; MTHI replaces only primary HI from a
 GPR's low 64-bit scalar lane, and MTLO applies the same rule to primary LO.
+MFHI1 reads all 64 bits of secondary HI1 into a GPR low lane without modifying
+any accumulator field.
 
 The functional RTL separately exposes the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
@@ -495,6 +497,13 @@ extrema, low-word source selection, every dividend sign-bit class at divisor
 zero, source aliasing, PC wrap, reserved `rd`/`sa`, exact events, and a 524-case
 differential stream make it the forty-sixth complete ISA entry.
 
+MFHI1 MMI function `0x10` copies all 64 bits of secondary HI1 into destination
+bits 63:0 while retaining bits 127:64. Destination zero is suppressed through
+the common architectural writeback boundary, and no accumulator changes. Eight
+full-width boundary classes, destination zero, PC wrap, primary and secondary
+state preservation, reserved `rs`/`rt`/`sa`, exact events, and a 520-case
+differential stream make it the forty-seventh complete ISA entry.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -640,7 +649,7 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries and 24 extension entries are complete; they began pending
+foundation entries and 25 extension entries are complete; they began pending
 because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and

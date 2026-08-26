@@ -111,6 +111,7 @@ module r5900_multu1_top (
         .source_rt_scalar_i(source_rt[63:0]),
         .source_hi_i(hi_o),
         .source_lo_i(lo_o),
+        .source_hi1_i(hi1_o),
         .destination_upper_i(gprs[instruction_i[15:11]][127:64]),
         .complete_o(execute_complete_o),
         .pc_advance_o,

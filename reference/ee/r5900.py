@@ -50,6 +50,7 @@ MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
 DIV1_FUNCTION = 26
 DIVU1_FUNCTION = 27
+MFHI1_FUNCTION = 16
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -398,6 +399,12 @@ def encode_divu1(dividend: int, divisor: int) -> int:
     rs = _require_gpr_index(dividend)
     rt = _require_gpr_index(divisor)
     return (MMI_OPCODE << 26) | (rs << 21) | (rt << 16) | DIVU1_FUNCTION
+
+
+def encode_mfhi1(destination: int) -> int:
+    """Encode canonical R5900 MMI MFHI1 with all reserved fields clear."""
+    rd = _require_gpr_index(destination)
+    return (MMI_OPCODE << 26) | (rd << 11) | MFHI1_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -862,6 +869,11 @@ class R5900State:
         lo1 = _as_signed_word(quotient) & SCALAR_MASK
         return self.write_hi1(hi1).write_lo1(lo1)
 
+    def _step_mfhi1(self, word: int) -> R5900State:
+        """Copy the complete secondary HI1 scalar into one GPR low lane."""
+        rd = (word >> 11) & 0x1F
+        return self.write_gpr(rd, _merge_scalar(self.read_gpr(rd), self.hi1))
+
     def _step_mfhi(self, word: int) -> R5900State:
         """Copy the complete primary HI scalar into one GPR low lane."""
         rd = (word >> 11) & 0x1F
@@ -1059,6 +1071,8 @@ class R5900State:
             return self._step_div1(word)
         if (word & 0xFFC0) == 0 and function == DIVU1_FUNCTION:
             return self._step_divu1(word)
+        if (word & 0x03FF_07C0) == 0 and function == MFHI1_FUNCTION:
+            return self._step_mfhi1(word)
         msg = f"unsupported R5900 instruction: 0x{word:08x}"
         raise UnsupportedInstructionError(msg)
 

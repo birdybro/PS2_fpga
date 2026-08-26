@@ -11,7 +11,8 @@ a claim of general CPU compatibility.
 Bus errors are retained as functional fetch status. Exact zero-word NOP, all
 six canonical 32-bit shifts, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV,
 DSRLV, DSRAV, LUI, ORI, ANDI, XORI, ADDIU, DADDIU, ADDU, DADDU, SUBU, DSUBU,
-MULT, MULTU, DIV, DIVU, MFHI, MFLO, MTHI, MTLO, MULT1, MULTU1, DIV1, DIVU1, AND, OR,
+MULT, MULTU, DIV, DIVU, MFHI, MFLO, MTHI, MTLO, MULT1, MULTU1, DIV1, DIVU1,
+MFHI1, AND, OR,
 XOR, NOR, SLT, SLTU, SLTI, and SLTIU execute with PC advance, retirement trace,
 and centralized writeback. No other instruction executes. Illegal words emit a
 functional diagnostic and are suppressed before execution, but do not enter an
@@ -21,9 +22,9 @@ GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-All 22 entries in the initial scalar foundation are complete. Twenty-four of
+All 22 entries in the initial scalar foundation are complete. Twenty-five of
 the 32 rows added by the doubleword and dual-HI/LO roadmap are complete; the
-other 8 are pending and each must pass its own instruction milestone before
+other 7 are pending and each must pass its own instruction milestone before
 becoming complete.
 
 The R5900-specific tables omit generic MIPS `DMULT`, `DMULTU`, `DDIV`, and

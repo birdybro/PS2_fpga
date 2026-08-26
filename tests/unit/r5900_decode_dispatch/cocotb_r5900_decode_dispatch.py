@@ -50,6 +50,7 @@ OPERATION_MULT1 = 43
 OPERATION_MULTU1 = 44
 OPERATION_DIV1 = 45
 OPERATION_DIVU1 = 46
+OPERATION_MFHI1 = 47
 
 
 async def check_dispatch(
@@ -471,6 +472,13 @@ async def test_r5900_decode_dispatch_sends_canonical_divu1_to_execute(dut) -> No
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_mfhi1_to_execute(dut) -> None:
+    """Dispatch canonical MMI MFHI1 destinations without diagnostics."""
+    for pc, instruction in ((0, 0x7000_0010), (4, 0x7000_0810), (0x0010_0000, 0x7000_F810)):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_MFHI1, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_sends_canonical_subu_to_execute(dut) -> None:
     """Dispatch SUBU source and destination fields without diagnostics."""
     for pc, instruction in (
@@ -601,6 +609,9 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (44, 0x7000_081A),
         (45, 0x7000_005B),
         (46, 0x7000_081B),
+        (47, 0x7020_0010),
+        (48, 0x7001_0010),
+        (49, 0x7000_0050),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),
