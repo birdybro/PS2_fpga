@@ -127,6 +127,9 @@ copied. The reviewed pipeline-1 implementation routes MULT1 and MULTU1 through
 the corresponding signed and unsigned three-operand multiply behaviors with
 accumulator index one. Their public tests confirm that optional `rd` equals
 LO1 and that HI1/LO1 reconstruct the respective 64-bit product.
+The reviewed DIV1/DIVU1 implementation routes the shared primary divide
+semantics to accumulator index one. Its DIV1 architectural test confirms signed
+truncation, remainder signs, and the nontrapping `INT_MIN / -1` result.
 
 <!-- ref:pcsx2-r5900-interpreter -->
 ### PCSX2 R5900 interpreter implementation

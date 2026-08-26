@@ -69,6 +69,9 @@ architectural tests further establish the corresponding signed and unsigned
 primary-multiply semantics, optional-`rd`, and result-extension behavior routed
 to HI1 and LO1. These sources are recorded with consultation and license
 metadata in `references.yaml`.
+The same reviewed implementation routes primary DIV/DIVU behavior to
+accumulator index one, and its DIV1 architectural test confirms signed
+quotient, remainder, and nontrapping overflow behavior.
 
 Generic MIPS III/IV `DMULT`, `DMULTU`, `DDIV`, and `DDIVU` are deliberately not
 in the R5900 roadmap: their SPECIAL function positions are absent in the
@@ -82,9 +85,9 @@ The roadmap does not turn uncertain behavior into a specification. The
 optional-`rd` result and destination-width rules must be corroborated during
 each corresponding multiply milestone; M097 and M098 resolve that boundary for
 the primary MULT and MULTU pair, while M105 and M106 resolve it for MULT1 and
-MULTU1. M099 and M100 resolve result extension,
-overflow, and divide-by-zero behavior for primary DIV and DIVU; secondary-path
-divide operations remain pending their own evidence gates.
+MULTU1. M099 and M100 resolve result extension, overflow, and divide-by-zero
+behavior for primary DIV and DIVU. M107 resolves the corresponding signed
+behavior for DIV1; unsigned DIVU1 remains pending its own M108 evidence gate.
 Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
 also unproven, so M084 must not invent a reset value.
 
@@ -111,8 +114,8 @@ testbench writes all four registers before reading any of them, so deterministic
 simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
-DIV, DIVU, MTHI, and MTLO. Secondary HI1/LO1 writes are connected for MULT1 and
-MULTU1.
+DIV, DIVU, MTHI, and MTLO. Secondary HI1/LO1 writes are connected for MULT1,
+MULTU1, and DIV1.
 MFHI and MFLO read primary HI and LO respectively
 without modifying any accumulator field; MTHI replaces only primary HI from a
 GPR's low 64-bit scalar lane, and MTLO applies the same rule to primary LO.
@@ -477,6 +480,15 @@ write. Unsigned extrema, half-extension boundaries, every relevant alias,
 ignored source upper lanes, primary/secondary isolation, reserved-field
 legality, exact events, and a 524-case differential stream make it the
 forty-fourth complete ISA entry.
+
+DIV1 MMI function `0x1a` applies DIV's signed low-word quotient, remainder,
+overflow, and divisor-zero behavior to the second multiply/divide path. It
+writes HI1 and LO1, preserves primary HI/LO and every GPR, raises no arithmetic
+exception, and advances PC normally for every edge result. Four sign pairings,
+truncation toward zero, low-word source selection, zero divisors under positive,
+negative, and zero dividends, `INT_MIN / -1`, source aliasing, PC wrap, reserved
+`rd`/`sa`, exact events, and a 524-case differential stream make it the
+forty-fifth complete ISA entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

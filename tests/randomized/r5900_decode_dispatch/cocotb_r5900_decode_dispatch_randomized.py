@@ -43,6 +43,7 @@ MFLO_FUNCTION = 18
 MTLO_FUNCTION = 19
 MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
+DIV1_FUNCTION = 26
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -125,9 +126,13 @@ def decoded_operation(word: int) -> int:
         operation = 9
     elif word >> 26 == LUI_OPCODE and ((word >> 21) & 0x1F) == 0:
         operation = 8
-    elif word >> 26 == MMI_OPCODE and ((word >> 6) & 0x1F) == 0:
-        mmi_operations = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}
-        operation = mmi_operations.get(word & 0x3F, 0)
+    elif word >> 26 == MMI_OPCODE:
+        function = word & 0x3F
+        if ((word >> 6) & 0x1F) == 0:
+            mmi_operations = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}
+            operation = mmi_operations.get(function, 0)
+        if (word & 0xFFC0) == 0 and function == DIV1_FUNCTION:
+            operation = 45
     return operation
 
 
@@ -238,6 +243,10 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 172, 0x7000_0019),
         (True, 173, 0x72FF_F819),
         (True, 174, 0x7000_0059),
+        (True, 175, 0x7000_001A),
+        (True, 176, 0x73FF_001A),
+        (True, 177, 0x7000_005A),
+        (True, 178, 0x7000_081A),
         (True, 132, 0x0000_0061),
         (True, 136, 0x0000_0023),
         (True, 140, 0x023F_F823),

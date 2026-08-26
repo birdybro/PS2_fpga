@@ -1357,21 +1357,21 @@ milestones:
     dependencies: [M105]
     tests: [unsigned extrema HI1 LO1 isolation optional-rd and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: "self (milestone(M106): implement R5900 MULTU1)"
+    commit: "ab07de3"
     notes: Implement unsigned word multiply on the secondary HI1 LO1 path.
   - id: M107
     title: Implement R5900 DIV1
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M106]
     tests: [signed edge results HI1 LO1 isolation and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M107): implement R5900 DIV1)"
     notes: Implement signed word divide on the secondary HI1 LO1 path.
   - id: M108
     title: Implement R5900 DIVU1
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M107]
     tests: [unsigned edge results HI1 LO1 isolation and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]

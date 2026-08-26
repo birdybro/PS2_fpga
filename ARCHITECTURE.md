@@ -57,7 +57,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its six-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, DIV, DIVU, MFHI, MFLO, MTHI, MTLO, MMI MULT1, MMI MULTU1, AND, OR, XOR, NOR,
+SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, DIV, DIVU, MFHI, MFLO, MTHI, MTLO, MMI MULT1, MMI MULTU1, MMI DIV1, AND, OR, XOR, NOR,
 SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, DADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts, MMI MULT1 and MULTU1, and register ALU operations require reserved `sa`
@@ -124,7 +124,9 @@ MTLO applies the same source-lane and state-preservation rules while replacing
 primary LO instead. MULT1 uses the same signed low-word product and optional-`rd`
 rules as MULT but writes secondary HI1 and LO1 while preserving primary HI and
 LO. MULTU1 likewise applies MULTU's unsigned low-word operation and independent
-signed extension of each product half to the secondary path. AND combines the
+signed extension of each product half to the secondary path. DIV1 applies DIV's
+signed low-word quotient, remainder, overflow, and divisor-zero rules to HI1
+and LO1 without changing primary HI/LO. AND combines the
 full low 64-bit scalar lanes and preserves
 the old destination's upper lane; OR uses the same lane
 rules for inclusive combination, XOR uses exclusive combination, and NOR

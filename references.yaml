@@ -123,12 +123,16 @@ references:
       - MULT1 and MULTU1 three-operand implementation patch
       - MULT1 architectural test patch
       - MULTU1 architectural test patch
+      - DIV1 and DIVU1 common implementation patch
+      - DIV1 architectural test patch
     notes: >-
       Corroborates scalar-lane use and the independently encoded second
       multiply/divide path. MULT1 and MULTU1 use the corresponding signed and
       unsigned low-word three-operand multiply behavior, optional rd receives
       LO1, and HI1 plus LO1 contain the product halves; no source structure was
-      copied.
+      copied. DIV1 and DIVU1 route the corresponding primary divide behavior to
+      accumulator index one; the DIV1 test covers signed quotient/remainder and
+      the nontrapping overflow result.
   - id: pcsx2-r5900-interpreter
     title: PCSX2 R5900 interpreter implementation
     url: https://github.com/PCSX2/pcsx2/blob/master/pcsx2/R5900OpcodeImpl.cpp

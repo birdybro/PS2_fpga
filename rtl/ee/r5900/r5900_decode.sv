@@ -156,6 +156,13 @@ module r5900_decode (
             legal_o = 1'b1;
             operation_o = R5900_OPERATION_MULTU1;
         end else if (
+            (instruction_i[31:26] == 6'h1c)
+            && (instruction_i[15:6] == 10'h000)
+            && (instruction_i[5:0] == 6'h1a)
+        ) begin
+            legal_o = 1'b1;
+            operation_o = R5900_OPERATION_DIV1;
+        end else if (
             (instruction_i[31:26] == 6'h00)
             && (instruction_i[10:6] == 5'h00)
             && (instruction_i[5:0] == 6'h21)

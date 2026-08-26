@@ -48,6 +48,7 @@ MTLO_FUNCTION = 19
 MMI_OPCODE = 28
 MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
+DIV1_FUNCTION = 26
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -382,6 +383,13 @@ def encode_multu1(destination: int, multiplicand: int, multiplier: int) -> int:
     rs = _require_gpr_index(multiplicand)
     rt = _require_gpr_index(multiplier)
     return (MMI_OPCODE << 26) | (rs << 21) | (rt << 16) | (rd << 11) | MULTU1_FUNCTION
+
+
+def encode_div1(dividend: int, divisor: int) -> int:
+    """Encode canonical R5900 MMI DIV1 with reserved rd and sa clear."""
+    rs = _require_gpr_index(dividend)
+    rt = _require_gpr_index(divisor)
+    return (MMI_OPCODE << 26) | (rs << 21) | (rt << 16) | DIV1_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -802,6 +810,22 @@ class R5900State:
             remainder = dividend - quotient * divisor
         return self.write_hi(remainder & SCALAR_MASK).write_lo(quotient & SCALAR_MASK)
 
+    def _step_div1(self, word: int) -> R5900State:
+        """Divide signed source words into secondary LO1 quotient and HI1 remainder."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        dividend = _as_signed_word(self.read_gpr(rs))
+        divisor = _as_signed_word(self.read_gpr(rt))
+        if dividend == -(1 << 31) and divisor == -1:
+            quotient, remainder = dividend, 0
+        elif divisor == 0:
+            quotient, remainder = (1 if dividend < 0 else -1), dividend
+        else:
+            magnitude = abs(dividend) // abs(divisor)
+            quotient = -magnitude if (dividend < 0) != (divisor < 0) else magnitude
+            remainder = dividend - quotient * divisor
+        return self.write_hi1(remainder & SCALAR_MASK).write_lo1(quotient & SCALAR_MASK)
+
     def _step_divu(self, word: int) -> R5900State:
         """Divide unsigned source words into sign-extended primary HI and LO."""
         rs = (word >> 21) & 0x1F
@@ -1009,6 +1033,8 @@ class R5900State:
                 return self._step_mult1(word)
             if function == MULTU1_FUNCTION:
                 return self._step_multu1(word)
+        if (word & 0xFFC0) == 0 and function == DIV1_FUNCTION:
+            return self._step_div1(word)
         msg = f"unsupported R5900 instruction: 0x{word:08x}"
         raise UnsupportedInstructionError(msg)
 
