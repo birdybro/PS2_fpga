@@ -192,6 +192,7 @@ module r5900_core (
         .source_rs_shift_i(source_rs[4:0]),
         .source_rs_scalar_i(source_rs[63:0]),
         .source_rt_scalar_i(source_rt[63:0]),
+        .source_hi_i(hi),
         .destination_upper_i(gprs[destination_index][127:64]),
         .complete_o(execute_complete),
         .pc_advance_o(execute_pc_advance),

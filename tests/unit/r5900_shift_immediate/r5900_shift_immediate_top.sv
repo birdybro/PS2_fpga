@@ -96,6 +96,7 @@ module r5900_shift_immediate_top (
         .source_rs_shift_i(source_rs_value_o[4:0]),
         .source_rs_scalar_i(source_rs_value_o[63:0]),
         .source_rt_scalar_i(source_rt_value_o[63:0]),
+        .source_hi_i(64'd0),
         .destination_upper_i(destination_value_o[127:64]),
         .complete_o(execute_complete_o),
         .pc_advance_o,

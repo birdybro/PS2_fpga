@@ -1299,23 +1299,25 @@ milestones:
     dependencies: [M099]
     tests: [unsigned quotient remainder divide-by-zero and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: "self (milestone(M100): implement R5900 DIVU)"
+    commit: "e8357fe"
     notes: >-
       Resolve R5900 result extension and zero-divisor behavior and implement
       unsigned word divide on the primary path without a GPR write.
   - id: M101
     title: Implement R5900 MFHI
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M100]
     tests: [HI transfer upper-lane destination alias zero-register and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
-    notes: Transfer the primary HI state to a GPR using documented scalar-lane behavior.
+    commit: "self (milestone(M101): implement R5900 MFHI)"
+    notes: >-
+      Transfer the complete primary HI scalar to a GPR while preserving the
+      destination upper lane and all accumulator state.
   - id: M102
     title: Implement R5900 MFLO
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M101]
     tests: [LO transfer upper-lane destination alias zero-register and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

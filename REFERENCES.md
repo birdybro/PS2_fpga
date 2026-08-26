@@ -130,7 +130,7 @@ copied.
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate,
 DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, MULTU,
-DIV, DIVU, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
+DIV, DIVU, MFHI, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
 SLTI, and SLTIU interpreter operations in this public emulator. It independently
 corroborates 32-bit operand selection, sign-extended scalar results, preserved
 upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word
@@ -150,6 +150,8 @@ toward zero, sign-extended quotient and remainder destinations, and explicit
 results for signed overflow and a zero divisor.
 The DIVU operation separately corroborates unsigned low-word arithmetic,
 independent sign extension of both 32-bit results, and its zero-divisor result.
+MFHI corroborates a complete 64-bit primary-HI transfer into the destination's
+low scalar lane without overwriting the upper 64-bit GPR lane.
 The project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
 
@@ -160,8 +162,8 @@ The repository's BSD-2-Clause license text was reviewed before its shared signed
 and unsigned 32-bit division template and EE bindings were consulted. This
 second emulator implementation independently corroborates normal quotient and
 remainder calculation, result extension, and both operations' edge-result
-matrices. No source text or implementation structure is copied into this
-project.
+matrices, plus MFHI's complete 64-bit primary-HI transfer. No source text or
+implementation structure is copied into this project.
 
 <!-- ref:r5900-linux-div-zero-report -->
 ### Linux MIPS R5900 division-by-zero hardware report

@@ -10,6 +10,7 @@ module r5900_execute (
     input r5900_types_pkg::r5900_shift_amount_t     source_rs_shift_i,
     input logic [63:0]                               source_rs_scalar_i,
     input logic [63:0]                               source_rt_scalar_i,
+    input logic [63:0]                               source_hi_i,
     input logic [63:0]                               destination_upper_i,
     output logic                                     complete_o,
     output logic                                     pc_advance_o,
@@ -241,6 +242,23 @@ module r5900_execute (
                             write_hi_value_o = {{32{divu_remainder[31]}}, divu_remainder};
                             write_lo_value_o = {{32{divu_quotient[31]}}, divu_quotient};
                         end
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_MFHI: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[25:16] == 10'h000)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h10)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {destination_upper_i, source_hi_i};
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;
                         retirement_o.instruction = instruction_i;

@@ -97,6 +97,7 @@ module r5900_mult_top (
         .source_rs_shift_i(source_rs[4:0]),
         .source_rs_scalar_i(source_rs[63:0]),
         .source_rt_scalar_i(source_rt[63:0]),
+        .source_hi_i(hi_o),
         .destination_upper_i(gprs[instruction_i[15:11]][127:64]),
         .complete_o(execute_complete_o),
         .pc_advance_o,

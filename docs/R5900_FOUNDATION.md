@@ -25,8 +25,9 @@ write, DIV's R5900 overflow and zero-divisor results, and DIVU's result extensio
 and zero-divisor behavior. A separately reviewed BSD-licensed Play!
 implementation independently corroborates both divide operations' edge rules;
 a public Linux report from actual R5900 hardware corroborates the common
-nonnegative divide-by-zero quotient. No emulator source text or implementation
-structure is copied.
+nonnegative divide-by-zero quotient. PCSX2 and Play! also corroborate MFHI's
+complete 64-bit primary-HI transfer into the low GPR scalar lane. No emulator
+source text or implementation structure is copied.
 
 These sources have different authority. The MIPS manual may establish the base
 semantics of a corroborated scalar instruction, but it cannot establish an
@@ -106,7 +107,7 @@ simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
 DIV, and DIVU. HI1 and LO1 remain isolated until the secondary-path instruction
-milestones.
+milestones. MFHI reads primary HI without modifying any accumulator field.
 
 The functional RTL separately exposes the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
@@ -417,6 +418,16 @@ signed-versus-unsigned divergence, five divisor-zero dividend classes, ignored
 upper source lanes, source aliases, zero register, primary/secondary state
 isolation, reserved-field legality, exact events, and a 524-case differential
 stream make it the thirty-eighth complete ISA entry.
+
+MFHI SPECIAL function `0x10` copies all 64 primary HI bits into the destination
+GPR scalar lane and preserves old destination bits 127:64. Destination zero is
+suppressed by the same centralized writeback boundary as other GPR-producing
+operations, while HI, LO, HI1, and LO1 remain unchanged. Full-width HI boundary
+classes, destination upper-lane preservation, destination zero, PC wrap, every
+reserved field, exact events, and a 520-case differential stream varying both
+HI and `rd` make it the thirty-ninth complete ISA entry. The functional model
+does not claim the base manual's instruction-spacing hazard timing; that remains
+part of the later pipeline-accuracy roadmap.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
