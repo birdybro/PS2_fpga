@@ -1330,21 +1330,21 @@ milestones:
     dependencies: [M102]
     tests: [GPR-to-HI source width alias and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M103): implement R5900 MTHI)"
+    commit: "185838e"
     notes: Transfer a GPR scalar value into primary HI state.
   - id: M104
     title: Implement R5900 MTLO
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M103]
     tests: [GPR-to-LO source width alias and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M104): implement R5900 MTLO)"
     notes: Transfer a GPR scalar value into primary LO state.
   - id: M105
     title: Implement R5900 MULT1
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M104]
     tests: [signed extrema HI1 LO1 isolation optional-rd and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]

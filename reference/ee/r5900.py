@@ -44,6 +44,7 @@ DIVU_FUNCTION = 27
 MFHI_FUNCTION = 16
 MTHI_FUNCTION = 17
 MFLO_FUNCTION = 18
+MTLO_FUNCTION = 19
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -356,6 +357,12 @@ def encode_mflo(destination: int) -> int:
     """Encode canonical R5900 SPECIAL MFLO with all reserved fields clear."""
     rd = _require_gpr_index(destination)
     return (rd << 11) | MFLO_FUNCTION
+
+
+def encode_mtlo(source: int) -> int:
+    """Encode canonical R5900 SPECIAL MTLO with all reserved fields clear."""
+    rs = _require_gpr_index(source)
+    return (rs << 21) | MTLO_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -779,13 +786,20 @@ class R5900State:
         rs = (word >> 21) & 0x1F
         return self.write_hi(self.read_gpr(rs) & SCALAR_MASK)
 
+    def _step_mtlo(self, word: int) -> R5900State:
+        """Copy one GPR's low scalar lane into primary LO."""
+        rs = (word >> 21) & 0x1F
+        return self.write_lo(self.read_gpr(rs) & SCALAR_MASK)
+
     def _step_primary_hilo_transfer(self, word: int, function: int) -> R5900State:
         """Dispatch one admitted primary HI/LO transfer operation."""
         if function == MFHI_FUNCTION:
             return self._step_mfhi(word)
         if function == MFLO_FUNCTION:
             return self._step_mflo(word)
-        return self._step_mthi(word)
+        if function == MTHI_FUNCTION:
+            return self._step_mthi(word)
+        return self._step_mtlo(word)
 
     def _step_register_or_multiply(self, word: int, function: int) -> R5900State:
         """Dispatch the admitted SPECIAL register and primary multiply group."""
@@ -898,8 +912,11 @@ class R5900State:
             MFHI_FUNCTION,
             MFLO_FUNCTION,
         )
-        write_hi = (word & 0x001F_FFC0) == 0 and function == MTHI_FUNCTION
-        if read_hilo or write_hi:
+        write_hilo = (word & 0x001F_FFC0) == 0 and function in (
+            MTHI_FUNCTION,
+            MTLO_FUNCTION,
+        )
+        if read_hilo or write_hilo:
             return self._step_primary_hilo_transfer(word, function)
         if variable and function in (
             MULT_FUNCTION,

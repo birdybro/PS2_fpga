@@ -32,6 +32,7 @@ from reference.ee.r5900 import (
     encode_mfhi,
     encode_mflo,
     encode_mthi,
+    encode_mtlo,
     encode_mult,
     encode_multu,
     encode_nor,
@@ -111,6 +112,7 @@ ENCODED_DIVU_EXAMPLE = 0x02F1_001B
 ENCODED_MFHI_EXAMPLE = 0x0000_F810
 ENCODED_MFLO_EXAMPLE = 0x0000_F812
 ENCODED_MTHI_EXAMPLE = 0x03E0_0011
+ENCODED_MTLO_EXAMPLE = 0x03E0_0013
 
 
 @pytest.mark.unit
@@ -1936,6 +1938,51 @@ def test_r5900_reference_mthi_zero_and_encoder_validation() -> None:
         error = TypeError if type(source) is bool else IndexError
         with pytest.raises(error):
             encode_mthi(source)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "scalar",
+    [
+        0,
+        1,
+        0x7FFF_FFFF,
+        0x8000_0000,
+        0xFFFF_FFFF,
+        0x8000_0000_0000_0000,
+        0xFFFF_FFFF_FFFF_FFFF,
+        0x0123_4567_89AB_CDEF,
+    ],
+)
+def test_r5900_reference_mtlo_copies_scalar_and_ignores_upper_lane(scalar: int) -> None:
+    """Transfer every scalar width class while preserving all sibling state."""
+    source_value = (0xCAFE_BABE_1234_5678 << 64) | scalar
+    state = R5900State.initial(
+        start_pc=PC_MASK - 3, hi=0x1111, lo=0x2222, hi1=0x3333, lo1=0x4444
+    ).write_gpr(31, source_value)
+    updated = state.step(encode_mtlo(31))
+    assert updated.gprs == state.gprs
+    assert (updated.hi, updated.lo, updated.hi1, updated.lo1) == (
+        state.hi,
+        scalar,
+        state.hi1,
+        state.lo1,
+    )
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_mtlo_zero_and_encoder_validation() -> None:
+    """Read immutable GPR zero and validate the exact single-field encoder."""
+    state = R5900State.initial(hi=1, lo=2, hi1=3, lo1=4)
+    updated = state.step(encode_mtlo(0))
+    assert updated.gprs == state.gprs
+    assert (updated.hi, updated.lo, updated.hi1, updated.lo1) == (1, 0, 3, 4)
+    assert encode_mtlo(31) == ENCODED_MTLO_EXAMPLE
+    for source in (-1, GPR_COUNT, True):
+        error = TypeError if type(source) is bool else IndexError
+        with pytest.raises(error):
+            encode_mtlo(source)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

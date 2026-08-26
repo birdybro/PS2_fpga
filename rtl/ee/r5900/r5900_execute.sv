@@ -297,6 +297,21 @@ module r5900_execute (
                         retirement_o.instruction = instruction_i;
                     end
                 end
+                R5900_OPERATION_MTLO: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[20:6] == 15'h0000)
+                        && (instruction_i[5:0] == 6'h13)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        write_lo_valid_o = 1'b1;
+                        write_lo_value_o = source_rs_scalar_i;
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
                 R5900_OPERATION_NOP: begin
                     if (instruction_i == 32'd0) begin
                         complete_o = 1'b1;

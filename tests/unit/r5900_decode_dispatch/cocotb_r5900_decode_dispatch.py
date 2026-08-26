@@ -45,6 +45,7 @@ OPERATION_DIVU = 38
 OPERATION_MFHI = 39
 OPERATION_MFLO = 40
 OPERATION_MTHI = 41
+OPERATION_MTLO = 42
 
 
 async def check_dispatch(
@@ -431,6 +432,13 @@ async def test_r5900_decode_dispatch_sends_canonical_mthi_to_execute(dut) -> Non
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_mtlo_to_execute(dut) -> None:
+    """Dispatch every canonical MTLO source without diagnostics."""
+    for pc, instruction in ((0, 0x13), (4, 0x0020_0013), (0x0010_0000, 0x03E0_0013)):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_MTLO, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_sends_canonical_subu_to_execute(dut) -> None:
     """Dispatch SUBU source and destination fields without diagnostics."""
     for pc, instruction in (
@@ -537,6 +545,9 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (25, 0x0001_0011),
         (25, 0x0000_0811),
         (25, 0x0000_0051),
+        (25, 0x0001_0013),
+        (25, 0x0000_0813),
+        (25, 0x0000_0053),
         (26, 0x0020_0038),
         (27, 0x0020_003A),
         (28, 0x0020_003B),

@@ -39,6 +39,7 @@ DIVU_FUNCTION = 27
 MFHI_FUNCTION = 16
 MTHI_FUNCTION = 17
 MFLO_FUNCTION = 18
+MTLO_FUNCTION = 19
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -93,6 +94,8 @@ def decoded_special_operation(word: int) -> int:
         operation = 39 if function == MFHI_FUNCTION else 40
     if function == MTHI_FUNCTION and (word & 0x001F_FFC0) == 0:
         operation = 41
+    if function == MTLO_FUNCTION and (word & 0x001F_FFC0) == 0:
+        operation = 42
     if operation == 0 and reserved_shift == 0:
         operation = REGISTER_OPERATIONS.get(function, 0)
     return operation
@@ -218,6 +221,11 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 161, 0x0001_0011),
         (True, 162, 0x0000_0811),
         (True, 163, 0x0000_0051),
+        (True, 164, 0x0000_0013),
+        (True, 165, 0x03E0_0013),
+        (True, 166, 0x0001_0013),
+        (True, 167, 0x0000_0813),
+        (True, 168, 0x0000_0053),
         (True, 132, 0x0000_0061),
         (True, 136, 0x0000_0023),
         (True, 140, 0x023F_F823),
