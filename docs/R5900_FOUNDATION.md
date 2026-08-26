@@ -21,8 +21,9 @@ quadword transfers and selected multimedia operations. After explicit GPL-3.0
 license review, the PCSX2 interpreter was consulted only to corroborate scalar
 width rules, including MULT/MULTU's signed or unsigned low-word operands,
 independently sign-extended product halves, optional low-64-bit destination
-write, and DIV's R5900 overflow and zero-divisor results. A separately reviewed
-BSD-licensed Play! implementation independently corroborates DIV's edge rules;
+write, DIV's R5900 overflow and zero-divisor results, and DIVU's result extension
+and zero-divisor behavior. A separately reviewed BSD-licensed Play!
+implementation independently corroborates both divide operations' edge rules;
 a public Linux report from actual R5900 hardware corroborates the common
 nonnegative divide-by-zero quotient. No emulator source text or implementation
 structure is copied.
@@ -75,9 +76,9 @@ doubleword/dual-HI/LO integration gate.
 The roadmap does not turn uncertain behavior into a specification. The
 optional-`rd` result and destination-width rules must be corroborated during
 each corresponding multiply milestone; M097 and M098 resolve that boundary for
-the primary MULT and MULTU pair only. M099 resolves signed overflow and
-divide-by-zero results for primary DIV; unsigned and secondary-path divide
-operations remain pending their own evidence gates.
+the primary MULT and MULTU pair only. M099 and M100 resolve result extension,
+overflow, and divide-by-zero behavior for primary DIV and DIVU; secondary-path
+divide operations remain pending their own evidence gates.
 Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
 also unproven, so M084 must not invent a reset value.
 
@@ -104,7 +105,7 @@ testbench writes all four registers before reading any of them, so deterministic
 simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
-and DIV. HI1 and LO1 remain isolated until the secondary-path instruction
+DIV, and DIVU. HI1 and LO1 remain isolated until the secondary-path instruction
 milestones.
 
 The functional RTL separately exposes the current 32-bit instruction,
@@ -405,6 +406,17 @@ functional model. All sign combinations, both edge classes, ignored upper
 source lanes, source aliases, zero register, primary/secondary state isolation,
 reserved-field legality, exact events, and a 524-case differential stream make
 it the thirty-seventh complete ISA entry.
+
+DIVU SPECIAL function `0x1b` divides unsigned low source words and independently
+sign-extends the 32-bit remainder into primary HI and quotient into primary LO.
+This extension remains signed even though the operands and arithmetic are
+unsigned. A zero divisor produces all ones in LO and the sign-extended dividend
+word in HI. DIVU never writes a GPR or raises an arithmetic exception in this
+functional model. Unsigned extrema, quotient and remainder sign-bit boundaries,
+signed-versus-unsigned divergence, five divisor-zero dividend classes, ignored
+upper source lanes, source aliases, zero register, primary/secondary state
+isolation, reserved-field legality, exact events, and a 524-case differential
+stream make it the thirty-eighth complete ISA entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

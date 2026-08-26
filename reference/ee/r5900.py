@@ -40,6 +40,7 @@ DSUBU_FUNCTION = 47
 MULT_FUNCTION = 24
 MULTU_FUNCTION = 25
 DIV_FUNCTION = 26
+DIVU_FUNCTION = 27
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -327,6 +328,13 @@ def encode_div(dividend: int, divisor: int) -> int:
     rs = _require_gpr_index(dividend)
     rt = _require_gpr_index(divisor)
     return (rs << 21) | (rt << 16) | DIV_FUNCTION
+
+
+def encode_divu(dividend: int, divisor: int) -> int:
+    """Encode canonical R5900 SPECIAL DIVU with reserved rd and sa clear."""
+    rs = _require_gpr_index(dividend)
+    rt = _require_gpr_index(divisor)
+    return (rs << 21) | (rt << 16) | DIVU_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -721,6 +729,20 @@ class R5900State:
             remainder = dividend - quotient * divisor
         return self.write_hi(remainder & SCALAR_MASK).write_lo(quotient & SCALAR_MASK)
 
+    def _step_divu(self, word: int) -> R5900State:
+        """Divide unsigned source words into sign-extended primary HI and LO."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        dividend = self.read_gpr(rs) & WORD_MASK
+        divisor = self.read_gpr(rt) & WORD_MASK
+        if divisor == 0:
+            quotient, remainder = WORD_MASK, dividend
+        else:
+            quotient, remainder = divmod(dividend, divisor)
+        hi = _as_signed_word(remainder) & SCALAR_MASK
+        lo = _as_signed_word(quotient) & SCALAR_MASK
+        return self.write_hi(hi).write_lo(lo)
+
     def _step_register_or_multiply(self, word: int, function: int) -> R5900State:
         """Dispatch the admitted SPECIAL register and primary multiply group."""
         if function == MULT_FUNCTION:
@@ -828,6 +850,8 @@ class R5900State:
         variable = reserved_shift == 0
         if (word & 0x0000_FFC0) == 0 and function == DIV_FUNCTION:
             return self._step_div(word)
+        if (word & 0x0000_FFC0) == 0 and function == DIVU_FUNCTION:
+            return self._step_divu(word)
         if variable and function in (
             MULT_FUNCTION,
             MULTU_FUNCTION,

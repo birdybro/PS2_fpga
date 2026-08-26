@@ -35,6 +35,7 @@ DSUBU_FUNCTION = 47
 MULT_FUNCTION = 24
 MULTU_FUNCTION = 25
 DIV_FUNCTION = 26
+DIVU_FUNCTION = 27
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -75,19 +76,26 @@ REGISTER_OPERATIONS = {
 }
 
 
+def expected_special_operation(word: int) -> int:
+    """Model one nonzero SPECIAL word with its overlapping reserved fields."""
+    reserved_rs = (word >> 21) & 0x1F
+    reserved_shift = (word >> 6) & 0x1F
+    function = word & 0x3F
+    operation = IMMEDIATE_OPERATIONS.get(function, 0) if reserved_rs == 0 else 0
+    if function == DIV_FUNCTION and ((word >> 6) & 0x3FF) == 0:
+        operation = 37
+    if function == DIVU_FUNCTION and ((word >> 6) & 0x3FF) == 0:
+        operation = 38
+    if operation == 0 and reserved_shift == 0:
+        operation = REGISTER_OPERATIONS.get(function, 0)
+    return operation
+
+
 def expected_operation(word: int) -> int:
     """Model admitted immediate and register operations independently from RTL."""
     operation = 1 if word == 0 else 0
     if word != 0 and word >> 26 == 0:
-        reserved_rs = (word >> 21) & 0x1F
-        reserved_shift = (word >> 6) & 0x1F
-        function = word & 0x3F
-        if reserved_rs == 0:
-            operation = IMMEDIATE_OPERATIONS.get(function, 0)
-        if function == DIV_FUNCTION and ((word >> 6) & 0x3FF) == 0:
-            operation = 37
-        if operation == 0 and reserved_shift == 0:
-            operation = REGISTER_OPERATIONS.get(function, 0)
+        operation = expected_special_operation(word)
     elif word >> 26 == ADDIU_OPCODE:
         operation = 12
     elif word >> 26 == DADDIU_OPCODE:
@@ -183,6 +191,10 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x03FF_001A,
         0x0000_005A,
         0x0000_081A,
+        0x0000_001B,
+        0x03FF_001B,
+        0x0000_005B,
+        0x0000_081B,
         0x0000_0061,
         0x0000_0023,
         0x023F_F823,

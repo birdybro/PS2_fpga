@@ -492,16 +492,22 @@ instructions:
     category: multiply divide pipeline 0
     encoding: SPECIAL opcode 0x00, function 0x1b
     milestone: M100
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references:
+      - mips-iv-instruction-set
+      - ps2tek
+      - binutils-r5900-review
+      - pcsx2-r5900-interpreter
+      - play-emulator
     notes: >-
-      Planned unsigned word divide targeting the primary HI and LO pair;
-      divide-by-zero results require R5900-specific evidence.
+      Divides unsigned low words, independently sign-extends the remainder and
+      quotient into primary HI and LO, and defines the R5900 zero-divisor result
+      without a GPR write.
   - mnemonic: MFHI
     category: HI LO transfer pipeline 0
     encoding: SPECIAL opcode 0x00, function 0x10

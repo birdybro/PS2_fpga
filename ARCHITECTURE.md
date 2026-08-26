@@ -57,7 +57,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its six-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, DIV, AND, OR, XOR, NOR,
+SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, DIV, DIVU, AND, OR, XOR, NOR,
 SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, DADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
@@ -108,7 +108,11 @@ optional destination rules to its product. DIV divides the signed low word of
 primary HI and the sign-extended quotient in primary LO, and never writes a
 GPR. Quotients truncate toward zero. The signed overflow pair produces zero in
 HI and `0xffffffff80000000` in LO; division by zero retains the signed dividend
-in HI and writes one for a negative dividend or all ones otherwise to LO. AND
+in HI and writes one for a negative dividend or all ones otherwise to LO.
+DIVU instead treats both low words as unsigned and independently sign-extends
+the 32-bit remainder and quotient into primary HI and LO. A zero divisor writes
+the sign-extended dividend word to HI and all ones to LO. Neither divide writes
+a GPR or raises an arithmetic exception. AND
 combines the full low 64-bit scalar
 lanes and preserves the old destination's upper lane; OR uses the same lane
 rules for inclusive combination, XOR uses exclusive combination, and NOR

@@ -65,6 +65,8 @@ module r5900_execute (
     logic signed [31:0] div_quotient;
     logic signed [31:0] div_remainder;
     logic div_overflow;
+    logic [31:0] divu_quotient;
+    logic [31:0] divu_remainder;
     logic signed [63:0] slt_source_rs_scalar;
     logic signed [63:0] slt_source_rt_scalar;
     logic slt_result;
@@ -127,6 +129,15 @@ module r5900_execute (
         if ((div_divisor != 32'sd0) && !div_overflow) begin
             div_quotient = div_dividend / div_divisor;
             div_remainder = div_dividend % div_divisor;
+        end
+    end
+
+    always_comb begin
+        divu_quotient = '0;
+        divu_remainder = '0;
+        if (source_rt_scalar_i[31:0] != 32'd0) begin
+            divu_quotient = source_rs_scalar_i[31:0] / source_rt_scalar_i[31:0];
+            divu_remainder = source_rs_scalar_i[31:0] % source_rt_scalar_i[31:0];
         end
     end
 
@@ -205,6 +216,30 @@ module r5900_execute (
                         end else begin
                             write_hi_value_o = {{32{div_remainder[31]}}, div_remainder};
                             write_lo_value_o = {{32{div_quotient[31]}}, div_quotient};
+                        end
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_DIVU: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[15:6] == 10'h000)
+                        && (instruction_i[5:0] == 6'h1b)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        write_hi_valid_o = 1'b1;
+                        write_lo_valid_o = 1'b1;
+                        if (source_rt_scalar_i[31:0] == 32'd0) begin
+                            write_hi_value_o = {
+                                {32{source_rs_scalar_i[31]}}, source_rs_scalar_i[31:0]
+                            };
+                            write_lo_value_o = 64'hffff_ffff_ffff_ffff;
+                        end else begin
+                            write_hi_value_o = {{32{divu_remainder[31]}}, divu_remainder};
+                            write_lo_value_o = {{32{divu_quotient[31]}}, divu_quotient};
                         end
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;

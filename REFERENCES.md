@@ -130,7 +130,7 @@ copied.
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate,
 DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, MULTU,
-DIV, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
+DIV, DIVU, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
 SLTI, and SLTIU interpreter operations in this public emulator. It independently
 corroborates 32-bit operand selection, sign-extended scalar results, preserved
 upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word
@@ -148,17 +148,20 @@ using unsigned operands.
 The DIV operation corroborates signed low-word operands, quotient truncation
 toward zero, sign-extended quotient and remainder destinations, and explicit
 results for signed overflow and a zero divisor.
+The DIVU operation separately corroborates unsigned low-word arithmetic,
+independent sign extension of both 32-bit results, and its zero-divisor result.
 The project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
 
 <!-- ref:play-emulator -->
 ### Play! PlayStation 2 emulator
 
-The repository's BSD-2-Clause license text was reviewed before its signed
-32-bit division template and EE bindings were consulted. This second emulator
-implementation independently corroborates the normal signed quotient and
-remainder plus the overflow and zero-divisor result matrix. No source text or
-implementation structure is copied into this project.
+The repository's BSD-2-Clause license text was reviewed before its shared signed
+and unsigned 32-bit division template and EE bindings were consulted. This
+second emulator implementation independently corroborates normal quotient and
+remainder calculation, result extension, and both operations' edge-result
+matrices. No source text or implementation structure is copied into this
+project.
 
 <!-- ref:r5900-linux-div-zero-report -->
 ### Linux MIPS R5900 division-by-zero hardware report

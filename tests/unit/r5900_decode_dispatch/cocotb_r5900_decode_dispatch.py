@@ -41,6 +41,7 @@ OPERATION_DSUBU = 34
 OPERATION_MULT = 35
 OPERATION_MULTU = 36
 OPERATION_DIV = 37
+OPERATION_DIVU = 38
 
 
 async def check_dispatch(
@@ -391,6 +392,17 @@ async def test_r5900_decode_dispatch_sends_canonical_div_to_execute(dut) -> None
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_divu_to_execute(dut) -> None:
+    """Dispatch unsigned DIVU source fields while reserved fields remain clear."""
+    for pc, instruction in (
+        (0, 0x0000_001B),
+        (4, 0x0020_001B),
+        (0x0010_0000, 0x02F1_001B),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DIVU, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_sends_canonical_subu_to_execute(dut) -> None:
     """Dispatch SUBU source and destination fields without diagnostics."""
     for pc, instruction in (
@@ -486,6 +498,8 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (25, 0x0000_006B),
         (25, 0x0000_005A),
         (25, 0x0000_081A),
+        (25, 0x0000_005B),
+        (25, 0x0000_081B),
         (26, 0x0020_0038),
         (27, 0x0020_003A),
         (28, 0x0020_003B),

@@ -1288,23 +1288,25 @@ milestones:
     dependencies: [M098]
     tests: [signed quotient remainder zero overflow and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: "self (milestone(M099): implement R5900 DIV)"
+    commit: "7e8c0d4"
     notes: >-
       Resolve R5900 edge results and implement signed word divide on the primary
       path without a GPR write.
   - id: M100
     title: Implement R5900 DIVU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M099]
     tests: [unsigned quotient remainder divide-by-zero and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: null
-    notes: Resolve R5900 edge results and implement unsigned word divide on the primary path.
+    commit: "self (milestone(M100): implement R5900 DIVU)"
+    notes: >-
+      Resolve R5900 result extension and zero-divisor behavior and implement
+      unsigned word divide on the primary path without a GPR write.
   - id: M101
     title: Implement R5900 MFHI
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M100]
     tests: [HI transfer upper-lane destination alias zero-register and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
