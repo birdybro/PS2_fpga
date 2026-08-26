@@ -507,6 +507,15 @@ GPR zero, PC wrap, reserved `sa`, and exact events; and retain unrelated source
 bits. A 524-case seeded differential stream compares PC and all 4,096 GPR bits
 after each sequential operation.
 
+## R5900 DSRLV
+
+SPECIAL function `0x16` logically shifts `rt[63:0]` right by `rs[5:0]` with
+zero fill and preserves old destination bits 127:64. Directed tests distinguish
+counts 31, 32, and 63; prove modulo-64 masking at 64 and all ones; cover all
+operand aliases, GPR zero, PC wrap, reserved `sa`, and exact events; and retain
+unrelated source bits. A 524-case seeded differential stream compares PC and
+the complete GPR file after every operation.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.

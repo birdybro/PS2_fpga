@@ -55,7 +55,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its five-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLLV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, SUBU, AND, OR, XOR, NOR,
+SLLV, SRLV, SRAV, DSLLV, DSRLV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, SUBU, AND, OR, XOR, NOR,
 SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
@@ -81,8 +81,8 @@ preserve destination bits 127:64. DSLL32 applies the same low-doubleword and
 upper-lane rules as DSLL with an effective shift count of encoded `sa + 32`;
 DSRL32 applies the corresponding zero-filling logical-right shift, while
 DSRA32 sign-fills its widened arithmetic-right result from source bit 63.
-DSLLV shifts the complete low doubleword left by `rs[5:0]`, preserving counts
-32 through 63 and retaining destination bits 127:64.
+DSLLV and DSRLV shift the complete low doubleword left or logically right by
+`rs[5:0]`, preserving counts 32 through 63 and destination bits 127:64.
 LUI places its immediate in word bits 31:16, applies the
 same scalar sign extension, and preserves the destination's upper 64 bits. The
 ORI, ANDI, and XORI zero-extend their immediates, combine them with source bits

@@ -18,6 +18,7 @@ SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 DSLLV_FUNCTION = 20
+DSRLV_FUNCTION = 22
 DSLL_FUNCTION = 56
 DSRL_FUNCTION = 58
 DSRA_FUNCTION = 59
@@ -177,6 +178,14 @@ def encode_dsllv(destination: int, source: int, shift_register: int) -> int:
     rt = _require_gpr_index(source)
     rs = _require_gpr_index(shift_register)
     return (rs << 21) | (rt << 16) | (rd << 11) | DSLLV_FUNCTION
+
+
+def encode_dsrlv(destination: int, source: int, shift_register: int) -> int:
+    """Encode canonical SPECIAL DSRLV with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    rs = _require_gpr_index(shift_register)
+    return (rs << 21) | (rt << 16) | (rd << 11) | DSRLV_FUNCTION
 
 
 def encode_srlv(destination: int, source: int, shift_register: int) -> int:
@@ -470,10 +479,15 @@ class R5900State:
         rs = (word >> 21) & 0x1F
         rt = (word >> 16) & 0x1F
         rd = (word >> 11) & 0x1F
-        if function == DSLLV_FUNCTION:
+        if function in (DSLLV_FUNCTION, DSRLV_FUNCTION):
             shift_amount = self.read_gpr(rs) & 0x3F
             source_scalar = self.read_gpr(rt) & SCALAR_MASK
-            result = _merge_scalar(self.read_gpr(rd), source_scalar << shift_amount)
+            shifted_scalar = (
+                source_scalar << shift_amount
+                if function == DSLLV_FUNCTION
+                else source_scalar >> shift_amount
+            )
+            result = _merge_scalar(self.read_gpr(rd), shifted_scalar)
             return self.write_gpr(rd, result)
         shift_amount = self.read_gpr(rs) & 0x1F
         source_word = self.read_gpr(rt) & WORD_MASK
@@ -705,6 +719,7 @@ class R5900State:
                 SRLV_FUNCTION,
                 SRAV_FUNCTION,
                 DSLLV_FUNCTION,
+                DSRLV_FUNCTION,
             ):
                 updated = self._step_variable_shift(word, function)
             else:

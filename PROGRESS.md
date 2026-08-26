@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M091 — implement R5900 DSLLV
-- Next milestone: M092 — implement R5900 DSRLV
+- Last completed milestone: M092 — implement R5900 DSRLV
+- Next milestone: M093 — implement R5900 DSRAV
 - Current subsystem: R5900 64-bit shift execution
-- Current regression status: 568 tests pass with no failures, errors, or skips; full lint and regression gates pass
-- Known architectural inaccuracies: the 22-instruction scalar foundation plus seven doubleword shifts execute; 25 doubleword and dual-HI/LO operations remain pending, and branches, data memory, exceptions, and compiled C are absent
+- Current regression status: 578 tests pass with no failures, errors, or skips; full lint and regression gates pass
+- Known architectural inaccuracies: the 22-instruction scalar foundation plus eight doubleword shifts execute; 24 doubleword and dual-HI/LO operations remain pending, and branches, data memory, exceptions, and compiled C are absent
 - Known timing inaccuracies: the core uses a deliberately functional five-state sequence, registered request handoff, and one-entry fetch buffer; pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M091 milestone commit (this commit)
+- Most recent pushed commit: M092 milestone commit (this commit)
 
 ## Resume note
 
@@ -22,5 +22,5 @@ GPR blocks now form a functional core. A generated native EE ELF loads into
 behavioral RAM, begins at its published entry, executes 13 straight-line words,
 matches exact retirement, writeback, final GPR, and architectural trace state,
 then reaches the simulator PASS latch. Resume with the single active milestone
-in `milestones.yaml` to implement the variable logical doubleword right shift, `DSRLV`, with directed
+in `milestones.yaml` to implement the variable arithmetic doubleword right shift, `DSRAV`, with directed
 and randomized differential verification.

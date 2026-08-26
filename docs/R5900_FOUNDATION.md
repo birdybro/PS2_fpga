@@ -346,6 +346,9 @@ count is `rs[5:0]`; values 32 through 63 therefore remain distinct instead of
 wrapping modulo 32. It shifts only `rt[63:0]`, preserves the destination upper
 lane, and is verified across every alias plus a 524-case sequential differential
 stream, making it the twenty-ninth complete ISA coverage entry.
+DSRLV function `0x16` applies the same six-bit count rules to a zero-filling
+logical-right shift. Directed count, alias, legality, and exact-event coverage
+plus a 524-case differential stream make it the thirtieth complete ISA entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

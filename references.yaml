@@ -139,6 +139,7 @@ references:
       - DSRL32 interpreter operation
       - DSRA32 interpreter operation
       - DSLLV interpreter operation
+      - DSRLV interpreter operation
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
     notes: >-
       Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 DSRL32 and DSRA32
