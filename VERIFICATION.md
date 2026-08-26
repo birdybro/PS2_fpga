@@ -498,6 +498,15 @@ counts 32 through 63. Directed tests cover both signs, sign fill at counts 32,
 reserved `rs`, and exact events. A 524-case seeded differential stream compares
 PC and the complete GPR file after every operation.
 
+## R5900 DSLLV
+
+SPECIAL function `0x14` shifts `rt[63:0]` left by `rs[5:0]` and preserves the
+old destination upper lane. Directed tests distinguish counts 31, 32, and 63;
+prove modulo-64 masking at count 64 and all ones; cover every operand alias,
+GPR zero, PC wrap, reserved `sa`, and exact events; and retain unrelated source
+bits. A 524-case seeded differential stream compares PC and all 4,096 GPR bits
+after each sequential operation.
+
 ## R5900 LUI
 
 Canonical primary opcode `0x0f` with reserved `rs` clear now executes LUI.

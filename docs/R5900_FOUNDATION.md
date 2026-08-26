@@ -341,6 +341,11 @@ uses signed arithmetic right shift for effective counts 32 through 63, retaining
 source sign fill only within the low doubleword and preserving destination bits
 127:64. Positive, negative, alias, zero-register, exact-event, and 524-case
 differential checks make it the twenty-eighth complete ISA coverage entry.
+DSLLV function `0x14` begins variable doubleword shifts. Unlike word SLLV, its
+count is `rs[5:0]`; values 32 through 63 therefore remain distinct instead of
+wrapping modulo 32. It shifts only `rt[63:0]`, preserves the destination upper
+lane, and is verified across every alias plus a 524-case sequential differential
+stream, making it the twenty-ninth complete ISA coverage entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

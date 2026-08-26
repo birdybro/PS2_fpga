@@ -1203,21 +1203,21 @@ milestones:
     dependencies: [M089]
     tests: [shift-32 shift-63 sign aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M090): implement R5900 DSRA32)"
+    commit: "4036ecc"
     notes: Implement the immediate high-range arithmetic doubleword right shift.
   - id: M091
     title: Implement R5900 DSLLV
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M090]
     tests: [masked-count boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M091): implement R5900 DSLLV)"
     notes: Implement variable doubleword logical left shift.
   - id: M092
     title: Implement R5900 DSRLV
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M091]
     tests: [masked-count boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

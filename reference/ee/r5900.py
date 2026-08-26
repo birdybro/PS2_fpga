@@ -17,6 +17,7 @@ SRA_FUNCTION = 3
 SLLV_FUNCTION = 4
 SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
+DSLLV_FUNCTION = 20
 DSLL_FUNCTION = 56
 DSRL_FUNCTION = 58
 DSRA_FUNCTION = 59
@@ -168,6 +169,14 @@ def encode_sllv(destination: int, source: int, shift_register: int) -> int:
     rt = _require_gpr_index(source)
     rs = _require_gpr_index(shift_register)
     return (rs << 21) | (rt << 16) | (rd << 11) | SLLV_FUNCTION
+
+
+def encode_dsllv(destination: int, source: int, shift_register: int) -> int:
+    """Encode canonical SPECIAL DSLLV with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    rs = _require_gpr_index(shift_register)
+    return (rs << 21) | (rt << 16) | (rd << 11) | DSLLV_FUNCTION
 
 
 def encode_srlv(destination: int, source: int, shift_register: int) -> int:
@@ -461,6 +470,11 @@ class R5900State:
         rs = (word >> 21) & 0x1F
         rt = (word >> 16) & 0x1F
         rd = (word >> 11) & 0x1F
+        if function == DSLLV_FUNCTION:
+            shift_amount = self.read_gpr(rs) & 0x3F
+            source_scalar = self.read_gpr(rt) & SCALAR_MASK
+            result = _merge_scalar(self.read_gpr(rd), source_scalar << shift_amount)
+            return self.write_gpr(rd, result)
         shift_amount = self.read_gpr(rs) & 0x1F
         source_word = self.read_gpr(rt) & WORD_MASK
         if function == SLLV_FUNCTION:
@@ -686,7 +700,12 @@ class R5900State:
                 updated = self._step_immediate_doubleword_shift(word, function)
             elif immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
                 updated = self._step_immediate_shift(word, function)
-            elif variable and function in (SLLV_FUNCTION, SRLV_FUNCTION, SRAV_FUNCTION):
+            elif variable and function in (
+                SLLV_FUNCTION,
+                SRLV_FUNCTION,
+                SRAV_FUNCTION,
+                DSLLV_FUNCTION,
+            ):
                 updated = self._step_variable_shift(word, function)
             else:
                 msg = f"unsupported R5900 instruction: 0x{word:08x}"

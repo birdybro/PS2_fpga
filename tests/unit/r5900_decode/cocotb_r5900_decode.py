@@ -32,6 +32,7 @@ OPERATION_DSRA = 25
 OPERATION_DSLL32 = 26
 OPERATION_DSRL32 = 27
 OPERATION_DSRA32 = 28
+OPERATION_DSLLV = 29
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -199,6 +200,21 @@ async def test_r5900_decode_recognizes_canonical_srav_encodings(dut) -> None:
     ):
         word = (rs << 21) | (rt << 16) | (rd << 11) | 7
         await check_decode(dut, word, True, OPERATION_SRAV)
+
+
+@cocotb.test()
+async def test_r5900_decode_recognizes_canonical_dsllv_encodings(dut) -> None:
+    """Admit all DSLLV register fields while reserved sa stays zero."""
+    for rs, rt, rd in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rs << 21) | (rt << 16) | (rd << 11) | 0x14
+        await check_decode(dut, word, True, OPERATION_DSLLV)
 
 
 @cocotb.test()
@@ -428,7 +444,8 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
     for function in (
         *range(1, 2),
         *range(5, 6),
-        *range(8, 33),
+        *range(8, 20),
+        *range(21, 33),
         *range(34, 35),
         *range(40, 42),
         *range(44, 56),
@@ -448,6 +465,7 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         await check_decode(dut, (value << 6) | 4, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 6, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 7, False, OPERATION_NONE)
+        await check_decode(dut, (value << 6) | 0x14, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x21, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x23, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x24, False, OPERATION_NONE)
