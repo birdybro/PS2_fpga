@@ -1366,21 +1366,21 @@ milestones:
     dependencies: [M106]
     tests: [signed edge results HI1 LO1 isolation and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: "self (milestone(M107): implement R5900 DIV1)"
+    commit: "5db9348"
     notes: Implement signed word divide on the secondary HI1 LO1 path.
   - id: M108
     title: Implement R5900 DIVU1
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M107]
     tests: [unsigned edge results HI1 LO1 isolation and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: null
+    commit: "self (milestone(M108): implement R5900 DIVU1)"
     notes: Implement unsigned word divide on the secondary HI1 LO1 path.
   - id: M109
     title: Implement R5900 MFHI1
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M108]
     tests: [HI1 transfer primary isolation upper-lane and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

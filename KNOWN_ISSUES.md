@@ -11,7 +11,7 @@ a claim of general CPU compatibility.
 Bus errors are retained as functional fetch status. Exact zero-word NOP, all
 six canonical 32-bit shifts, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV,
 DSRLV, DSRAV, LUI, ORI, ANDI, XORI, ADDIU, DADDIU, ADDU, DADDU, SUBU, DSUBU,
-MULT, MULTU, DIV, DIVU, MFHI, MFLO, MTHI, MTLO, MULT1, MULTU1, DIV1, AND, OR,
+MULT, MULTU, DIV, DIVU, MFHI, MFLO, MTHI, MTLO, MULT1, MULTU1, DIV1, DIVU1, AND, OR,
 XOR, NOR, SLT, SLTU, SLTI, and SLTIU execute with PC advance, retirement trace,
 and centralized writeback. No other instruction executes. Illegal words emit a
 functional diagnostic and are suppressed before execution, but do not enter an
@@ -21,9 +21,9 @@ GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-All 22 entries in the initial scalar foundation are complete. Twenty-three of
+All 22 entries in the initial scalar foundation are complete. Twenty-four of
 the 32 rows added by the doubleword and dual-HI/LO roadmap are complete; the
-other 9 are pending and each must pass its own instruction milestone before
+other 8 are pending and each must pass its own instruction milestone before
 becoming complete.
 
 The R5900-specific tables omit generic MIPS `DMULT`, `DMULTU`, `DDIV`, and
@@ -35,16 +35,14 @@ Public sources establish four 64-bit multiply/divide registers (`HI`, `LO`,
 `HI1`, and `LO1`) but not their post-reset values. The standalone RTL storage
 therefore has no reset or initialization construct, and tests seed every field
 before observation. Primary HI/LO writes are connected to the functional core;
-secondary HI1/LO1 writes are connected for MULT1, MULTU1, and DIV1, while the
-remaining pipeline-1 producers are pending.
+secondary HI1/LO1 writes are connected for MULT1, MULTU1, DIV1, and DIVU1,
+while the remaining pipeline-1 producers are pending.
 
 MULT1 and MULTU1 optional-`rd` results are resolved. The corresponding R5900
 optional-`rd` results for `MADD`, `MADDU`, and their pipeline-1 forms require
 semantic and destination-width corroboration before M113 through M116 can
-complete. DIV1 signed-overflow and divide-by-zero results are resolved; the
-corresponding unsigned DIVU1 behavior requires its own M108 evidence gate.
-Until that milestone resolves it, the operation remains unimplemented rather
-than approximated.
+complete. DIV1 and DIVU1 edge results, including signed overflow and both
+divide-by-zero forms, are resolved and regression-locked.
 
 No consulted public R5900 source defines the post-reset values of GPR 1 through
 31. The physical storage therefore has no reset input and tests initialize every

@@ -49,6 +49,7 @@ OPERATION_MTLO = 42
 OPERATION_MULT1 = 43
 OPERATION_MULTU1 = 44
 OPERATION_DIV1 = 45
+OPERATION_DIVU1 = 46
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -513,6 +514,14 @@ async def test_r5900_decode_recognizes_canonical_div1_encodings(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_canonical_divu1_encodings(dut) -> None:
+    """Admit DIVU1 sources under MMI only when reserved rd and sa stay clear."""
+    for rs, rt in ((0, 0), (1, 0), (0, 1), (31, 31), (23, 17)):
+        word = (0x1C << 26) | (rs << 21) | (rt << 16) | 0x1B
+        await check_decode(dut, word, True, OPERATION_DIVU1)
+
+
+@cocotb.test()
 async def test_r5900_decode_recognizes_every_subu_register_field(dut) -> None:
     """Admit all SUBU register fields while its reserved shift field stays zero."""
     for rs, rt, rd in (
@@ -631,11 +640,13 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_mmi_encodings(dut) -
     """Keep unsupported MMI functions and nonzero multiply shift fields closed."""
     for word in (
         0x7000_0000,
-        0x7000_001B,
+        0x7000_001C,
         0x7000_0058,
         0x7000_0059,
         0x7000_005A,
         0x7000_081A,
+        0x7000_005B,
+        0x7000_081B,
         0x72FF_F858,
     ):
         await check_decode(dut, word, False, OPERATION_NONE)

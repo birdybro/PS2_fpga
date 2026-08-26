@@ -49,6 +49,7 @@ MMI_OPCODE = 28
 MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
 DIV1_FUNCTION = 26
+DIVU1_FUNCTION = 27
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -390,6 +391,13 @@ def encode_div1(dividend: int, divisor: int) -> int:
     rs = _require_gpr_index(dividend)
     rt = _require_gpr_index(divisor)
     return (MMI_OPCODE << 26) | (rs << 21) | (rt << 16) | DIV1_FUNCTION
+
+
+def encode_divu1(dividend: int, divisor: int) -> int:
+    """Encode canonical R5900 MMI DIVU1 with reserved rd and sa clear."""
+    rs = _require_gpr_index(dividend)
+    rt = _require_gpr_index(divisor)
+    return (MMI_OPCODE << 26) | (rs << 21) | (rt << 16) | DIVU1_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -840,6 +848,20 @@ class R5900State:
         lo = _as_signed_word(quotient) & SCALAR_MASK
         return self.write_hi(hi).write_lo(lo)
 
+    def _step_divu1(self, word: int) -> R5900State:
+        """Divide unsigned source words into secondary HI1 and LO1."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        dividend = self.read_gpr(rs) & WORD_MASK
+        divisor = self.read_gpr(rt) & WORD_MASK
+        if divisor == 0:
+            quotient, remainder = WORD_MASK, dividend
+        else:
+            quotient, remainder = divmod(dividend, divisor)
+        hi1 = _as_signed_word(remainder) & SCALAR_MASK
+        lo1 = _as_signed_word(quotient) & SCALAR_MASK
+        return self.write_hi1(hi1).write_lo1(lo1)
+
     def _step_mfhi(self, word: int) -> R5900State:
         """Copy the complete primary HI scalar into one GPR low lane."""
         rd = (word >> 11) & 0x1F
@@ -1035,6 +1057,8 @@ class R5900State:
                 return self._step_multu1(word)
         if (word & 0xFFC0) == 0 and function == DIV1_FUNCTION:
             return self._step_div1(word)
+        if (word & 0xFFC0) == 0 and function == DIVU1_FUNCTION:
+            return self._step_divu1(word)
         msg = f"unsupported R5900 instruction: 0x{word:08x}"
         raise UnsupportedInstructionError(msg)
 

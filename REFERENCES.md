@@ -129,7 +129,16 @@ accumulator index one. Their public tests confirm that optional `rd` equals
 LO1 and that HI1/LO1 reconstruct the respective 64-bit product.
 The reviewed DIV1/DIVU1 implementation routes the shared primary divide
 semantics to accumulator index one. Its DIV1 architectural test confirms signed
-truncation, remainder signs, and the nontrapping `INT_MIN / -1` result.
+truncation, remainder signs, and the nontrapping `INT_MIN / -1` result. Its
+DIVU1 architectural test confirms unsigned quotient and remainder behavior for
+nonzero divisors; the shared implementation carries the established primary
+DIVU divisor-zero result to the secondary accumulator.
+The catalog records direct links to the public
+[common DIV1/DIVU1 implementation](https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/05fe58636a0aa1294f9990a49dfc74ad83c40288.1540134918.git.noring@nocrew.org/),
+[DIV1 architectural test](https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/661b6682ef12a7bc022215f60f8cb62803c90833.1540134919.git.noring@nocrew.org/),
+and
+[DIVU1 architectural test](https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/76c3c6692e62384c2a0c8b81e7142cdb039ef412.1540134919.git.noring@nocrew.org/)
+patch reviews. No source text or implementation structure was copied.
 
 <!-- ref:pcsx2-r5900-interpreter -->
 ### PCSX2 R5900 interpreter implementation

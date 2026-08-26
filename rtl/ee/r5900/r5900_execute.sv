@@ -387,6 +387,30 @@ module r5900_execute (
                         retirement_o.instruction = instruction_i;
                     end
                 end
+                R5900_OPERATION_DIVU1: begin
+                    if (
+                        (instruction_i[31:26] == 6'h1c)
+                        && (instruction_i[15:6] == 10'h000)
+                        && (instruction_i[5:0] == 6'h1b)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        write_hi1_valid_o = 1'b1;
+                        write_lo1_valid_o = 1'b1;
+                        if (source_rt_scalar_i[31:0] == 32'd0) begin
+                            write_hi1_value_o = {
+                                {32{source_rs_scalar_i[31]}}, source_rs_scalar_i[31:0]
+                            };
+                            write_lo1_value_o = 64'hffff_ffff_ffff_ffff;
+                        end else begin
+                            write_hi1_value_o = {{32{divu_remainder[31]}}, divu_remainder};
+                            write_lo1_value_o = {{32{divu_quotient[31]}}, divu_quotient};
+                        end
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
                 R5900_OPERATION_NOP: begin
                     if (instruction_i == 32'd0) begin
                         complete_o = 1'b1;

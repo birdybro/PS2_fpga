@@ -71,7 +71,9 @@ to HI1 and LO1. These sources are recorded with consultation and license
 metadata in `references.yaml`.
 The same reviewed implementation routes primary DIV/DIVU behavior to
 accumulator index one, and its DIV1 architectural test confirms signed
-quotient, remainder, and nontrapping overflow behavior.
+quotient, remainder, and nontrapping overflow behavior. Its DIVU1 architectural
+test confirms unsigned quotient and remainder behavior for nonzero divisors;
+the common implementation preserves the primary DIVU divisor-zero semantics.
 
 Generic MIPS III/IV `DMULT`, `DMULTU`, `DDIV`, and `DDIVU` are deliberately not
 in the R5900 roadmap: their SPECIAL function positions are absent in the
@@ -87,7 +89,8 @@ each corresponding multiply milestone; M097 and M098 resolve that boundary for
 the primary MULT and MULTU pair, while M105 and M106 resolve it for MULT1 and
 MULTU1. M099 and M100 resolve result extension, overflow, and divide-by-zero
 behavior for primary DIV and DIVU. M107 resolves the corresponding signed
-behavior for DIV1; unsigned DIVU1 remains pending its own M108 evidence gate.
+behavior for DIV1, and M108 resolves the corresponding unsigned behavior for
+DIVU1.
 Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
 also unproven, so M084 must not invent a reset value.
 
@@ -115,7 +118,7 @@ simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
 DIV, DIVU, MTHI, and MTLO. Secondary HI1/LO1 writes are connected for MULT1,
-MULTU1, and DIV1.
+MULTU1, DIV1, and DIVU1.
 MFHI and MFLO read primary HI and LO respectively
 without modifying any accumulator field; MTHI replaces only primary HI from a
 GPR's low 64-bit scalar lane, and MTLO applies the same rule to primary LO.
@@ -490,6 +493,14 @@ negative, and zero dividends, `INT_MIN / -1`, source aliasing, PC wrap, reserved
 `rd`/`sa`, exact events, and a 524-case differential stream make it the
 forty-fifth complete ISA entry.
 
+DIVU1 MMI function `0x1b` applies DIVU's unsigned low-word quotient, remainder,
+and divisor-zero behavior to the second multiply/divide path. It independently
+sign-extends both 32-bit results into HI1 and LO1, preserves primary HI/LO and
+every GPR, raises no arithmetic exception, and advances PC normally. Unsigned
+extrema, low-word source selection, every dividend sign-bit class at divisor
+zero, source aliasing, PC wrap, reserved `rd`/`sa`, exact events, and a 524-case
+differential stream make it the forty-sixth complete ISA entry.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -635,7 +646,7 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries and 21 extension entries are complete; they began pending
+foundation entries and 24 extension entries are complete; they began pending
 because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and

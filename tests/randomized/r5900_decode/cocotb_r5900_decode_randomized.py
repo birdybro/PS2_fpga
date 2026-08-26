@@ -44,6 +44,7 @@ MTLO_FUNCTION = 19
 MULT1_FUNCTION = 24
 MULTU1_FUNCTION = 25
 DIV1_FUNCTION = 26
+DIVU1_FUNCTION = 27
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -131,8 +132,8 @@ def expected_operation(word: int) -> int:
         if ((word >> 6) & 0x1F) == 0:
             mmi_operations = {MULT1_FUNCTION: 43, MULTU1_FUNCTION: 44}
             operation = mmi_operations.get(function, 0)
-        if (word & 0xFFC0) == 0 and function == DIV1_FUNCTION:
-            operation = 45
+        if (word & 0xFFC0) == 0:
+            operation = {DIV1_FUNCTION: 45, DIVU1_FUNCTION: 46}.get(function, operation)
     return operation
 
 
@@ -246,6 +247,10 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x73FF_001A,
         0x7000_005A,
         0x7000_081A,
+        0x7000_001B,
+        0x73FF_001B,
+        0x7000_005B,
+        0x7000_081B,
         0x0000_0061,
         0x0000_0023,
         0x023F_F823,

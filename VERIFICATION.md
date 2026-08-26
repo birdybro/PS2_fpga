@@ -125,8 +125,8 @@ bundling. The next branch/jump planning boundary is part of the checked chain.
 
 ## R5900 ISA coverage validation
 
-`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 45
-complete operations and 9 pending doubleword or dual-HI/LO
+`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 46
+complete operations and 8 pending doubleword or dual-HI/LO
 operations. Each entry names its milestone and cataloged evidence, and tracks
 decode, implementation, directed testing, randomized differential testing, and
 exception testing independently. Summary states cannot become `partial` or
@@ -679,6 +679,18 @@ on dividend sign, while `INT_MIN / -1` returns zero remainder and `INT_MIN`
 quotient without exception. Directed tests cover all sign pairings, low-word
 source selection, every zero-dividend sign class, overflow, source aliases, PC
 wrap, primary-path isolation, exact secondary write and retirement events, and
+nonzero reserved `rd` or `sa` rejection. A 524-case seeded differential stream
+compares PC, every GPR, and all four accumulator fields after every operation.
+
+## R5900 DIVU1
+
+MMI opcode `0x1c`, function `0x1b` divides unsigned `rs[31:0]` by unsigned
+`rt[31:0]`, writes the independently sign-extended 32-bit remainder to HI1 and
+quotient to LO1, and preserves primary HI/LO plus every GPR. A zero divisor
+writes the sign-extended dividend word to HI1 and all ones to LO1 without an
+exception. Directed tests cover unsigned extrema, low-word source selection,
+all dividend sign-bit classes at divisor zero, source aliasing, PC wrap,
+primary-path isolation, exact secondary write and retirement events, and
 nonzero reserved `rd` or `sa` rejection. A 524-case seeded differential stream
 compares PC, every GPR, and all four accumulator fields after every operation.
 

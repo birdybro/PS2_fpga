@@ -633,16 +633,18 @@ instructions:
     category: multiply divide pipeline 1
     encoding: MMI opcode 0x1c, function 0x1b
     milestone: M108
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
     references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
     notes: >-
-      Planned unsigned word divide targeting the secondary HI1 and LO1 pair;
-      divide-by-zero results require R5900-specific evidence.
+      Divides unsigned low words into the secondary HI1 remainder and LO1
+      quotient, independently sign-extends both result words, defines the
+      divisor-zero result without exception, writes no GPR, and preserves
+      primary HI/LO.
   - mnemonic: MFHI1
     category: HI LO transfer pipeline 1
     encoding: MMI opcode 0x1c, function 0x10

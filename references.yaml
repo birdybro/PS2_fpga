@@ -111,6 +111,10 @@ references:
   - id: qemu-r5900-overview
     title: QEMU R5900 multimedia instruction overview patch review
     url: https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/bcc29487f67d12865795c6a357203c41a8027c23.1540134918.git.noring@nocrew.org/
+    related_urls:
+      div1-divu1-implementation: https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/05fe58636a0aa1294f9990a49dfc74ad83c40288.1540134918.git.noring@nocrew.org/
+      div1-test: https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/661b6682ef12a7bc022215f60f8cb62803c90833.1540134919.git.noring@nocrew.org/
+      divu1-test: https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/76c3c6692e62384c2a0c8b81e7142cdb039ef412.1540134919.git.noring@nocrew.org/
     source_class: public-mailing-list
     role: architecture
     subsystems: [r5900, mmi]
@@ -125,6 +129,7 @@ references:
       - MULTU1 architectural test patch
       - DIV1 and DIVU1 common implementation patch
       - DIV1 architectural test patch
+      - DIVU1 architectural test patch
     notes: >-
       Corroborates scalar-lane use and the independently encoded second
       multiply/divide path. MULT1 and MULTU1 use the corresponding signed and
@@ -132,7 +137,8 @@ references:
       LO1, and HI1 plus LO1 contain the product halves; no source structure was
       copied. DIV1 and DIVU1 route the corresponding primary divide behavior to
       accumulator index one; the DIV1 test covers signed quotient/remainder and
-      the nontrapping overflow result.
+      the nontrapping overflow result, while the DIVU1 test covers unsigned
+      quotient and remainder for nonzero divisors.
   - id: pcsx2-r5900-interpreter
     title: PCSX2 R5900 interpreter implementation
     url: https://github.com/PCSX2/pcsx2/blob/master/pcsx2/R5900OpcodeImpl.cpp
