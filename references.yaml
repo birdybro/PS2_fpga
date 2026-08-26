@@ -147,6 +147,7 @@ references:
       - DIV interpreter operation
       - DIVU interpreter operation
       - MFHI interpreter operation
+      - MFLO interpreter operation
     notes: >-
       Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 DSRL32 and DSRA32
       low-doubleword results with preserved upper lanes, immediate and six-bit
@@ -154,8 +155,9 @@ references:
       MULT and MULTU word product splitting with independent HI and LO sign
       extension plus the optional low-scalar destination, including MULTU's
       unsigned operands, DIV quotient, remainder, overflow, and zero-divisor
-      results, DIVU result extension and zero-divisor behavior, and MFHI's full
-      primary-HI scalar transfer; no source structure was copied.
+      results, DIVU result extension and zero-divisor behavior, and MFHI's and
+      MFLO's full primary-HI and primary-LO scalar transfers; no source structure
+      was copied.
   - id: play-emulator
     title: Play! PlayStation 2 emulator
     url: https://github.com/jpd002/Play-
@@ -169,11 +171,12 @@ references:
       - MA_MIPSIV signed and unsigned 32-bit division template
       - EE DIV DIVU DIV1 and DIVU1 binding declarations
       - MA_MIPSIV MFHI operation
+      - MA_MIPSIV MFLO operation
     notes: >-
       Independently corroborates signed and unsigned quotient and remainder
       calculation, 64-bit result extension, both operations' divisor-zero
-      results, and MFHI's complete 64-bit transfer; no source structure was
-      copied.
+      results, and MFHI's and MFLO's complete 64-bit transfers; no source
+      structure was copied.
   - id: r5900-linux-div-zero-report
     title: Linux MIPS R5900 division-by-zero hardware report
     url: https://lkml.indiana.edu/hypermail/linux/kernel/1903.3/07310.html

@@ -26,7 +26,8 @@ and zero-divisor behavior. A separately reviewed BSD-licensed Play!
 implementation independently corroborates both divide operations' edge rules;
 a public Linux report from actual R5900 hardware corroborates the common
 nonnegative divide-by-zero quotient. PCSX2 and Play! also corroborate MFHI's
-complete 64-bit primary-HI transfer into the low GPR scalar lane. No emulator
+and MFLO's complete 64-bit primary-HI or primary-LO transfer into the low GPR
+scalar lane. No emulator
 source text or implementation structure is copied.
 
 These sources have different authority. The MIPS manual may establish the base
@@ -107,7 +108,8 @@ simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
 DIV, and DIVU. HI1 and LO1 remain isolated until the secondary-path instruction
-milestones. MFHI reads primary HI without modifying any accumulator field.
+milestones. MFHI and MFLO read primary HI and LO respectively without modifying
+any accumulator field.
 
 The functional RTL separately exposes the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
@@ -429,6 +431,14 @@ HI and `rd` make it the thirty-ninth complete ISA entry. The functional model
 does not claim the base manual's instruction-spacing hazard timing; that remains
 part of the later pipeline-accuracy roadmap.
 
+MFLO SPECIAL function `0x12` copies all 64 primary LO bits into the destination
+GPR scalar lane and preserves old destination bits 127:64. Destination zero is
+suppressed, while HI, LO, HI1, and LO1 remain unchanged. Full-width LO boundary
+classes, destination upper-lane preservation, destination zero, PC wrap, every
+reserved field, exact events, and a 520-case differential stream varying both
+LO and `rd` make it the fortieth complete ISA entry. As with MFHI, functional
+coverage does not claim the base manual's instruction-spacing hazard timing.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -574,7 +584,7 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries and 14 extension entries are complete; they began pending
+foundation entries and 18 extension entries are complete; they began pending
 because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and

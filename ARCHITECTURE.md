@@ -57,7 +57,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its six-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, DIV, DIVU, MFHI, AND, OR, XOR, NOR,
+SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, DIV, DIVU, MFHI, MFLO, AND, OR, XOR, NOR,
 SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, DADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
@@ -115,8 +115,9 @@ the sign-extended dividend word to HI and all ones to LO. Neither divide writes
 a GPR or raises an arithmetic exception.
 MFHI copies all 64 bits of primary HI into `rd[63:0]`, preserves the old
 destination bits 127:64, suppresses destination zero through centralized
-writeback, and leaves every HI/LO-family register unchanged. AND
-combines the full low 64-bit scalar
+writeback, and leaves every HI/LO-family register unchanged.
+MFLO applies the same destination and state-preservation rules while copying
+all 64 bits of primary LO. AND combines the full low 64-bit scalar
 lanes and preserves the old destination's upper lane; OR uses the same lane
 rules for inclusive combination, XOR uses exclusive combination, and NOR
 complements the 64-bit inclusive result without extending that complement into

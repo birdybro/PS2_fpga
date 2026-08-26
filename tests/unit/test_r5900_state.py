@@ -30,6 +30,7 @@ from reference.ee.r5900 import (
     encode_dsubu,
     encode_lui,
     encode_mfhi,
+    encode_mflo,
     encode_mult,
     encode_multu,
     encode_nor,
@@ -107,6 +108,7 @@ ENCODED_MULTU_EXAMPLE = 0x02F1_F819
 ENCODED_DIV_EXAMPLE = 0x02F1_001A
 ENCODED_DIVU_EXAMPLE = 0x02F1_001B
 ENCODED_MFHI_EXAMPLE = 0x0000_F810
+ENCODED_MFLO_EXAMPLE = 0x0000_F812
 
 
 @pytest.mark.unit
@@ -1840,6 +1842,53 @@ def test_r5900_reference_mfhi_zero_and_encoder_validation() -> None:
         error = TypeError if type(destination) is bool else IndexError
         with pytest.raises(error):
             encode_mfhi(destination)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "lo_value",
+    [
+        0,
+        1,
+        0x7FFF_FFFF,
+        0x8000_0000,
+        0xFFFF_FFFF,
+        0x8000_0000_0000_0000,
+        0xFFFF_FFFF_FFFF_FFFF,
+        0x0123_4567_89AB_CDEF,
+    ],
+)
+def test_r5900_reference_mflo_copies_full_scalar_and_preserves_upper_lane(
+    lo_value: int,
+) -> None:
+    """Transfer every LO width class without changing any accumulator."""
+    destination = 0xCAFE_BABE_1234_5678_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(
+        start_pc=PC_MASK - 3, hi=0x1111, lo=lo_value, hi1=0x3333, lo1=0x4444
+    ).write_gpr(31, destination)
+    updated = state.step(encode_mflo(31))
+    assert updated.read_gpr(31) == (destination & ~((1 << 64) - 1)) | lo_value
+    assert (updated.hi, updated.lo, updated.hi1, updated.lo1) == (
+        state.hi,
+        state.lo,
+        state.hi1,
+        state.lo1,
+    )
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_mflo_zero_and_encoder_validation() -> None:
+    """Suppress destination zero and validate the exact single-field encoder."""
+    state = R5900State.initial(hi=1, lo=0x0123_4567_89AB_CDEF, hi1=3, lo1=4)
+    updated = state.step(encode_mflo(0))
+    assert updated.gprs == state.gprs
+    assert (updated.hi, updated.lo, updated.hi1, updated.lo1) == (1, state.lo, 3, 4)
+    assert encode_mflo(31) == ENCODED_MFLO_EXAMPLE
+    for destination in (-1, GPR_COUNT, True):
+        error = TypeError if type(destination) is bool else IndexError
+        with pytest.raises(error):
+            encode_mflo(destination)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit
