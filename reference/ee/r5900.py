@@ -35,6 +35,7 @@ DADDIU_OPCODE = 25
 SLTI_OPCODE = 10
 SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
+DADDU_FUNCTION = 45
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -283,6 +284,14 @@ def encode_addu(destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | ADDU_FUNCTION
+
+
+def encode_daddu(destination: int, source_a: int, source_b: int) -> int:
+    """Encode canonical SPECIAL DADDU with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(source_a)
+    rt = _require_gpr_index(source_b)
+    return (rs << 21) | (rt << 16) | (rd << 11) | DADDU_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -616,6 +625,15 @@ class R5900State:
         result = _merge_scalar_word(self.read_gpr(rd), result_word)
         return self.write_gpr(rd, result)
 
+    def _step_daddu(self, word: int) -> R5900State:
+        """Add two source scalars modulo 64 bits without an overflow exception."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        result_scalar = (self.read_gpr(rs) & SCALAR_MASK) + (self.read_gpr(rt) & SCALAR_MASK)
+        result = _merge_scalar(self.read_gpr(rd), result_scalar)
+        return self.write_gpr(rd, result)
+
     def _step_subu(self, word: int) -> R5900State:
         """Subtract source words modulo 32 bits without an overflow exception."""
         rs = (word >> 21) & 0x1F
@@ -698,6 +716,8 @@ class R5900State:
         """Dispatch one admitted SPECIAL register ALU operation."""
         if function == ADDU_FUNCTION:
             return self._step_addu(word)
+        if function == DADDU_FUNCTION:
+            return self._step_daddu(word)
         if function == SUBU_FUNCTION:
             return self._step_subu(word)
         return self._step_logical_or_compare(word, function)
@@ -718,6 +738,7 @@ class R5900State:
                 updated = self._step_signed_immediate_group(word, opcode)
             elif variable and function in (
                 ADDU_FUNCTION,
+                DADDU_FUNCTION,
                 SUBU_FUNCTION,
                 AND_FUNCTION,
                 OR_FUNCTION,

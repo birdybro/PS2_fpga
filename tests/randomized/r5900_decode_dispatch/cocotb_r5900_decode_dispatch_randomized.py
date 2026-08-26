@@ -30,6 +30,7 @@ DADDIU_OPCODE = 25
 SLTI_OPCODE = 10
 SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
+DADDU_FUNCTION = 45
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -56,6 +57,7 @@ REGISTER_OPERATIONS = {
     DSRLV_FUNCTION: 30,
     DSRAV_FUNCTION: 31,
     ADDU_FUNCTION: 13,
+    DADDU_FUNCTION: 33,
     SUBU_FUNCTION: 14,
     AND_FUNCTION: 15,
     OR_FUNCTION: 16,
@@ -157,6 +159,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 126, 0x2FFF_FFFF),
         (True, 124, 0x0000_0021),
         (True, 128, 0x023F_F821),
+        (True, 129, 0x0000_002D),
+        (True, 130, 0x023F_F82D),
+        (True, 131, 0x0000_006D),
         (True, 132, 0x0000_0061),
         (True, 136, 0x0000_0023),
         (True, 140, 0x023F_F823),

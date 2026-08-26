@@ -93,6 +93,13 @@ module r5900_decode (
         end else if (
             (instruction_i[31:26] == 6'h00)
             && (instruction_i[10:6] == 5'h00)
+            && (instruction_i[5:0] == 6'h2d)
+        ) begin
+            legal_o = 1'b1;
+            operation_o = R5900_OPERATION_DADDU;
+        end else if (
+            (instruction_i[31:26] == 6'h00)
+            && (instruction_i[10:6] == 5'h00)
             && (instruction_i[5:0] == 6'h23)
         ) begin
             legal_o = 1'b1;

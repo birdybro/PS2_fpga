@@ -1239,21 +1239,21 @@ milestones:
     dependencies: [M093]
     tests: [immediate sign extension wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M094): implement R5900 DADDIU)"
+    commit: "d6129d3"
     notes: Implement nontrapping 64-bit immediate addition.
   - id: M095
     title: Implement R5900 DADDU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M094]
     tests: [carry wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M095): implement R5900 DADDU)"
     notes: Implement nontrapping 64-bit register addition.
   - id: M096
     title: Implement R5900 DSUBU
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M095]
     tests: [borrow wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
