@@ -123,10 +123,10 @@ GPL-2.0-or-later contribution is consulted as corroborating architecture
 evidence only. Its operation inventory also corroborates that `MULT1`,
 `MULTU1`, `DIV1`, `DIVU1`, `MADD1`, `MADDU1`, `MFHI1`, `MFLO1`, `MTHI1`, and
 `MTLO1` use the second multiply/divide path. No source structure or text is
-copied. The reviewed pipeline-1 implementation routes MULT1 through the signed
-three-operand multiply behavior with accumulator index one, and its public test
-confirms that optional `rd` equals LO1 and that HI1/LO1 reconstruct the signed
-64-bit product.
+copied. The reviewed pipeline-1 implementation routes MULT1 and MULTU1 through
+the corresponding signed and unsigned three-operand multiply behaviors with
+accumulator index one. Their public tests confirm that optional `rd` equals
+LO1 and that HI1/LO1 reconstruct the respective 64-bit product.
 
 <!-- ref:pcsx2-r5900-interpreter -->
 ### PCSX2 R5900 interpreter implementation

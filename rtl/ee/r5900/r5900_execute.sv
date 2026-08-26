@@ -340,6 +340,26 @@ module r5900_execute (
                         retirement_o.instruction = instruction_i;
                     end
                 end
+                R5900_OPERATION_MULTU1: begin
+                    if (
+                        (instruction_i[31:26] == 6'h1c)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h19)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = instruction_i[15:11] != 5'd0;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {destination_upper_i, multu_lo};
+                        write_hi1_valid_o = 1'b1;
+                        write_hi1_value_o = multu_hi;
+                        write_lo1_valid_o = 1'b1;
+                        write_lo1_value_o = multu_lo;
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
                 R5900_OPERATION_NOP: begin
                     if (instruction_i == 32'd0) begin
                         complete_o = 1'b1;
