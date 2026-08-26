@@ -37,6 +37,7 @@ OPERATION_DSRLV = 30
 OPERATION_DSRAV = 31
 OPERATION_DADDIU = 32
 OPERATION_DADDU = 33
+OPERATION_DSUBU = 34
 
 
 async def check_dispatch(
@@ -343,6 +344,17 @@ async def test_r5900_decode_dispatch_sends_canonical_daddu_to_execute(dut) -> No
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_dsubu_to_execute(dut) -> None:
+    """Dispatch DSUBU source and destination fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x0000_002F),
+        (4, 0x0020_002F),
+        (0x0010_0000, 0x023F_F82F),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DSUBU, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_sends_canonical_subu_to_execute(dut) -> None:
     """Dispatch SUBU source and destination fields without diagnostics."""
     for pc, instruction in (
@@ -446,6 +458,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (33, 0x0000_0056),
         (34, 0x0000_0057),
         (35, 0x0000_006D),
+        (36, 0x0000_006F),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),

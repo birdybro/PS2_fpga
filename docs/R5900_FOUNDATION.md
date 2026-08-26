@@ -364,6 +364,11 @@ preserves old destination bits 127:64. Carry and wrap boundaries, every source
 and destination alias, identical and zero sources, reserved-field legality,
 exact events, and a 524-case differential stream make it the thirty-third
 complete ISA entry.
+DSUBU SPECIAL function `0x2f` subtracts the second source low doubleword from
+the first modulo 64 and preserves old destination bits 127:64. Borrow and wrap
+boundaries, operand ordering, every alias, identical and zero sources,
+reserved-field legality, exact events, and a 524-case differential stream make
+it the thirty-fourth complete ISA entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

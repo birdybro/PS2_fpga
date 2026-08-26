@@ -429,14 +429,14 @@ instructions:
     category: 64-bit arithmetic register
     encoding: SPECIAL opcode 0x00, function 0x2f
     milestone: M096
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
     references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
-    notes: Planned nontrapping doubleword subtraction of low-64-bit source operands.
+    notes: Subtracts rt bits 63:0 from rs bits 63:0 modulo 64 and preserves rd bits 127:64.
   - mnemonic: MULT
     category: multiply divide pipeline 0
     encoding: SPECIAL opcode 0x00, function 0x18

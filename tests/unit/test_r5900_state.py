@@ -25,6 +25,7 @@ from reference.ee.r5900 import (
     encode_dsrl,
     encode_dsrl32,
     encode_dsrlv,
+    encode_dsubu,
     encode_lui,
     encode_nor,
     encode_or,
@@ -75,6 +76,7 @@ ENCODED_XORI_EXAMPLE = 0x3AFF_1234
 ENCODED_ADDIU_EXAMPLE = 0x26FF_1234
 ENCODED_DADDIU_EXAMPLE = 0x66FF_1234
 ENCODED_DADDU_EXAMPLE = 0x02F1_F82D
+ENCODED_DSUBU_EXAMPLE = 0x02F1_F82F
 ENCODED_ADDU_EXAMPLE = 0x02F1_F821
 ALIASED_ADDIU_RESULT = 0xCAFE_BABE_1234_5678_FFFF_FFFF_8000_0000
 ALIASED_DADDIU_RESULT = 0xCAFE_BABE_1234_5678_8000_0000_0000_0000
@@ -1465,6 +1467,67 @@ def test_r5900_reference_daddu_handles_aliases_zero_and_encoder_validation() -> 
         error = TypeError if any(type(field) is bool for field in fields) else IndexError
         with pytest.raises(error):
             encode_daddu(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("minuend_scalar", "subtrahend_scalar", "expected_scalar"),
+    [
+        (0x0000_0000_0000_0000, 0x0000_0000_0000_0000, 0x0000_0000_0000_0000),
+        (0x0000_0000_0000_0001, 0x0000_0000_0000_0000, 0x0000_0000_0000_0001),
+        (0x7FFF_FFFF_FFFF_FFFF, 0x0000_0000_0000_0000, 0x7FFF_FFFF_FFFF_FFFF),
+        (0x8000_0000_0000_0000, 0x0000_0000_0000_0000, 0x8000_0000_0000_0000),
+        (0xFFFF_FFFF_FFFF_FFFF, 0x0000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFF),
+        (0x8000_0000_0000_0000, 0x0000_0000_0000_0001, 0x7FFF_FFFF_FFFF_FFFF),
+        (0x7FFF_FFFF_FFFF_FFFF, 0xFFFF_FFFF_FFFF_FFFF, 0x8000_0000_0000_0000),
+        (0x0000_0000_0000_0000, 0x0000_0000_0000_0001, 0xFFFF_FFFF_FFFF_FFFF),
+    ],
+)
+def test_r5900_reference_dsubu_wraps_scalar_and_preserves_destination_upper_lane(
+    minuend_scalar: int,
+    subtrahend_scalar: int,
+    expected_scalar: int,
+) -> None:
+    """Subtract low doublewords modulo 64 and merge the destination upper lane."""
+    minuend = 0xFFFF_FFFF_FFFF_FFFF_0000_0000_0000_0000 | minuend_scalar
+    subtrahend = 0xAAAA_AAAA_AAAA_AAAA_0000_0000_0000_0000 | subtrahend_scalar
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(3, minuend).write_gpr(4, subtrahend)
+    state = state.write_gpr(5, destination)
+
+    updated = state.step(encode_dsubu(5, 3, 4))
+
+    expected = (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(5) == expected
+    assert updated.read_gpr(3) == minuend
+    assert updated.read_gpr(4) == subtrahend
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_dsubu_handles_aliases_zero_and_encoder_validation() -> None:
+    """Cover both destination aliases, identical sources, zero, and exact encoding."""
+    minuend = 0xCAFE_BABE_1234_5678_8000_0000_0000_0000
+    subtrahend = 0x0123_4567_89AB_CDEF_0000_0000_0000_0001
+    state = R5900State.initial().write_gpr(31, minuend).write_gpr(30, subtrahend)
+    rd_is_rs = state.step(encode_dsubu(31, 31, 30))
+    expected_rs = 0xCAFE_BABE_1234_5678_7FFF_FFFF_FFFF_FFFF
+    assert rd_is_rs.read_gpr(31) == expected_rs
+    rd_is_rt = state.step(encode_dsubu(30, 31, 30))
+    expected_rt = 0x0123_4567_89AB_CDEF_7FFF_FFFF_FFFF_FFFF
+    assert rd_is_rt.read_gpr(30) == expected_rt
+    same_sources = state.step(encode_dsubu(29, 30, 30))
+    assert same_sources.read_gpr(29) == 0
+    discarded = state.step(encode_dsubu(0, 31, 30))
+    assert discarded.gprs == state.gprs
+    zero_sources = state.step(encode_dsubu(29, 0, 0))
+    assert zero_sources.read_gpr(29) == 0
+    assert encode_dsubu(31, 23, 17) == ENCODED_DSUBU_EXAMPLE
+    for fields in ((-1, 0, 0), (0, GPR_COUNT, 0), (0, 0, GPR_COUNT), (True, 0, 0)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_dsubu(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

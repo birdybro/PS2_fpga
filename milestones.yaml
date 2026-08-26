@@ -1248,21 +1248,21 @@ milestones:
     dependencies: [M094]
     tests: [carry wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M095): implement R5900 DADDU)"
+    commit: "682965b"
     notes: Implement nontrapping 64-bit register addition.
   - id: M096
     title: Implement R5900 DSUBU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M095]
     tests: [borrow wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M096): implement R5900 DSUBU)"
     notes: Implement nontrapping 64-bit register subtraction.
   - id: M097
     title: Implement R5900 MULT
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M096]
     tests: [signed extrema HI LO optional-rd and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]

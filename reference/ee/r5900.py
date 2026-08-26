@@ -36,6 +36,7 @@ SLTI_OPCODE = 10
 SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
 DADDU_FUNCTION = 45
+DSUBU_FUNCTION = 47
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -292,6 +293,14 @@ def encode_daddu(destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | DADDU_FUNCTION
+
+
+def encode_dsubu(destination: int, minuend: int, subtrahend: int) -> int:
+    """Encode canonical SPECIAL DSUBU with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rs = _require_gpr_index(minuend)
+    rt = _require_gpr_index(subtrahend)
+    return (rs << 21) | (rt << 16) | (rd << 11) | DSUBU_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -634,6 +643,15 @@ class R5900State:
         result = _merge_scalar(self.read_gpr(rd), result_scalar)
         return self.write_gpr(rd, result)
 
+    def _step_dsubu(self, word: int) -> R5900State:
+        """Subtract source scalars modulo 64 bits without an overflow exception."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        result_scalar = (self.read_gpr(rs) & SCALAR_MASK) - (self.read_gpr(rt) & SCALAR_MASK)
+        result = _merge_scalar(self.read_gpr(rd), result_scalar)
+        return self.write_gpr(rd, result)
+
     def _step_subu(self, word: int) -> R5900State:
         """Subtract source words modulo 32 bits without an overflow exception."""
         rs = (word >> 21) & 0x1F
@@ -720,6 +738,8 @@ class R5900State:
             return self._step_daddu(word)
         if function == SUBU_FUNCTION:
             return self._step_subu(word)
+        if function == DSUBU_FUNCTION:
+            return self._step_dsubu(word)
         return self._step_logical_or_compare(word, function)
 
     def step(self, instruction: int) -> R5900State:
@@ -740,6 +760,7 @@ class R5900State:
                 ADDU_FUNCTION,
                 DADDU_FUNCTION,
                 SUBU_FUNCTION,
+                DSUBU_FUNCTION,
                 AND_FUNCTION,
                 OR_FUNCTION,
                 XOR_FUNCTION,
