@@ -1321,21 +1321,21 @@ milestones:
     dependencies: [M101]
     tests: [LO transfer upper-lane destination alias zero-register and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M102): implement R5900 MFLO)"
+    commit: "050ae6c"
     notes: Transfer the primary LO state to a GPR using documented scalar-lane behavior.
   - id: M103
     title: Implement R5900 MTHI
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M102]
     tests: [GPR-to-HI source width alias and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M103): implement R5900 MTHI)"
     notes: Transfer a GPR scalar value into primary HI state.
   - id: M104
     title: Implement R5900 MTLO
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M103]
     tests: [GPR-to-LO source width alias and differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

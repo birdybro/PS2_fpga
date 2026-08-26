@@ -42,6 +42,7 @@ MULTU_FUNCTION = 25
 DIV_FUNCTION = 26
 DIVU_FUNCTION = 27
 MFHI_FUNCTION = 16
+MTHI_FUNCTION = 17
 MFLO_FUNCTION = 18
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
@@ -343,6 +344,12 @@ def encode_mfhi(destination: int) -> int:
     """Encode canonical R5900 SPECIAL MFHI with all reserved fields clear."""
     rd = _require_gpr_index(destination)
     return (rd << 11) | MFHI_FUNCTION
+
+
+def encode_mthi(source: int) -> int:
+    """Encode canonical R5900 SPECIAL MTHI with all reserved fields clear."""
+    rs = _require_gpr_index(source)
+    return (rs << 21) | MTHI_FUNCTION
 
 
 def encode_mflo(destination: int) -> int:
@@ -767,6 +774,19 @@ class R5900State:
         rd = (word >> 11) & 0x1F
         return self.write_gpr(rd, _merge_scalar(self.read_gpr(rd), self.lo))
 
+    def _step_mthi(self, word: int) -> R5900State:
+        """Copy one GPR's low scalar lane into primary HI."""
+        rs = (word >> 21) & 0x1F
+        return self.write_hi(self.read_gpr(rs) & SCALAR_MASK)
+
+    def _step_primary_hilo_transfer(self, word: int, function: int) -> R5900State:
+        """Dispatch one admitted primary HI/LO transfer operation."""
+        if function == MFHI_FUNCTION:
+            return self._step_mfhi(word)
+        if function == MFLO_FUNCTION:
+            return self._step_mflo(word)
+        return self._step_mthi(word)
+
     def _step_register_or_multiply(self, word: int, function: int) -> R5900State:
         """Dispatch the admitted SPECIAL register and primary multiply group."""
         if function == MULT_FUNCTION:
@@ -874,8 +894,13 @@ class R5900State:
         variable = reserved_shift == 0
         if (word & 0x0000_FFC0) == 0 and function in (DIV_FUNCTION, DIVU_FUNCTION):
             return self._step_div(word) if function == DIV_FUNCTION else self._step_divu(word)
-        if (word & 0x03FF_07C0) == 0 and function in (MFHI_FUNCTION, MFLO_FUNCTION):
-            return self._step_mfhi(word) if function == MFHI_FUNCTION else self._step_mflo(word)
+        read_hilo = (word & 0x03FF_07C0) == 0 and function in (
+            MFHI_FUNCTION,
+            MFLO_FUNCTION,
+        )
+        write_hi = (word & 0x001F_FFC0) == 0 and function == MTHI_FUNCTION
+        if read_hilo or write_hi:
+            return self._step_primary_hilo_transfer(word, function)
         if variable and function in (
             MULT_FUNCTION,
             MULTU_FUNCTION,

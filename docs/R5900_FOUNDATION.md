@@ -107,9 +107,10 @@ testbench writes all four registers before reading any of them, so deterministic
 simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
 Primary HI/LO writes are now connected to the functional core for MULT, MULTU,
-DIV, and DIVU. HI1 and LO1 remain isolated until the secondary-path instruction
-milestones. MFHI and MFLO read primary HI and LO respectively without modifying
-any accumulator field.
+DIV, DIVU, and MTHI. HI1 and LO1 remain isolated until the secondary-path
+instruction milestones. MFHI and MFLO read primary HI and LO respectively
+without modifying any accumulator field; MTHI replaces only primary HI from a
+GPR's low 64-bit scalar lane.
 
 The functional RTL separately exposes the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
@@ -439,6 +440,14 @@ reserved field, exact events, and a 520-case differential stream varying both
 LO and `rd` make it the fortieth complete ISA entry. As with MFHI, functional
 coverage does not claim the base manual's instruction-spacing hazard timing.
 
+MTHI SPECIAL function `0x11` copies source GPR bits 63:0 into primary HI while
+ignoring bits 127:64. It writes no GPR and leaves LO, HI1, and LO1 unchanged.
+Full-width scalar boundaries under an asymmetric upper GPR lane, source zero,
+PC wrap, every reserved field, exact events, and a 520-case differential stream
+varying the complete 128-bit source and `rs` make it the forty-first complete
+ISA entry. Functional coverage does not claim the base manual's HI/LO
+instruction-spacing hazard timing.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -584,7 +593,7 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries and 18 extension entries are complete; they began pending
+foundation entries and 19 extension entries are complete; they began pending
 because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and

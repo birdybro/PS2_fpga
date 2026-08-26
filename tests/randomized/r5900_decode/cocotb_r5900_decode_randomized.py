@@ -37,6 +37,7 @@ MULTU_FUNCTION = 25
 DIV_FUNCTION = 26
 DIVU_FUNCTION = 27
 MFHI_FUNCTION = 16
+MTHI_FUNCTION = 17
 MFLO_FUNCTION = 18
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
@@ -90,6 +91,8 @@ def expected_special_operation(word: int) -> int:
         operation = 38
     if function in (MFHI_FUNCTION, MFLO_FUNCTION) and (word & 0x03FF_07C0) == 0:
         operation = 39 if function == MFHI_FUNCTION else 40
+    if function == MTHI_FUNCTION and (word & 0x001F_FFC0) == 0:
+        operation = 41
     if operation == 0 and reserved_shift == 0:
         operation = REGISTER_OPERATIONS.get(function, 0)
     return operation
@@ -209,6 +212,11 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x0020_0012,
         0x0001_0012,
         0x0000_0052,
+        0x0000_0011,
+        0x03E0_0011,
+        0x0001_0011,
+        0x0000_0811,
+        0x0000_0051,
         0x0000_0061,
         0x0000_0023,
         0x023F_F823,

@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M102 — implement R5900 MFLO
-- Next milestone: M103 — implement R5900 MTHI
+- Last completed milestone: M103 — implement R5900 MTHI
+- Next milestone: M104 — implement R5900 MTLO
 - Current subsystem: R5900 multiply/divide execution
-- Current regression status: 691 tests pass with no failures, errors, or skips; full lint and regression gates pass
-- Known architectural inaccuracies: the 22-instruction scalar foundation plus eighteen doubleword and dual-HI/LO operations execute; 14 extension operations remain pending, and branches, data memory, exceptions, and compiled C are absent
+- Current regression status: 702 tests pass with no failures, errors, or skips; full lint and regression gates pass
+- Known architectural inaccuracies: the 22-instruction scalar foundation plus nineteen doubleword and dual-HI/LO operations execute; 13 extension operations remain pending, and branches, data memory, exceptions, and compiled C are absent
 - Known timing inaccuracies: the core uses a deliberately functional five-state sequence, registered request handoff, and one-entry fetch buffer; pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M102 milestone commit (this commit)
+- Most recent pushed commit: M103 milestone commit (this commit)
 
 ## Resume note
 
@@ -22,5 +22,5 @@ GPR blocks now form a functional core. A generated native EE ELF loads into
 behavioral RAM, begins at its published entry, executes 13 straight-line words,
 matches exact retirement, writeback, final GPR, and architectural trace state,
 then reaches the simulator PASS latch. Resume with the single active milestone
-in `milestones.yaml` to implement the GPR-to-primary-HI transfer `MTHI` with
+in `milestones.yaml` to implement the GPR-to-primary-LO transfer `MTLO` with
 directed and randomized differential verification.
