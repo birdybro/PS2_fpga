@@ -19,6 +19,7 @@ SRLV_FUNCTION = 6
 SRAV_FUNCTION = 7
 DSLLV_FUNCTION = 20
 DSRLV_FUNCTION = 22
+DSRAV_FUNCTION = 23
 DSLL_FUNCTION = 56
 DSRL_FUNCTION = 58
 DSRA_FUNCTION = 59
@@ -186,6 +187,14 @@ def encode_dsrlv(destination: int, source: int, shift_register: int) -> int:
     rt = _require_gpr_index(source)
     rs = _require_gpr_index(shift_register)
     return (rs << 21) | (rt << 16) | (rd << 11) | DSRLV_FUNCTION
+
+
+def encode_dsrav(destination: int, source: int, shift_register: int) -> int:
+    """Encode canonical SPECIAL DSRAV with its reserved shift field clear."""
+    rd = _require_gpr_index(destination)
+    rt = _require_gpr_index(source)
+    rs = _require_gpr_index(shift_register)
+    return (rs << 21) | (rt << 16) | (rd << 11) | DSRAV_FUNCTION
 
 
 def encode_srlv(destination: int, source: int, shift_register: int) -> int:
@@ -479,14 +488,15 @@ class R5900State:
         rs = (word >> 21) & 0x1F
         rt = (word >> 16) & 0x1F
         rd = (word >> 11) & 0x1F
-        if function in (DSLLV_FUNCTION, DSRLV_FUNCTION):
+        if function in (DSLLV_FUNCTION, DSRLV_FUNCTION, DSRAV_FUNCTION):
             shift_amount = self.read_gpr(rs) & 0x3F
             source_scalar = self.read_gpr(rt) & SCALAR_MASK
-            shifted_scalar = (
-                source_scalar << shift_amount
-                if function == DSLLV_FUNCTION
-                else source_scalar >> shift_amount
-            )
+            if function == DSLLV_FUNCTION:
+                shifted_scalar = source_scalar << shift_amount
+            elif function == DSRLV_FUNCTION:
+                shifted_scalar = source_scalar >> shift_amount
+            else:
+                shifted_scalar = _as_signed_scalar(source_scalar) >> shift_amount
             result = _merge_scalar(self.read_gpr(rd), shifted_scalar)
             return self.write_gpr(rd, result)
         shift_amount = self.read_gpr(rs) & 0x1F
@@ -720,6 +730,7 @@ class R5900State:
                 SRAV_FUNCTION,
                 DSLLV_FUNCTION,
                 DSRLV_FUNCTION,
+                DSRAV_FUNCTION,
             ):
                 updated = self._step_variable_shift(word, function)
             else:

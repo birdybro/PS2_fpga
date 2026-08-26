@@ -33,6 +33,7 @@ module r5900_execute (
     logic [31:0] srav_word;
     logic [63:0] dsllv_scalar;
     logic [63:0] dsrlv_scalar;
+    logic [63:0] dsrav_scalar;
     logic [63:0] dsll_scalar;
     logic [63:0] dsrl_scalar;
     logic signed [63:0] dsra_source_scalar;
@@ -62,6 +63,7 @@ module r5900_execute (
     assign srav_word = sra_source_word >>> source_rs_shift_i;
     assign dsllv_scalar = source_rt_scalar_i << source_rs_scalar_i[5:0];
     assign dsrlv_scalar = source_rt_scalar_i >> source_rs_scalar_i[5:0];
+    assign dsrav_scalar = dsra_source_scalar >>> source_rs_scalar_i[5:0];
     assign dsll_scalar = source_rt_scalar_i << instruction_i[10:6];
     assign dsrl_scalar = source_rt_scalar_i >> instruction_i[10:6];
     assign dsra_source_scalar = $signed(source_rt_scalar_i);
@@ -250,6 +252,22 @@ module r5900_execute (
                         writeback_commit_o = 1'b1;
                         writeback_destination_o = instruction_i[15:11];
                         writeback_value_o = {destination_upper_i, dsrlv_scalar};
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_DSRAV: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h17)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {destination_upper_i, dsrav_scalar};
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;
                         retirement_o.instruction = instruction_i;

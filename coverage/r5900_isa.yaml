@@ -393,14 +393,14 @@ instructions:
     category: 64-bit shift variable
     encoding: SPECIAL opcode 0x00, function 0x17
     milestone: M093
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review]
-    notes: Planned variable arithmetic right shift over the low 64-bit scalar lane.
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
+    notes: Arithmetically shifts signed rt bits 63:0 right by rs bits 5:0 and preserves rd bits 127:64.
   - mnemonic: DADDIU
     category: 64-bit arithmetic immediate
     encoding: primary opcode 0x19

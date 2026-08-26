@@ -19,6 +19,7 @@ from reference.ee.r5900 import (
     encode_dsllv,
     encode_dsra,
     encode_dsra32,
+    encode_dsrav,
     encode_dsrl,
     encode_dsrl32,
     encode_dsrlv,
@@ -63,6 +64,7 @@ ENCODED_DSRA_EXAMPLE = 0x0011_FB7B
 ENCODED_DSRA32_EXAMPLE = 0x0011_FB7F
 ENCODED_DSLLV_EXAMPLE = 0x0131_F814
 ENCODED_DSRLV_EXAMPLE = 0x0131_F816
+ENCODED_DSRAV_EXAMPLE = 0x0131_F817
 SELF_COUNT_DSLLV_RESULT = 24
 ENCODED_LUI_EXAMPLE = 0x3C1F_1234
 ENCODED_ORI_EXAMPLE = 0x36FF_1234
@@ -903,6 +905,70 @@ def test_r5900_reference_dsrlv_aliases_zero_and_encoder_validation() -> None:
     ):
         with pytest.raises(error):
             encode_dsrlv(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("shift_register_value", "source_scalar", "expected_scalar"),
+    [
+        (0, 0x8000_0000_0000_0001, 0x8000_0000_0000_0001),
+        (1, 0x8000_0000_0000_0001, 0xC000_0000_0000_0000),
+        (31, 0x8000_0000_8000_0001, 0xFFFF_FFFF_0000_0001),
+        (32, 0x8000_0000_8000_0001, 0xFFFF_FFFF_8000_0000),
+        (63, 0x8000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFF),
+        (64, 0x8000_0000_0000_0001, 0x8000_0000_0000_0001),
+        (GPR_MASK, 0x7FFF_FFFF_FFFF_FFFF, 0),
+    ],
+)
+def test_r5900_reference_dsrav_masks_six_count_bits_and_sign_fills(
+    shift_register_value: int,
+    source_scalar: int,
+    expected_scalar: int,
+) -> None:
+    """Use rs low six bits for signed right shift and retain rd upper bits."""
+    shift_register = 0xF00D_CAFE_1234_5678_0000_0000_0000_0000 | shift_register_value
+    source = 0xDEAD_BEEF_CAFE_F00D_0000_0000_0000_0000 | source_scalar
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(start_pc=PC_MASK - 3)
+    state = state.write_gpr(2, shift_register)
+    state = state.write_gpr(3, source).write_gpr(5, destination)
+    updated = state.step(encode_dsrav(5, 3, 2))
+    assert updated.read_gpr(5) == (destination & ~((1 << 64) - 1)) | expected_scalar
+    assert updated.read_gpr(2) == shift_register
+    assert updated.read_gpr(3) == source
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_dsrav_aliases_zero_and_encoder_validation() -> None:
+    """Read all aliases before writeback, protect zero, and validate fields."""
+    upper_mask = GPR_MASK ^ ((1 << 64) - 1)
+    original = 0xCAFE_BABE_1234_5678_FEDC_BA98_7654_3210
+    state = R5900State.initial().write_gpr(2, 4).write_gpr(7, original)
+    rd_equals_rt = state.step(encode_dsrav(7, 7, 2))
+    assert rd_equals_rt.read_gpr(7) == (original & upper_mask) | 0xFFED_CBA9_8765_4321
+
+    count_and_destination = 0x0123_4567_89AB_CDEF_1111_2222_0000_0021
+    state = rd_equals_rt.write_gpr(8, 0xFEDC_BA98_7654_3210)
+    state = state.write_gpr(9, count_and_destination)
+    rd_equals_rs = state.step(encode_dsrav(9, 8, 9))
+    assert rd_equals_rs.read_gpr(9) == (count_and_destination & upper_mask) | 0xFFFF_FFFF_FF6E_5D4C
+
+    rs_equals_rt = rd_equals_rs.write_gpr(10, 3).step(encode_dsrav(11, 10, 10))
+    assert rs_equals_rt.read_gpr(11) == 0
+    discarded = rs_equals_rt.step(encode_dsrav(0, 7, 2))
+    assert discarded.read_gpr(0) == 0
+    assert discarded.gprs[1:] == rs_equals_rt.gprs[1:]
+    assert encode_dsrav(31, 17, 9) == ENCODED_DSRAV_EXAMPLE
+    for fields, error in (
+        ((-1, 0, 0), IndexError),
+        ((0, GPR_COUNT, 0), IndexError),
+        ((0, 0, -1), IndexError),
+        ((0, 0, GPR_COUNT), IndexError),
+        ((True, 0, 0), TypeError),
+    ):
+        with pytest.raises(error):
+            encode_dsrav(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

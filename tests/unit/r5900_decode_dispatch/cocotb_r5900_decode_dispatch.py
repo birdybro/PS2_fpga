@@ -34,6 +34,7 @@ OPERATION_DSRL32 = 27
 OPERATION_DSRA32 = 28
 OPERATION_DSLLV = 29
 OPERATION_DSRLV = 30
+OPERATION_DSRAV = 31
 
 
 async def check_dispatch(
@@ -216,6 +217,17 @@ async def test_r5900_decode_dispatch_sends_canonical_dsrlv_to_execute(dut) -> No
         (0x0010_0000, 0x023F_F816),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DSRLV, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_dsrav_to_execute(dut) -> None:
+    """Dispatch DSRAV register fields without a reserved diagnostic."""
+    for pc, instruction in (
+        (0, 0x0000_0017),
+        (4, 0x0020_0017),
+        (0x0010_0000, 0x023F_F817),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DSRAV, False))
 
 
 @cocotb.test()
@@ -408,6 +420,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (31, 0x0020_003F),
         (32, 0x0000_0054),
         (33, 0x0000_0056),
+        (34, 0x0000_0057),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),

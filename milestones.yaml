@@ -1221,21 +1221,21 @@ milestones:
     dependencies: [M091]
     tests: [masked-count boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M092): implement R5900 DSRLV)"
+    commit: "f3f8f97"
     notes: Implement variable doubleword logical right shift.
   - id: M093
     title: Implement R5900 DSRAV
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M092]
     tests: [masked-count sign boundaries aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: null
+    commit: "self (milestone(M093): implement R5900 DSRAV)"
     notes: Implement variable doubleword arithmetic right shift.
   - id: M094
     title: Implement R5900 DADDIU
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M093]
     tests: [immediate sign extension wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]

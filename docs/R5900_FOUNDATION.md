@@ -349,6 +349,11 @@ stream, making it the twenty-ninth complete ISA coverage entry.
 DSRLV function `0x16` applies the same six-bit count rules to a zero-filling
 logical-right shift. Directed count, alias, legality, and exact-event coverage
 plus a 524-case differential stream make it the thirtieth complete ISA entry.
+DSRAV function `0x17` completes the variable doubleword trio with a signed
+arithmetic-right shift. It fills from `rt[63]`, masks the count to `rs[5:0]`,
+and preserves destination bits 127:64. Positive and negative count boundaries,
+all aliases, encoding legality, exact events, and a 524-case differential
+stream make it the thirty-first complete ISA entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

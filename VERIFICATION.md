@@ -125,8 +125,8 @@ bundling. The next branch/jump planning boundary is part of the checked chain.
 
 ## R5900 ISA coverage validation
 
-`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 22
-complete foundation operations and 32 pending doubleword or dual-HI/LO
+`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 31
+complete operations and 23 pending doubleword or dual-HI/LO
 operations. Each entry names its milestone and cataloged evidence, and tracks
 decode, implementation, directed testing, randomized differential testing, and
 exception testing independently. Summary states cannot become `partial` or
@@ -515,6 +515,16 @@ counts 31, 32, and 63; prove modulo-64 masking at 64 and all ones; cover all
 operand aliases, GPR zero, PC wrap, reserved `sa`, and exact events; and retain
 unrelated source bits. A 524-case seeded differential stream compares PC and
 the complete GPR file after every operation.
+
+## R5900 DSRAV
+
+SPECIAL function `0x17` arithmetically shifts signed `rt[63:0]` right by
+`rs[5:0]`, fills from source bit 63, and preserves old destination bits
+127:64. Directed tests distinguish positive and negative sources at counts 0,
+1, 31, 32, and 63; prove modulo-64 masking at 64 and all ones; cover all
+operand aliases, GPR zero, PC wrap, reserved `sa`, and exact events. A 524-case
+seeded differential stream compares PC and the complete GPR file after every
+operation.
 
 ## R5900 LUI
 
