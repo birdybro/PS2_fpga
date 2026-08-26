@@ -15,11 +15,10 @@ documented exceptions. GNU Binutils R5900 target review records that the R5900
 is not a drop-in complete MIPS III or MIPS IV processor and calls out subset and
 FPU differences.
 
-PS2Tek independently identifies SLL in the EE SPECIAL function table. A public
-QEMU R5900 architecture overview states that GPR bits 127:64 are used only by
-quadword transfers and selected multimedia operations. After explicit GPL-3.0
-license review, the PCSX2 interpreter was consulted only to corroborate scalar
-width rules, including MULT/MULTU's signed or unsigned low-word operands,
+PS2Tek independently identifies SLL in the EE SPECIAL function table and the
+secondary HI1/LO1 instruction inventory in its MMI table. After explicit
+GPL-3.0 license review, the PCSX2 interpreter was consulted only to corroborate
+scalar width rules, including MULT/MULTU's signed or unsigned low-word operands,
 independently sign-extended product halves, optional low-64-bit destination
 write, DIV's R5900 overflow and zero-divisor results, and DIVU's result extension
 and zero-divisor behavior. A separately reviewed BSD-licensed Play!
@@ -63,17 +62,12 @@ PS2Tek's SPECIAL and MMI tables establish the R5900-specific inclusion and
 encodings, while the public MIPS IV manual supplies base semantics where the
 operation is shared. GNU assembler opcode and encoding tests independently
 corroborate the inventory, including optional `rd` forms for R5900 multiply and
-multiply-accumulate instructions. The QEMU R5900 overview corroborates the
-separate pipeline-1 operation set. Its reviewed MULT1/MULTU1 implementation and
-architectural tests further establish the corresponding signed and unsigned
-primary-multiply semantics, optional-`rd`, and result-extension behavior routed
-to HI1 and LO1. These sources are recorded with consultation and license
-metadata in `references.yaml`.
-The same reviewed implementation routes primary DIV/DIVU behavior to
-accumulator index one, and its DIV1 architectural test confirms signed
-quotient, remainder, and nontrapping overflow behavior. Its DIVU1 architectural
-test confirms unsigned quotient and remainder behavior for nonzero divisors;
-the common implementation preserves the primary DIVU divisor-zero semantics.
+multiply-accumulate instructions. The current PCSX2 PlayStation 2 MMI
+interpreter independently corroborates the PS2Tek secondary-path inventory and
+the low-word multiply/divide, optional-`rd`, result-extension, edge-result, and
+HI1/LO1 transfer behavior. It is verification evidence, not architectural
+authority. These sources are recorded with consultation and license metadata in
+`references.yaml`.
 
 Generic MIPS III/IV `DMULT`, `DMULTU`, `DDIV`, and `DDIVU` are deliberately not
 in the R5900 roadmap: their SPECIAL function positions are absent in the

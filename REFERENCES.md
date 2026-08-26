@@ -27,6 +27,18 @@ consultation. M058 consulted one GPL-3.0 emulator's constant-shift behavior only
 after that review; no implementation text or structure was copied into this MIT
 codebase.
 
+## R5900 source correction audit
+
+The historical QEMU R5900 patch series is not used as PlayStation 2
+architectural authority or implementation evidence. Its catalog entry and every
+ISA-matrix citation were removed after a source audit. The scalar and
+doubleword results it had previously corroborated are independently covered by
+the public MIPS IV semantics, PS2Tek's EE instruction tables, GNU's R5900
+encoding tests, and current licensed PCSX2 behavior. The M105 through M108
+secondary multiply/divide transitions were rechecked against PCSX2's current
+PlayStation 2 MMI interpreter and PS2Tek's MMI table. That audit found no RTL or
+Python-model divergence; it corrected provenance rather than behavior.
+
 ## Architecture and hardware
 
 <!-- ref:sony-ee-announcement -->
@@ -114,34 +126,8 @@ assembler tests were inspected to corroborate encodings, optional destination
 forms, and the omission of generic MIPS `DMULT`, `DMULTU`, `DDIV`, and `DDIVU`;
 no implementation text or source structure was copied.
 
-<!-- ref:qemu-r5900-overview -->
-### QEMU R5900 multimedia instruction overview patch review
-
-Public QEMU patch review whose R5900 overview states that GPR bits 127:64 are
-used only by quadword loads/stores and selected multimedia instructions. The
-GPL-2.0-or-later contribution is consulted as corroborating architecture
-evidence only. Its operation inventory also corroborates that `MULT1`,
-`MULTU1`, `DIV1`, `DIVU1`, `MADD1`, `MADDU1`, `MFHI1`, `MFLO1`, `MTHI1`, and
-`MTLO1` use the second multiply/divide path. No source structure or text is
-copied. The reviewed pipeline-1 implementation routes MULT1 and MULTU1 through
-the corresponding signed and unsigned three-operand multiply behaviors with
-accumulator index one. Their public tests confirm that optional `rd` equals
-LO1 and that HI1/LO1 reconstruct the respective 64-bit product.
-The reviewed DIV1/DIVU1 implementation routes the shared primary divide
-semantics to accumulator index one. Its DIV1 architectural test confirms signed
-truncation, remainder signs, and the nontrapping `INT_MIN / -1` result. Its
-DIVU1 architectural test confirms unsigned quotient and remainder behavior for
-nonzero divisors; the shared implementation carries the established primary
-DIVU divisor-zero result to the secondary accumulator.
-The catalog records direct links to the public
-[common DIV1/DIVU1 implementation](https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/05fe58636a0aa1294f9990a49dfc74ad83c40288.1540134918.git.noring@nocrew.org/),
-[DIV1 architectural test](https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/661b6682ef12a7bc022215f60f8cb62803c90833.1540134919.git.noring@nocrew.org/),
-and
-[DIVU1 architectural test](https://patchew.org/QEMU/cover.1540134918.git.noring@nocrew.org/76c3c6692e62384c2a0c8b81e7142cdb039ef412.1540134919.git.noring@nocrew.org/)
-patch reviews. No source text or implementation structure was copied.
-
 <!-- ref:pcsx2-r5900-interpreter -->
-### PCSX2 R5900 interpreter implementation
+### PCSX2 PlayStation 2 R5900 interpreter implementation
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate,
 DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, MULTU,
@@ -168,6 +154,11 @@ independent sign extension of both 32-bit results, and its zero-divisor result.
 MFHI and MFLO corroborate complete 64-bit primary-HI and primary-LO transfers
 into the destination's low scalar lane without overwriting the upper 64-bit GPR
 lane.
+The current PS2-specific MMI interpreter and opcode table separately
+corroborate the secondary `HI1`/`LO1` instruction inventory and the state
+transitions for `MULT1`, `MULTU1`, `DIV1`, `DIVU1`, `MFHI1`, `MFLO1`, `MTHI1`,
+and `MTLO1`. PS2Tek remains the architectural encoding source; PCSX2 is used
+only as licensed behavioral verification evidence.
 The project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
 

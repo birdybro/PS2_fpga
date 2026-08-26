@@ -1375,8 +1375,20 @@ milestones:
     dependencies: [M107]
     tests: [unsigned edge results HI1 LO1 isolation and differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: "self (milestone(M108): implement R5900 DIVU1)"
+    commit: "1cb9c19"
     notes: Implement unsigned word divide on the secondary HI1 LO1 path.
+  - id: M108A
+    title: Audit R5900 source provenance
+    subsystem: verification
+    status: complete
+    dependencies: [M108]
+    tests: [reference catalog ISA coverage lint and full regression]
+    references: [REFERENCES.md, references.yaml, coverage/r5900_isa.yaml]
+    commit: "self (milestone(M108A): correct R5900 source provenance)"
+    notes: >-
+      Remove historical QEMU patch citations and independently revalidate the
+      affected behavior against PS2Tek GNU R5900 encodings and current PCSX2
+      PlayStation 2 interpreter behavior.
   - id: M109
     title: Implement R5900 MFHI1
     subsystem: r5900

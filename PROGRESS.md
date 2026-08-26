@@ -1,13 +1,13 @@
 # Progress
 
-- Last completed milestone: M108 — implement R5900 DIVU1
+- Last completed milestone: M108A — audit R5900 source provenance
 - Next milestone: M109 — implement R5900 MFHI1
 - Current subsystem: R5900 secondary HI/LO transfers
-- Current regression status: M108 authoritative gate passes lint and all 761 tests with deterministic seed 1; zero failures, errors, or skips
+- Current regression status: M108A authoritative gate passes lint and all 761 tests with deterministic seed 1; zero failures, errors, or skips
 - Known architectural inaccuracies: the 22-instruction scalar foundation plus twenty-four doubleword and dual-HI/LO operations execute; 8 extension operations remain pending, and branches, data memory, exceptions, and compiled C are absent
 - Known timing inaccuracies: the core uses a deliberately functional five-state sequence, registered request handoff, and one-entry fetch buffer; pipeline, caches, and physical RDRAM timing are unmodeled
 - External blockers: none
-- Most recent pushed commit: M108 milestone commit (this commit)
+- Most recent pushed commit: M108A provenance-correction milestone (this commit)
 
 ## Resume note
 
@@ -24,4 +24,7 @@ matches exact retirement, writeback, final GPR, and architectural trace state,
 then reaches the simulator PASS latch. Resume with the single active milestone
 in `milestones.yaml` to transfer the complete secondary HI1 scalar value into a
 GPR while preserving its upper lane, with directed and randomized differential
-verification.
+verification. A post-M108 source audit removed historical QEMU patch citations,
+revalidated existing R5900 behavior against PS2Tek, GNU encoding evidence, and
+current PCSX2 PlayStation 2 interpreter behavior, and found no implementation
+change necessary.

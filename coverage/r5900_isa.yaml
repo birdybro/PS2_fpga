@@ -30,7 +30,6 @@ instructions:
     references:
       - mips-iv-instruction-set
       - ps2tek
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
     notes: Shifts rt word, sign-extends through bits 63:32, and preserves rd bits 127:64.
   - mnemonic: SRL
@@ -46,7 +45,6 @@ instructions:
     references:
       - mips-iv-instruction-set
       - ps2tek
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
     notes: Logically shifts rt word, applies scalar sign extension, and preserves rd bits 127:64.
   - mnemonic: SRA
@@ -62,7 +60,6 @@ instructions:
     references:
       - mips-iv-instruction-set
       - ps2tek
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
     notes: Arithmetically shifts signed rt word, sign-extends it, and preserves rd bits 127:64.
   - mnemonic: SLLV
@@ -78,7 +75,6 @@ instructions:
     references:
       - mips-iv-instruction-set
       - ps2tek
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
     notes: Shifts rt word by rs bits 4:0, sign-extends it, and preserves rd bits 127:64.
   - mnemonic: SRLV
@@ -94,7 +90,6 @@ instructions:
     references:
       - mips-iv-instruction-set
       - ps2tek
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
     notes: Logically shifts rt word by rs bits 4:0 and preserves rd bits 127:64.
   - mnemonic: SRAV
@@ -110,7 +105,6 @@ instructions:
     references:
       - mips-iv-instruction-set
       - ps2tek
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
     notes: Arithmetically shifts signed rt word by rs bits 4:0 and preserves rd bits 127:64.
   - mnemonic: LUI
@@ -123,7 +117,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Places immediate in bits 31:16, sign-extends it, and preserves rt bits 127:64.
   - mnemonic: ORI
     category: logical immediate
@@ -135,7 +129,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: ORs zero-extended immediate with rs bits 63:0 and preserves rt bits 127:64.
   - mnemonic: ANDI
     category: logical immediate
@@ -147,7 +141,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: ANDs rs bits 63:0 with zero-extended immediate and preserves rt bits 127:64.
   - mnemonic: XORI
     category: logical immediate
@@ -159,7 +153,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: XORs rs bits 63:0 with zero-extended immediate and preserves rt bits 127:64.
   - mnemonic: ADDIU
     category: 32-bit arithmetic immediate
@@ -171,7 +165,7 @@ instructions:
     random_differential_test: complete
     exception_tests: complete
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Adds signed immediate modulo 32 bits, sign-extends result, and never traps on overflow.
   - mnemonic: ADDU
     category: 32-bit arithmetic register
@@ -183,7 +177,7 @@ instructions:
     random_differential_test: complete
     exception_tests: complete
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Adds source low words modulo 32 bits, sign-extends result, and never traps on overflow.
   - mnemonic: SUBU
     category: 32-bit arithmetic register
@@ -195,7 +189,7 @@ instructions:
     random_differential_test: complete
     exception_tests: complete
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Subtracts source low words modulo 32 bits, sign-extends result, and never traps on overflow.
   - mnemonic: AND
     category: logical register
@@ -207,7 +201,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: ANDs source scalar lanes and preserves destination bits 127:64.
   - mnemonic: OR
     category: logical register
@@ -219,7 +213,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: ORs source scalar lanes and preserves destination bits 127:64.
   - mnemonic: XOR
     category: logical register
@@ -231,7 +225,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: XORs source scalar lanes and preserves destination bits 127:64.
   - mnemonic: NOR
     category: logical register
@@ -243,7 +237,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: NORs source scalar lanes within 64 bits and preserves destination bits 127:64.
   - mnemonic: SLT
     category: signed comparison register
@@ -255,7 +249,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Compares signed scalar lanes, writes 0 or 1, and preserves destination bits 127:64.
   - mnemonic: SLTU
     category: unsigned comparison register
@@ -267,7 +261,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Compares unsigned scalar lanes, writes 0 or 1, and preserves destination bits 127:64.
   - mnemonic: SLTI
     category: signed comparison immediate
@@ -279,7 +273,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Compares a signed scalar against a sign-extended immediate and preserves destination bits 127:64.
   - mnemonic: SLTIU
     category: unsigned comparison immediate
@@ -291,7 +285,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, pcsx2-r5900-interpreter]
     notes: Sign-extends the immediate before unsigned scalar comparison and preserves destination bits 127:64.
   - mnemonic: DSLL
     category: 64-bit shift immediate
@@ -447,7 +441,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Multiplies signed low words, independently sign-extends the high and low
       product words into primary HI and LO, and optionally writes LO to nonzero
@@ -462,7 +456,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview, pcsx2-r5900-interpreter]
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Multiplies unsigned low words, independently sign-extends the high and low
       product words into primary HI and LO, and optionally writes LO to nonzero
@@ -522,7 +516,6 @@ instructions:
       - mips-iv-instruction-set
       - ps2tek
       - binutils-r5900-review
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
       - play-emulator
     notes: >-
@@ -542,7 +535,6 @@ instructions:
       - mips-iv-instruction-set
       - ps2tek
       - binutils-r5900-review
-      - qemu-r5900-overview
       - pcsx2-r5900-interpreter
       - play-emulator
     notes: >-
@@ -562,7 +554,7 @@ instructions:
       - mips-iv-instruction-set
       - ps2tek
       - binutils-r5900-review
-      - qemu-r5900-overview
+      - pcsx2-r5900-interpreter
     notes: >-
       Copies GPR rs bits 63:0 into primary HI, ignores rs bits 127:64, and
       leaves every GPR plus LO HI1 and LO1 unchanged.
@@ -580,7 +572,7 @@ instructions:
       - mips-iv-instruction-set
       - ps2tek
       - binutils-r5900-review
-      - qemu-r5900-overview
+      - pcsx2-r5900-interpreter
     notes: >-
       Copies GPR rs bits 63:0 into primary LO, ignores rs bits 127:64, and
       leaves every GPR plus HI HI1 and LO1 unchanged.
@@ -594,7 +586,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Multiplies signed low words, independently sign-extends both product
       halves into secondary HI1 and LO1, and optionally copies LO1 to rd bits
@@ -609,7 +601,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Multiplies unsigned low words, independently sign-extends both product
       halves into secondary HI1 and LO1, and optionally copies LO1 to rd bits
@@ -624,7 +616,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Divides signed low words into the secondary HI1 remainder and LO1
       quotient with defined overflow and divisor-zero results, no exception,
@@ -639,7 +631,7 @@ instructions:
     random_differential_test: complete
     exception_tests: not-applicable
     status: complete
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Divides unsigned low words into the secondary HI1 remainder and LO1
       quotient, independently sign-extends both result words, defines the
@@ -655,7 +647,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: Planned transfer from the secondary HI1 register to a GPR scalar lane.
   - mnemonic: MFLO1
     category: HI LO transfer pipeline 1
@@ -667,7 +659,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: Planned transfer from the secondary LO1 register to a GPR scalar lane.
   - mnemonic: MTHI1
     category: HI LO transfer pipeline 1
@@ -679,7 +671,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: Planned transfer from a GPR scalar lane to the secondary HI1 register.
   - mnemonic: MTLO1
     category: HI LO transfer pipeline 1
@@ -691,7 +683,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: Planned transfer from a GPR scalar lane to the secondary LO1 register.
   - mnemonic: MADD
     category: multiply accumulate pipeline 0
@@ -703,7 +695,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Planned signed word multiply-accumulate targeting primary HI and LO;
       optional rd behavior requires milestone evidence.
@@ -717,7 +709,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Planned unsigned word multiply-accumulate targeting primary HI and LO;
       optional rd behavior requires milestone evidence.
@@ -731,7 +723,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Planned signed word multiply-accumulate targeting secondary HI1 and LO1;
       optional rd behavior requires milestone evidence.
@@ -745,7 +737,7 @@ instructions:
     random_differential_test: pending
     exception_tests: pending
     status: pending
-    references: [ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    references: [ps2tek, binutils-r5900-review, pcsx2-r5900-interpreter]
     notes: >-
       Planned unsigned word multiply-accumulate targeting secondary HI1 and
       LO1; optional rd behavior requires milestone evidence.
