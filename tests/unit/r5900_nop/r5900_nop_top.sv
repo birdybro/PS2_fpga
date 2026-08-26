@@ -15,7 +15,7 @@ module r5900_nop_top (
     input  logic [4:0]    read_index_b_i,
     output logic [31:0]   pc_o,
     output logic          execute_valid_o,
-    output logic [4:0]    operation_o,
+    output logic [5:0]    operation_o,
     output logic          execute_complete_o,
     output logic          pc_advance_o,
     output logic          execute_writeback_commit_o,

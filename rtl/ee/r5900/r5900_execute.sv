@@ -43,6 +43,7 @@ module r5900_execute (
     logic [63:0] dsrl32_scalar;
     logic [63:0] dsra32_scalar;
     logic [31:0] addiu_word;
+    logic [63:0] daddiu_scalar;
     logic [31:0] addu_word;
     logic [31:0] subu_word;
     logic signed [63:0] slt_source_rs_scalar;
@@ -74,6 +75,8 @@ module r5900_execute (
     assign dsra32_scalar = dsra_source_scalar >>> high_shift_amount;
     assign addiu_word = source_rs_scalar_i[31:0]
         + {{16{instruction_i[15]}}, instruction_i[15:0]};
+    assign daddiu_scalar = source_rs_scalar_i
+        + {{48{instruction_i[15]}}, instruction_i[15:0]};
     assign addu_word = source_rs_scalar_i[31:0] + source_rt_scalar_i[31:0];
     assign subu_word = source_rs_scalar_i[31:0] - source_rt_scalar_i[31:0];
     assign slt_source_rs_scalar = $signed(source_rs_scalar_i);
@@ -445,6 +448,18 @@ module r5900_execute (
                             {32{addiu_word[31]}},
                             addiu_word
                         };
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_DADDIU: begin
+                    if (instruction_i[31:26] == 6'h19) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = 1'b1;
+                        writeback_destination_o = instruction_i[20:16];
+                        writeback_value_o = {destination_upper_i, daddiu_scalar};
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;
                         retirement_o.instruction = instruction_i;

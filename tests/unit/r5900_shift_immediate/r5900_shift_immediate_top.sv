@@ -13,7 +13,7 @@ module r5900_shift_immediate_top (
     input  logic [127:0]  seed_value_i,
     output logic [31:0]   pc_o,
     output logic          execute_valid_o,
-    output logic [4:0]    operation_o,
+    output logic [5:0]    operation_o,
     output logic          execute_complete_o,
     output logic          pc_advance_o,
     output logic          execute_writeback_commit_o,
@@ -136,6 +136,7 @@ module r5900_shift_immediate_top (
                 || (instruction_i[31:26] == 6'h0d)
                 || (instruction_i[31:26] == 6'h0e)
                 || (instruction_i[31:26] == 6'h0f)
+                || (instruction_i[31:26] == 6'h19)
                 ? instruction_i[20:16]
                 : instruction_i[15:11]
         ),

@@ -7,7 +7,7 @@ module r5900_decode_dispatch_top (
     input  logic [31:0]  pc_i,
     input  logic [31:0]  instruction_i,
     output logic         execute_valid_o,
-    output logic [4:0]   operation_o,
+    output logic [5:0]   operation_o,
     output logic         reserved_valid_o,
     output logic [31:0]  reserved_pc_o,
     output logic [31:0]  reserved_instruction_o

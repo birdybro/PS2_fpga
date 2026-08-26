@@ -354,6 +354,11 @@ arithmetic-right shift. It fills from `rt[63]`, masks the count to `rs[5:0]`,
 and preserves destination bits 127:64. Positive and negative count boundaries,
 all aliases, encoding legality, exact events, and a 524-case differential
 stream make it the thirty-first complete ISA entry.
+DADDIU primary opcode `0x19` begins the nontrapping doubleword arithmetic
+group. It sign-extends the 16-bit immediate, adds it to `rs[63:0]` modulo 64,
+and preserves old `rt[127:64]`. Signed-immediate extrema, carry and wrap,
+aliasing, zero-register suppression, exact events, and a 524-case differential
+stream make it the thirty-second complete ISA entry.
 
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and

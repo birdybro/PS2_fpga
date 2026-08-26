@@ -26,6 +26,7 @@ ORI_OPCODE = 13
 ANDI_OPCODE = 12
 XORI_OPCODE = 14
 ADDIU_OPCODE = 9
+DADDIU_OPCODE = 25
 SLTI_OPCODE = 10
 SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
@@ -78,6 +79,8 @@ def decoded_operation(word: int) -> int:
             operation = REGISTER_OPERATIONS.get(function, 0)
     elif word >> 26 == ADDIU_OPCODE:
         operation = 12
+    elif word >> 26 == DADDIU_OPCODE:
+        operation = 32
     elif word >> 26 == SLTI_OPCODE:
         operation = 21
     elif word >> 26 == SLTIU_OPCODE:
@@ -143,6 +146,9 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 112, 0x2400_0000),
         (True, 116, 0x2421_8000),
         (True, 120, 0x27FF_FFFF),
+        (True, 120, 0x6400_0000),
+        (True, 121, 0x6421_8000),
+        (True, 122, 0x67FF_FFFF),
         (True, 121, 0x2800_0000),
         (True, 122, 0x2821_8000),
         (True, 123, 0x2BFF_FFFF),

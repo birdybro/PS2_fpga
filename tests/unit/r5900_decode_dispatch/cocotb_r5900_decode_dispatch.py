@@ -35,6 +35,7 @@ OPERATION_DSRA32 = 28
 OPERATION_DSLLV = 29
 OPERATION_DSRLV = 30
 OPERATION_DSRAV = 31
+OPERATION_DADDIU = 32
 
 
 async def check_dispatch(
@@ -283,6 +284,17 @@ async def test_r5900_decode_dispatch_sends_canonical_addiu_to_execute(dut) -> No
         (0x0010_0000, 0x27FF_FFFF),
     ):
         await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_ADDIU, False))
+
+
+@cocotb.test()
+async def test_r5900_decode_dispatch_sends_canonical_daddiu_to_execute(dut) -> None:
+    """Dispatch DADDIU source, destination, and immediate fields without diagnostics."""
+    for pc, instruction in (
+        (0, 0x6400_0000),
+        (4, 0x6421_8000),
+        (0x0010_0000, 0x67FF_FFFF),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_DADDIU, False))
 
 
 @cocotb.test()

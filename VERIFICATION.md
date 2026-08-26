@@ -125,8 +125,8 @@ bundling. The next branch/jump planning boundary is part of the checked chain.
 
 ## R5900 ISA coverage validation
 
-`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 31
-complete operations and 23 pending doubleword or dual-HI/LO
+`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 32
+complete operations and 22 pending doubleword or dual-HI/LO
 operations. Each entry names its milestone and cataloged evidence, and tracks
 decode, implementation, directed testing, randomized differential testing, and
 exception testing independently. Summary states cannot become `partial` or
@@ -525,6 +525,16 @@ SPECIAL function `0x17` arithmetically shifts signed `rt[63:0]` right by
 operand aliases, GPR zero, PC wrap, reserved `sa`, and exact events. A 524-case
 seeded differential stream compares PC and the complete GPR file after every
 operation.
+
+## R5900 DADDIU
+
+Primary opcode `0x19` adds a sign-extended 16-bit immediate to `rs[63:0]`
+modulo 64, writes `rt[63:0]`, preserves old destination bits 127:64, and does
+not raise integer overflow. Directed tests cover immediate zero, one,
+`0x7fff`, `0x8000`, and `0xffff`; positive and negative wrap boundaries;
+source/destination aliasing; ignored source bits 127:64; GPR zero; PC wrap; and
+exact events. A 524-case seeded differential stream independently checks the
+pre-commit candidate, PC, and complete GPR state after every operation.
 
 ## R5900 LUI
 
