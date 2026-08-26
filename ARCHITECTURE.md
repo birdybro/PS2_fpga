@@ -57,7 +57,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its six-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, AND, OR, XOR, NOR,
+SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, MULTU, AND, OR, XOR, NOR,
 SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, DADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
@@ -101,7 +101,9 @@ upper lane; SUBU applies word rules to nontrapping modulo-32-bit subtraction,
 while DSUBU subtracts complete low scalar lanes modulo 64 and preserves the
 destination upper lane. MULT multiplies the signed low words, independently
 sign-extends the product's high and low words into primary HI and LO, and
-optionally writes LO to nonzero `rd` while preserving `rd[127:64]`. AND
+optionally writes LO to nonzero `rd` while preserving `rd[127:64]`. MULTU uses
+unsigned low-word operands but applies the same independent sign extension and
+optional destination rules to its product. AND
 combines the full low 64-bit scalar
 lanes and preserves the old destination's upper lane; OR uses the same lane
 rules for inclusive combination, XOR uses exclusive combination, and NOR

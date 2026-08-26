@@ -38,6 +38,7 @@ ADDU_FUNCTION = 33
 DADDU_FUNCTION = 45
 DSUBU_FUNCTION = 47
 MULT_FUNCTION = 24
+MULTU_FUNCTION = 25
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -310,6 +311,14 @@ def encode_mult(result_destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | MULT_FUNCTION
+
+
+def encode_multu(result_destination: int, source_a: int, source_b: int) -> int:
+    """Encode R5900 SPECIAL MULTU with its optional rd and reserved sa clear."""
+    rd = _require_gpr_index(result_destination)
+    rs = _require_gpr_index(source_a)
+    rt = _require_gpr_index(source_b)
+    return (rs << 21) | (rt << 16) | (rd << 11) | MULTU_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -675,6 +684,27 @@ class R5900State:
             updated = updated.write_gpr(rd, _merge_scalar(self.read_gpr(rd), lo))
         return updated
 
+    def _step_multu(self, word: int) -> R5900State:
+        """Multiply unsigned source words into sign-extended primary HI and LO halves."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        product = (self.read_gpr(rs) & WORD_MASK) * (self.read_gpr(rt) & WORD_MASK)
+        lo = _as_signed_word(product) & SCALAR_MASK
+        hi = _as_signed_word(product >> WORD_WIDTH) & SCALAR_MASK
+        updated = self.write_hi(hi).write_lo(lo)
+        if rd != 0:
+            updated = updated.write_gpr(rd, _merge_scalar(self.read_gpr(rd), lo))
+        return updated
+
+    def _step_register_or_multiply(self, word: int, function: int) -> R5900State:
+        """Dispatch the admitted SPECIAL register and primary multiply group."""
+        if function == MULT_FUNCTION:
+            return self._step_mult(word)
+        if function == MULTU_FUNCTION:
+            return self._step_multu(word)
+        return self._step_register_alu(word, function)
+
     def _step_subu(self, word: int) -> R5900State:
         """Subtract source words modulo 32 bits without an overflow exception."""
         rs = (word >> 21) & 0x1F
@@ -781,6 +811,7 @@ class R5900State:
                 updated = self._step_signed_immediate_group(word, opcode)
             elif variable and function in (
                 MULT_FUNCTION,
+                MULTU_FUNCTION,
                 ADDU_FUNCTION,
                 DADDU_FUNCTION,
                 SUBU_FUNCTION,
@@ -792,11 +823,7 @@ class R5900State:
                 SLT_FUNCTION,
                 SLTU_FUNCTION,
             ):
-                updated = (
-                    self._step_mult(word)
-                    if function == MULT_FUNCTION
-                    else self._step_register_alu(word, function)
-                )
+                updated = self._step_register_or_multiply(word, function)
             elif opcode == ANDI_OPCODE:
                 updated = self._step_andi(word)
             elif opcode == XORI_OPCODE:

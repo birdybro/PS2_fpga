@@ -28,6 +28,7 @@ from reference.ee.r5900 import (
     encode_dsubu,
     encode_lui,
     encode_mult,
+    encode_multu,
     encode_nor,
     encode_or,
     encode_ori,
@@ -99,6 +100,7 @@ ENCODED_SLT_EXAMPLE = 0x02F1_F82A
 ENCODED_SLTU_EXAMPLE = 0x02F1_F82B
 ENCODED_SLTI_EXAMPLE = 0x2AFF_1234
 ENCODED_SLTIU_EXAMPLE = 0x2EFF_1234
+ENCODED_MULTU_EXAMPLE = 0x02F1_F819
 
 
 @pytest.mark.unit
@@ -1592,6 +1594,73 @@ def test_r5900_reference_mult_optional_rd_alias_zero_and_encoder_validation() ->
         error = TypeError if any(type(field) is bool for field in fields) else IndexError
         with pytest.raises(error):
             encode_mult(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("source_a_word", "source_b_word", "expected_hi", "expected_lo"),
+    [
+        (0x0000_0000, 0xFFFF_FFFF, 0x0000_0000_0000_0000, 0x0000_0000_0000_0000),
+        (0x0000_0001, 0x0000_0001, 0x0000_0000_0000_0000, 0x0000_0000_0000_0001),
+        (0xFFFF_FFFF, 0x0000_0001, 0x0000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFF),
+        (0xFFFF_FFFF, 0xFFFF_FFFF, 0xFFFF_FFFF_FFFF_FFFE, 0x0000_0000_0000_0001),
+        (0x7FFF_FFFF, 0x0000_0002, 0x0000_0000_0000_0000, 0xFFFF_FFFF_FFFF_FFFE),
+        (0x8000_0000, 0x0000_0001, 0x0000_0000_0000_0000, 0xFFFF_FFFF_8000_0000),
+        (0x8000_0000, 0xFFFF_FFFF, 0x0000_0000_7FFF_FFFF, 0xFFFF_FFFF_8000_0000),
+        (0x8000_0000, 0x8000_0000, 0x0000_0000_4000_0000, 0x0000_0000_0000_0000),
+    ],
+)
+def test_r5900_reference_multu_sign_extends_unsigned_product_halves(
+    source_a_word: int,
+    source_b_word: int,
+    expected_hi: int,
+    expected_lo: int,
+) -> None:
+    """Multiply unsigned source words while sign-extending each product half."""
+    source_a = 0xFFFF_FFFF_FFFF_FFFF_1234_5678_0000_0000 | source_a_word
+    source_b = 0xAAAA_AAAA_AAAA_AAAA_8765_4321_0000_0000 | source_b_word
+    destination = 0x0123_4567_89AB_CDEF_AAAA_BBBB_CCCC_DDDD
+    state = R5900State.initial(
+        start_pc=PC_MASK - 3,
+        hi=0x1111,
+        lo=0x2222,
+        hi1=0x3333,
+        lo1=0x4444,
+    )
+    state = state.write_gpr(3, source_a).write_gpr(4, source_b)
+    state = state.write_gpr(5, destination)
+
+    updated = state.step(encode_multu(5, 3, 4))
+
+    expected_gpr = (destination & ~((1 << 64) - 1)) | expected_lo
+    assert updated.read_gpr(5) == expected_gpr
+    assert (updated.hi, updated.lo) == (expected_hi, expected_lo)
+    assert (updated.hi1, updated.lo1) == (state.hi1, state.lo1)
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_multu_optional_rd_alias_zero_and_encoder_validation() -> None:
+    """Cover optional rd, source aliasing, GPR zero, and exact MULTU encoding."""
+    source = 0xCAFE_BABE_1234_5678_FFFF_FFFF_FFFF_FFFF
+    state = R5900State.initial(hi=1, lo=2, hi1=3, lo1=4).write_gpr(31, source)
+    aliased = state.step(encode_multu(31, 31, 31))
+    expected = 0xCAFE_BABE_1234_5678_0000_0000_0000_0001
+    assert aliased.read_gpr(31) == expected
+    assert (aliased.hi, aliased.lo, aliased.hi1, aliased.lo1) == (
+        0xFFFF_FFFF_FFFF_FFFE,
+        1,
+        3,
+        4,
+    )
+    no_destination = state.step(encode_multu(0, 31, 31))
+    assert no_destination.gprs == state.gprs
+    assert (no_destination.hi, no_destination.lo) == (0xFFFF_FFFF_FFFF_FFFE, 1)
+    assert encode_multu(31, 23, 17) == ENCODED_MULTU_EXAMPLE
+    for fields in ((-1, 0, 0), (0, GPR_COUNT, 0), (0, 0, GPR_COUNT), (True, 0, 0)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_multu(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

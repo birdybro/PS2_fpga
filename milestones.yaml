@@ -1266,23 +1266,25 @@ milestones:
     dependencies: [M096]
     tests: [signed extrema HI LO optional-rd and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: "self (milestone(M097): implement R5900 MULT)"
+    commit: "5b80884"
     notes: >-
       Implement signed word multiply, independently sign-extended primary HI LO
       halves, and the optional scalar destination.
   - id: M098
     title: Implement R5900 MULTU
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M097]
     tests: [unsigned extrema HI LO optional-rd and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: null
-    notes: Resolve and implement unsigned word multiply on the primary HI LO path.
+    commit: "self (milestone(M098): implement R5900 MULTU)"
+    notes: >-
+      Implement unsigned word multiply, independently sign-extended primary HI
+      LO halves, and the optional scalar destination.
   - id: M099
     title: Implement R5900 DIV
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M098]
     tests: [signed quotient remainder zero overflow and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]

@@ -19,8 +19,8 @@ PS2Tek independently identifies SLL in the EE SPECIAL function table. A public
 QEMU R5900 architecture overview states that GPR bits 127:64 are used only by
 quadword transfers and selected multimedia operations. After explicit GPL-3.0
 license review, the PCSX2 interpreter was consulted only to corroborate scalar
-width rules, including MULT's signed low-word operands, independently
-sign-extended product halves, and optional low-64-bit destination write. No
+width rules, including MULT/MULTU's signed or unsigned low-word operands,
+independently sign-extended product halves, and optional low-64-bit destination write. No
 emulator source text or implementation structure is copied.
 
 These sources have different authority. The MIPS manual may establish the base
@@ -70,8 +70,8 @@ doubleword/dual-HI/LO integration gate.
 
 The roadmap does not turn uncertain behavior into a specification. The
 optional-`rd` result and destination-width rules must be corroborated during
-each corresponding multiply milestone; M097 resolves that boundary for primary
-signed MULT only. Signed overflow and divide-by-zero results must be resolved
+each corresponding multiply milestone; M097 and M098 resolve that boundary for
+the primary MULT and MULTU pair only. Signed overflow and divide-by-zero results must be resolved
 for the R5900 before either divide path is admitted.
 Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
 also unproven, so M084 must not invent a reset value.
@@ -381,6 +381,14 @@ independent half-extension boundaries, every relevant alias, primary/secondary
 state isolation, reserved-field legality, exact events, and a 524-case
 differential stream make it the thirty-fifth complete ISA entry.
 
+MULTU SPECIAL function `0x19` uses the same primary destinations and optional
+`rd` behavior while multiplying unsigned source words. The high and low product
+words are nevertheless independently sign-extended into HI and LO. Unsigned
+extrema, signed-versus-unsigned divergence, half-extension boundaries, every
+relevant alias, primary/secondary state isolation, reserved-field legality,
+exact events, and a 524-case differential stream make it the thirty-sixth
+complete ISA entry.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -526,7 +534,7 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries and 13 extension entries are complete; they began pending
+foundation entries and 14 extension entries are complete; they began pending
 because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and

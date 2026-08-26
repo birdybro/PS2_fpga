@@ -77,7 +77,8 @@ package r5900_types_pkg;
         R5900_OPERATION_DADDIU = 6'd32,
         R5900_OPERATION_DADDU  = 6'd33,
         R5900_OPERATION_DSUBU  = 6'd34,
-        R5900_OPERATION_MULT   = 6'd35
+        R5900_OPERATION_MULT   = 6'd35,
+        R5900_OPERATION_MULTU  = 6'd36
     } r5900_operation_t;
 
     typedef struct packed {

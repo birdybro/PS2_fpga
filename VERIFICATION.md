@@ -125,8 +125,8 @@ bundling. The next branch/jump planning boundary is part of the checked chain.
 
 ## R5900 ISA coverage validation
 
-`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 35
-complete operations and 19 pending doubleword or dual-HI/LO
+`coverage/r5900_isa.yaml` contains 54 encodings in exact roadmap order: 36
+complete operations and 18 pending doubleword or dual-HI/LO
 operations. Each entry names its milestone and cataloged evidence, and tracks
 decode, implementation, directed testing, randomized differential testing, and
 exception testing independently. Summary states cannot become `partial` or
@@ -567,6 +567,17 @@ tests cover signed extrema, product-half sign boundaries, all aliases, GPR zero,
 PC wrap, reserved `sa`, HI1/LO1 isolation, and exact HI/LO, writeback, and
 retirement events. A 524-case seeded differential stream compares PC, every
 GPR, HI, LO, HI1, and LO1 after every operation.
+
+## R5900 MULTU
+
+SPECIAL function `0x19` multiplies unsigned `rs[31:0]` and `rt[31:0]`, while
+retaining the R5900 result rule that independently sign-extends both product
+words into primary HI and LO. Optional nonzero `rd` receives the sign-extended
+LO scalar and keeps old bits 127:64; destination zero suppresses only that GPR
+write. Directed tests cover unsigned extrema, cases that differ from MULT,
+product-half sign boundaries, aliases, GPR zero, PC wrap, reserved `sa`,
+HI1/LO1 isolation, and exact events. A 524-case seeded differential stream
+compares PC, every GPR, HI, LO, HI1, and LO1 after every operation.
 
 ## R5900 LUI
 

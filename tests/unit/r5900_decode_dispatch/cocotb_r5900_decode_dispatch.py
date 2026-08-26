@@ -39,6 +39,7 @@ OPERATION_DADDIU = 32
 OPERATION_DADDU = 33
 OPERATION_DSUBU = 34
 OPERATION_MULT = 35
+OPERATION_MULTU = 36
 
 
 async def check_dispatch(
@@ -367,6 +368,17 @@ async def test_r5900_decode_dispatch_sends_mult_optional_destination_to_execute(
 
 
 @cocotb.test()
+async def test_r5900_decode_dispatch_sends_multu_optional_destination_to_execute(dut) -> None:
+    """Dispatch unsigned MULTU with both absent and populated rd fields."""
+    for pc, instruction in (
+        (0, 0x0000_0019),
+        (4, 0x0020_0019),
+        (0x0010_0000, 0x023F_F819),
+    ):
+        await check_dispatch(dut, (True, pc, instruction), (True, OPERATION_MULTU, False))
+
+
+@cocotb.test()
 async def test_r5900_decode_dispatch_sends_canonical_subu_to_execute(dut) -> None:
     """Dispatch SUBU source and destination fields without diagnostics."""
     for pc, instruction in (
@@ -472,6 +484,7 @@ async def test_r5900_decode_dispatch_reports_and_suppresses_illegal_words(dut) -
         (35, 0x0000_006D),
         (36, 0x0000_006F),
         (37, 0x0000_0058),
+        (38, 0x0000_0059),
         (20, 0x3C20_0000),
         (0x0010_0000, 0x0405_1234),
         (0x8000_0180, 0x0400_0000),

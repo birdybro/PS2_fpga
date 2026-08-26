@@ -129,7 +129,7 @@ copied.
 ### PCSX2 R5900 interpreter implementation
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate,
-DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
+DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, MULTU, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
 SLTI, and SLTIU interpreter operations in this public emulator. It independently
 corroborates 32-bit operand selection, sign-extended scalar results, preserved
 upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word
@@ -139,9 +139,11 @@ for SLT and SLTU, plus sign-extended immediate comparison for SLTI and SLTIU.
 Its doubleword shift operations separately corroborate low-64-bit
 logical or arithmetic results, unchanged destination bits 127:64, and six-bit
 variable shift counts.
-The MULT operation separately corroborates signed low-word multiplication,
-independent 32-to-64-bit sign extension of both product halves into HI and LO,
-and the R5900 optional `rd` receiving LO without overwriting its upper GPR lane.
+The MULT and MULTU operations separately corroborate signed or unsigned
+low-word multiplication, independent 32-to-64-bit sign extension of both
+product halves into HI and LO, and the R5900 optional `rd` receiving LO without
+overwriting its upper GPR lane. MULTU retains that sign-extension rule despite
+using unsigned operands.
 The project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
 
