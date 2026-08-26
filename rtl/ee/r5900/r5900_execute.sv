@@ -60,6 +60,11 @@ module r5900_execute (
     logic [63:0] multu_product;
     logic [63:0] multu_hi;
     logic [63:0] multu_lo;
+    logic signed [31:0] div_dividend;
+    logic signed [31:0] div_divisor;
+    logic signed [31:0] div_quotient;
+    logic signed [31:0] div_remainder;
+    logic div_overflow;
     logic signed [63:0] slt_source_rs_scalar;
     logic signed [63:0] slt_source_rt_scalar;
     logic slt_result;
@@ -103,6 +108,10 @@ module r5900_execute (
     assign multu_product = source_rs_scalar_i[31:0] * source_rt_scalar_i[31:0];
     assign multu_hi = {{32{multu_product[63]}}, multu_product[63:32]};
     assign multu_lo = {{32{multu_product[31]}}, multu_product[31:0]};
+    assign div_dividend = $signed(source_rs_scalar_i[31:0]);
+    assign div_divisor = $signed(source_rt_scalar_i[31:0]);
+    assign div_overflow = (source_rs_scalar_i[31:0] == 32'h8000_0000)
+        && (source_rt_scalar_i[31:0] == 32'hffff_ffff);
     assign slt_source_rs_scalar = $signed(source_rs_scalar_i);
     assign slt_source_rt_scalar = $signed(source_rt_scalar_i);
     assign slt_result = slt_source_rs_scalar < slt_source_rt_scalar;
@@ -111,6 +120,15 @@ module r5900_execute (
     assign slti_result = slt_source_rs_scalar < slti_immediate;
     assign sltiu_immediate = {{48{instruction_i[15]}}, instruction_i[15:0]};
     assign sltiu_result = source_rs_scalar_i < sltiu_immediate;
+
+    always_comb begin
+        div_quotient = '0;
+        div_remainder = '0;
+        if ((div_divisor != 32'sd0) && !div_overflow) begin
+            div_quotient = div_dividend / div_divisor;
+            div_remainder = div_dividend % div_divisor;
+        end
+    end
 
     always_comb begin
         complete_o = 1'b0;
@@ -161,6 +179,33 @@ module r5900_execute (
                         write_hi_value_o = multu_hi;
                         write_lo_valid_o = 1'b1;
                         write_lo_value_o = multu_lo;
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
+                R5900_OPERATION_DIV: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[15:6] == 10'h000)
+                        && (instruction_i[5:0] == 6'h1a)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        write_hi_valid_o = 1'b1;
+                        write_lo_valid_o = 1'b1;
+                        if (div_overflow) begin
+                            write_hi_value_o = 64'd0;
+                            write_lo_value_o = 64'hffff_ffff_8000_0000;
+                        end else if (div_divisor == 32'sd0) begin
+                            write_hi_value_o = {{32{div_dividend[31]}}, div_dividend};
+                            write_lo_value_o = div_dividend[31]
+                                ? 64'd1
+                                : 64'hffff_ffff_ffff_ffff;
+                        end else begin
+                            write_hi_value_o = {{32{div_remainder[31]}}, div_remainder};
+                            write_lo_value_o = {{32{div_quotient[31]}}, div_quotient};
+                        end
                         retirement_o.valid = 1'b1;
                         retirement_o.pc = pc_i;
                         retirement_o.instruction = instruction_i;

@@ -144,13 +144,46 @@ references:
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
       - MULT interpreter operation
       - MULTU interpreter operation
+      - DIV interpreter operation
     notes: >-
       Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 DSRL32 and DSRA32
       low-doubleword results with preserved upper lanes, immediate and six-bit
       variable shift counts, immediate or register arithmetic handling, and
       MULT and MULTU word product splitting with independent HI and LO sign
       extension plus the optional low-scalar destination, including MULTU's
-      unsigned operands; no source structure was copied.
+      unsigned operands, and DIV quotient, remainder, overflow, and zero-divisor
+      results; no source structure was copied.
+  - id: play-emulator
+    title: Play! PlayStation 2 emulator
+    url: https://github.com/jpd002/Play-
+    source_class: official-project
+    role: architecture
+    subsystems: [r5900]
+    license: BSD-2-Clause; repository License.txt reviewed before consultation
+    source_code_consulted: true
+    redistribution: link-only
+    consulted_sections:
+      - MA_MIPSIV signed 32-bit division template
+      - EE DIV and DIV1 binding declarations
+    notes: >-
+      Independently corroborates signed quotient and remainder calculation plus
+      the signed overflow and divisor-zero results; no source structure was
+      copied.
+  - id: r5900-linux-div-zero-report
+    title: Linux MIPS R5900 division-by-zero hardware report
+    url: https://lkml.indiana.edu/hypermail/linux/kernel/1903.3/07310.html
+    source_class: public-mailing-list
+    role: architecture
+    subsystems: [r5900]
+    license: Public mailing-list message; redistribution rights not assumed
+    source_code_consulted: false
+    redistribution: link-only
+    consulted_sections:
+      - actual R5900 division-by-zero result observation
+    notes: >-
+      Hardware report corroborates the all-ones quotient for the common
+      nonnegative dividend case; emulator evidence covers the remaining edge
+      matrix.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format
     url: https://gabi.xinuos.com/elf/02-eheader.html

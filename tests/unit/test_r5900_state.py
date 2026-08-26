@@ -16,6 +16,7 @@ from reference.ee.r5900 import (
     encode_andi,
     encode_daddiu,
     encode_daddu,
+    encode_div,
     encode_dsll,
     encode_dsll32,
     encode_dsllv,
@@ -101,6 +102,7 @@ ENCODED_SLTU_EXAMPLE = 0x02F1_F82B
 ENCODED_SLTI_EXAMPLE = 0x2AFF_1234
 ENCODED_SLTIU_EXAMPLE = 0x2EFF_1234
 ENCODED_MULTU_EXAMPLE = 0x02F1_F819
+ENCODED_DIV_EXAMPLE = 0x02F1_001A
 
 
 @pytest.mark.unit
@@ -1661,6 +1663,66 @@ def test_r5900_reference_multu_optional_rd_alias_zero_and_encoder_validation() -
         error = TypeError if any(type(field) is bool for field in fields) else IndexError
         with pytest.raises(error):
             encode_multu(*fields)  # type: ignore[arg-type]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("dividend_word", "divisor_word", "expected_hi", "expected_lo"),
+    [
+        (7, 3, 1, 2),
+        (0xFFFF_FFF9, 3, NEGATIVE_ONE_SCALAR, 0xFFFF_FFFF_FFFF_FFFE),
+        (7, 0xFFFF_FFFD, 1, 0xFFFF_FFFF_FFFF_FFFE),
+        (0xFFFF_FFF9, 0xFFFF_FFFD, NEGATIVE_ONE_SCALAR, 2),
+        (0x7FFF_FFFF, 1, 0, 0x0000_0000_7FFF_FFFF),
+        (0x8000_0000, 2, 0, 0xFFFF_FFFF_C000_0000),
+        (0x8000_0000, 0xFFFF_FFFF, 0, 0xFFFF_FFFF_8000_0000),
+        (7, 0, 7, NEGATIVE_ONE_SCALAR),
+        (0xFFFF_FFF9, 0, 0xFFFF_FFFF_FFFF_FFF9, 1),
+        (0, 0, 0, NEGATIVE_ONE_SCALAR),
+    ],
+)
+def test_r5900_reference_div_updates_signed_word_quotient_and_remainder(
+    dividend_word: int,
+    divisor_word: int,
+    expected_hi: int,
+    expected_lo: int,
+) -> None:
+    """Cover truncation, signed remainders, zero division, and overflow."""
+    dividend = 0xDEAD_BEEF_CAFE_F00D_1234_5678_0000_0000 | dividend_word
+    divisor = 0xAAAA_5555_AAAA_5555_8765_4321_0000_0000 | divisor_word
+    state = R5900State.initial(
+        start_pc=PC_MASK - 3,
+        hi=0x1111,
+        lo=0x2222,
+        hi1=0x3333,
+        lo1=0x4444,
+    )
+    state = state.write_gpr(23, dividend).write_gpr(17, divisor)
+
+    updated = state.step(encode_div(23, 17))
+
+    assert updated.gprs == state.gprs
+    assert (updated.hi, updated.lo) == (expected_hi, expected_lo)
+    assert (updated.hi1, updated.lo1) == (state.hi1, state.lo1)
+    assert updated.pc == 0
+
+
+@pytest.mark.unit
+def test_r5900_reference_div_sources_alias_zero_and_encoder_validation() -> None:
+    """Cover source aliasing, the zero register, and exact DIV encoding."""
+    source = 0xCAFE_BABE_1234_5678_FFFF_FFFF_FFFF_FFF9
+    state = R5900State.initial(hi=1, lo=2, hi1=3, lo1=4).write_gpr(31, source)
+    aliased = state.step(encode_div(31, 31))
+    assert aliased.gprs == state.gprs
+    assert (aliased.hi, aliased.lo, aliased.hi1, aliased.lo1) == (0, 1, 3, 4)
+    zero_sources = state.step(encode_div(0, 0))
+    assert zero_sources.gprs == state.gprs
+    assert (zero_sources.hi, zero_sources.lo) == (0, NEGATIVE_ONE_SCALAR)
+    assert encode_div(23, 17) == ENCODED_DIV_EXAMPLE
+    for fields in ((-1, 0), (0, GPR_COUNT), (True, 0)):
+        error = TypeError if any(type(field) is bool for field in fields) else IndexError
+        with pytest.raises(error):
+            encode_div(*fields)  # type: ignore[arg-type]
 
 
 @pytest.mark.unit

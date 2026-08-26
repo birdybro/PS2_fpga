@@ -34,6 +34,7 @@ DADDU_FUNCTION = 45
 DSUBU_FUNCTION = 47
 MULT_FUNCTION = 24
 MULTU_FUNCTION = 25
+DIV_FUNCTION = 26
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -83,6 +84,8 @@ def expected_operation(word: int) -> int:
         function = word & 0x3F
         if reserved_rs == 0:
             operation = IMMEDIATE_OPERATIONS.get(function, 0)
+        if function == DIV_FUNCTION and ((word >> 6) & 0x3FF) == 0:
+            operation = 37
         if operation == 0 and reserved_shift == 0:
             operation = REGISTER_OPERATIONS.get(function, 0)
     elif word >> 26 == ADDIU_OPCODE:
@@ -176,6 +179,10 @@ async def test_r5900_decode_randomized_admission(dut) -> None:
         0x0000_0019,
         0x023F_F819,
         0x0000_0059,
+        0x0000_001A,
+        0x03FF_001A,
+        0x0000_005A,
+        0x0000_081A,
         0x0000_0061,
         0x0000_0023,
         0x023F_F823,

@@ -39,6 +39,7 @@ DADDU_FUNCTION = 45
 DSUBU_FUNCTION = 47
 MULT_FUNCTION = 24
 MULTU_FUNCTION = 25
+DIV_FUNCTION = 26
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -319,6 +320,13 @@ def encode_multu(result_destination: int, source_a: int, source_b: int) -> int:
     rs = _require_gpr_index(source_a)
     rt = _require_gpr_index(source_b)
     return (rs << 21) | (rt << 16) | (rd << 11) | MULTU_FUNCTION
+
+
+def encode_div(dividend: int, divisor: int) -> int:
+    """Encode canonical R5900 SPECIAL DIV with reserved rd and sa clear."""
+    rs = _require_gpr_index(dividend)
+    rt = _require_gpr_index(divisor)
+    return (rs << 21) | (rt << 16) | DIV_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -697,6 +705,22 @@ class R5900State:
             updated = updated.write_gpr(rd, _merge_scalar(self.read_gpr(rd), lo))
         return updated
 
+    def _step_div(self, word: int) -> R5900State:
+        """Divide signed source words into primary LO quotient and HI remainder."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        dividend = _as_signed_word(self.read_gpr(rs))
+        divisor = _as_signed_word(self.read_gpr(rt))
+        if dividend == -(1 << 31) and divisor == -1:
+            quotient, remainder = dividend, 0
+        elif divisor == 0:
+            quotient, remainder = (1 if dividend < 0 else -1), dividend
+        else:
+            magnitude = abs(dividend) // abs(divisor)
+            quotient = -magnitude if (dividend < 0) != (divisor < 0) else magnitude
+            remainder = dividend - quotient * divisor
+        return self.write_hi(remainder & SCALAR_MASK).write_lo(quotient & SCALAR_MASK)
+
     def _step_register_or_multiply(self, word: int, function: int) -> R5900State:
         """Dispatch the admitted SPECIAL register and primary multiply group."""
         if function == MULT_FUNCTION:
@@ -795,6 +819,53 @@ class R5900State:
             return self._step_dsubu(word)
         return self._step_logical_or_compare(word, function)
 
+    def _step_special(self, word: int) -> R5900State:
+        """Validate and execute one supported nonzero SPECIAL instruction."""
+        reserved_rs = (word >> 21) & 0x1F
+        reserved_shift = (word >> 6) & 0x1F
+        function = word & 0x3F
+        immediate = reserved_rs == 0
+        variable = reserved_shift == 0
+        if (word & 0x0000_FFC0) == 0 and function == DIV_FUNCTION:
+            return self._step_div(word)
+        if variable and function in (
+            MULT_FUNCTION,
+            MULTU_FUNCTION,
+            ADDU_FUNCTION,
+            DADDU_FUNCTION,
+            SUBU_FUNCTION,
+            DSUBU_FUNCTION,
+            AND_FUNCTION,
+            OR_FUNCTION,
+            XOR_FUNCTION,
+            NOR_FUNCTION,
+            SLT_FUNCTION,
+            SLTU_FUNCTION,
+        ):
+            return self._step_register_or_multiply(word, function)
+        if immediate and function in (
+            DSLL_FUNCTION,
+            DSRL_FUNCTION,
+            DSRA_FUNCTION,
+            DSLL32_FUNCTION,
+            DSRL32_FUNCTION,
+            DSRA32_FUNCTION,
+        ):
+            return self._step_immediate_doubleword_shift(word, function)
+        if immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
+            return self._step_immediate_shift(word, function)
+        if variable and function in (
+            SLLV_FUNCTION,
+            SRLV_FUNCTION,
+            SRAV_FUNCTION,
+            DSLLV_FUNCTION,
+            DSRLV_FUNCTION,
+            DSRAV_FUNCTION,
+        ):
+            return self._step_variable_shift(word, function)
+        msg = f"unsupported R5900 instruction: 0x{word:08x}"
+        raise UnsupportedInstructionError(msg)
+
     def step(self, instruction: int) -> R5900State:
         """Execute one supported instruction and return its architectural successor."""
         word = _require_unsigned("instruction", instruction, INSTRUCTION_MASK)
@@ -803,27 +874,10 @@ class R5900State:
         else:
             opcode = word >> 26
             reserved_rs = (word >> 21) & 0x1F
-            reserved_shift = (word >> 6) & 0x1F
-            function = word & 0x3F
-            immediate = opcode == SPECIAL_OPCODE and reserved_rs == 0
-            variable = opcode == SPECIAL_OPCODE and reserved_shift == 0
             if opcode in (ADDIU_OPCODE, DADDIU_OPCODE, SLTI_OPCODE, SLTIU_OPCODE):
                 updated = self._step_signed_immediate_group(word, opcode)
-            elif variable and function in (
-                MULT_FUNCTION,
-                MULTU_FUNCTION,
-                ADDU_FUNCTION,
-                DADDU_FUNCTION,
-                SUBU_FUNCTION,
-                DSUBU_FUNCTION,
-                AND_FUNCTION,
-                OR_FUNCTION,
-                XOR_FUNCTION,
-                NOR_FUNCTION,
-                SLT_FUNCTION,
-                SLTU_FUNCTION,
-            ):
-                updated = self._step_register_or_multiply(word, function)
+            elif opcode == SPECIAL_OPCODE:
+                updated = self._step_special(word)
             elif opcode == ANDI_OPCODE:
                 updated = self._step_andi(word)
             elif opcode == XORI_OPCODE:
@@ -832,26 +886,6 @@ class R5900State:
                 updated = self._step_ori(word)
             elif opcode == LUI_OPCODE and reserved_rs == 0:
                 updated = self._step_lui(word)
-            elif immediate and function in (
-                DSLL_FUNCTION,
-                DSRL_FUNCTION,
-                DSRA_FUNCTION,
-                DSLL32_FUNCTION,
-                DSRL32_FUNCTION,
-                DSRA32_FUNCTION,
-            ):
-                updated = self._step_immediate_doubleword_shift(word, function)
-            elif immediate and function in (SLL_FUNCTION, SRL_FUNCTION, SRA_FUNCTION):
-                updated = self._step_immediate_shift(word, function)
-            elif variable and function in (
-                SLLV_FUNCTION,
-                SRLV_FUNCTION,
-                SRAV_FUNCTION,
-                DSLLV_FUNCTION,
-                DSRLV_FUNCTION,
-                DSRAV_FUNCTION,
-            ):
-                updated = self._step_variable_shift(word, function)
             else:
                 msg = f"unsupported R5900 instruction: 0x{word:08x}"
                 raise UnsupportedInstructionError(msg)

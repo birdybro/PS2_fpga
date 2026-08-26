@@ -34,6 +34,7 @@ DADDU_FUNCTION = 45
 DSUBU_FUNCTION = 47
 MULT_FUNCTION = 24
 MULTU_FUNCTION = 25
+DIV_FUNCTION = 26
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -83,6 +84,8 @@ def decoded_operation(word: int) -> int:
         function = word & 0x3F
         if reserved_rs == 0:
             operation = IMMEDIATE_OPERATIONS.get(function, 0)
+        if function == DIV_FUNCTION and ((word >> 6) & 0x3FF) == 0:
+            operation = 37
         if operation == 0 and reserved_shift == 0:
             operation = REGISTER_OPERATIONS.get(function, 0)
     elif word >> 26 == ADDIU_OPCODE:
@@ -177,6 +180,10 @@ async def test_r5900_decode_dispatch_randomized(dut) -> None:
         (True, 138, 0x0000_0019),
         (True, 139, 0x023F_F819),
         (True, 140, 0x0000_0059),
+        (True, 141, 0x0000_001A),
+        (True, 142, 0x03FF_001A),
+        (True, 143, 0x0000_005A),
+        (True, 144, 0x0000_081A),
         (True, 132, 0x0000_0061),
         (True, 136, 0x0000_0023),
         (True, 140, 0x023F_F823),

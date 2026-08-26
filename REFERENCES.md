@@ -129,7 +129,8 @@ copied.
 ### PCSX2 R5900 interpreter implementation
 
 The GPL-3.0 license was reviewed before consulting scalar shift, immediate,
-DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, MULTU, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
+DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, MULT, MULTU,
+DIV, and ADDU, SUBU, AND, OR, XOR, NOR, SLT, SLTU,
 SLTI, and SLTIU interpreter operations in this public emulator. It independently
 corroborates 32-bit operand selection, sign-extended scalar results, preserved
 upper GPR lanes, low-five-bit variable-shift counts, and nontrapping word
@@ -144,8 +145,28 @@ low-word multiplication, independent 32-to-64-bit sign extension of both
 product halves into HI and LO, and the R5900 optional `rd` receiving LO without
 overwriting its upper GPR lane. MULTU retains that sign-extension rule despite
 using unsigned operands.
+The DIV operation corroborates signed low-word operands, quotient truncation
+toward zero, sign-extended quotient and remainder destinations, and explicit
+results for signed overflow and a zero divisor.
 The project implements that behavior independently in
 SystemVerilog and Python without copying source text or implementation structure.
+
+<!-- ref:play-emulator -->
+### Play! PlayStation 2 emulator
+
+The repository's BSD-2-Clause license text was reviewed before its signed
+32-bit division template and EE bindings were consulted. This second emulator
+implementation independently corroborates the normal signed quotient and
+remainder plus the overflow and zero-divisor result matrix. No source text or
+implementation structure is copied into this project.
+
+<!-- ref:r5900-linux-div-zero-report -->
+### Linux MIPS R5900 division-by-zero hardware report
+
+A public Linux MIPS mailing-list message reports a division-by-zero observation
+from actual R5900 hardware. It corroborates the all-ones quotient in the common
+nonnegative-dividend case; it is not treated as evidence for the complete edge
+matrix by itself.
 
 <!-- ref:system-v-gabi-elf -->
 ### System V generic ABI ELF object file format
