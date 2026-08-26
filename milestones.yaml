@@ -1257,21 +1257,23 @@ milestones:
     dependencies: [M095]
     tests: [borrow wrap aliases upper-lane preservation and randomized differential tests]
     references: [coverage/r5900_isa.yaml, docs/R5900_FOUNDATION.md]
-    commit: "self (milestone(M096): implement R5900 DSUBU)"
+    commit: "cabfa38"
     notes: Implement nontrapping 64-bit register subtraction.
   - id: M097
     title: Implement R5900 MULT
     subsystem: r5900
-    status: active
+    status: complete
     dependencies: [M096]
     tests: [signed extrema HI LO optional-rd and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]
-    commit: null
-    notes: Resolve and implement signed word multiply on the primary HI LO path.
+    commit: "self (milestone(M097): implement R5900 MULT)"
+    notes: >-
+      Implement signed word multiply, independently sign-extended primary HI LO
+      halves, and the optional scalar destination.
   - id: M098
     title: Implement R5900 MULTU
     subsystem: r5900
-    status: pending
+    status: active
     dependencies: [M097]
     tests: [unsigned extrema HI LO optional-rd and randomized differential tests]
     references: [coverage/r5900_isa.yaml, KNOWN_ISSUES.md, REFERENCES.md]

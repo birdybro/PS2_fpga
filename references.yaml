@@ -142,10 +142,13 @@ references:
       - DSRLV interpreter operation
       - DSRAV interpreter operation
       - ADDU SUBU AND OR XOR NOR SLT SLTU SLTI and SLTIU interpreter operations
+      - MULT interpreter operation
     notes: >-
       Corroborates R5900 scalar result widths, DSLL DSRL DSRA DSLL32 DSRL32 and DSRA32
       low-doubleword results with preserved upper lanes, immediate and six-bit
-      variable shift counts, and immediate or register arithmetic handling; no source structure
+      variable shift counts, immediate or register arithmetic handling, and
+      MULT signed-word product splitting with independent HI and LO sign
+      extension plus the optional low-scalar destination; no source structure
       was copied.
   - id: system-v-gabi-elf
     title: System V generic ABI ELF object file format

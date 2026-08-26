@@ -441,16 +441,17 @@ instructions:
     category: multiply divide pipeline 0
     encoding: SPECIAL opcode 0x00, function 0x18
     milestone: M097
-    decoded: false
-    implemented: false
-    directed_test: pending
-    random_differential_test: pending
-    exception_tests: pending
-    status: pending
-    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview]
+    decoded: true
+    implemented: true
+    directed_test: complete
+    random_differential_test: complete
+    exception_tests: not-applicable
+    status: complete
+    references: [mips-iv-instruction-set, ps2tek, binutils-r5900-review, qemu-r5900-overview, pcsx2-r5900-interpreter]
     notes: >-
-      Planned signed word multiply targeting the primary HI and LO pair;
-      optional rd behavior requires milestone evidence.
+      Multiplies signed low words, independently sign-extends the high and low
+      product words into primary HI and LO, and optionally writes LO to nonzero
+      rd bits 63:0 while preserving rd bits 127:64.
   - mnemonic: MULTU
     category: multiply divide pipeline 0
     encoding: SPECIAL opcode 0x00, function 0x19

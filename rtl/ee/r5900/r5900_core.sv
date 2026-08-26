@@ -52,6 +52,15 @@ module r5900_core (
     logic                        execute_writeback_commit;
     r5900_gpr_index_t            execute_writeback_destination;
     r5900_gpr_t                  execute_writeback_value;
+    logic                        execute_write_hi_valid;
+    r5900_hilo_t                 execute_write_hi_value;
+    logic                        execute_write_lo_valid;
+    r5900_hilo_t                 execute_write_lo_value;
+    r5900_hilo_t                 hi;
+    r5900_hilo_t                 lo;
+    r5900_hilo_t                 hi1;
+    r5900_hilo_t                 lo1;
+    r5900_hilo_state_t           hilo_state;
     r5900_retirement_t           execute_retirement;
     logic                        writeback_pending_q;
     r5900_gpr_index_t            writeback_destination_q;
@@ -189,7 +198,28 @@ module r5900_core (
         .writeback_commit_o(execute_writeback_commit),
         .writeback_destination_o(execute_writeback_destination),
         .writeback_value_o(execute_writeback_value),
+        .write_hi_valid_o(execute_write_hi_valid),
+        .write_hi_value_o(execute_write_hi_value),
+        .write_lo_valid_o(execute_write_lo_valid),
+        .write_lo_value_o(execute_write_lo_value),
         .retirement_o(execute_retirement)
+    );
+
+    r5900_hilo_state u_hilo_state (
+        .clk_i,
+        .write_hi_valid_i(execute_write_hi_valid),
+        .write_hi_value_i(execute_write_hi_value),
+        .write_lo_valid_i(execute_write_lo_valid),
+        .write_lo_value_i(execute_write_lo_value),
+        .write_hi1_valid_i(1'b0),
+        .write_hi1_value_i('0),
+        .write_lo1_valid_i(1'b0),
+        .write_lo1_value_i('0),
+        .hi_o(hi),
+        .lo_o(lo),
+        .hi1_o(hi1),
+        .lo1_o(lo1),
+        .state_o(hilo_state)
     );
 
     r5900_writeback u_writeback (
@@ -227,11 +257,18 @@ module r5900_core (
             retirement_o.valid |-> (state == R5900_WRITEBACK);
     endproperty
 
+    property p_hilo_views_match;
+        @(posedge clk_i) {hi, lo, hi1, lo1} === hilo_state;
+    endproperty
+
     assert property (p_pc_advances_only_after_execution)
         else $fatal(1, "R5900_CORE_PC_ADVANCE_STATE: PC advanced outside execute");
 
     assert property (p_retirement_occurs_only_during_writeback)
         else $fatal(1, "R5900_CORE_RETIREMENT_STATE: retirement emitted outside writeback");
+
+    assert property (p_hilo_views_match)
+        else $fatal(1, "R5900_CORE_HILO_VIEW: packed and individual HI/LO views differ");
 
 endmodule
 

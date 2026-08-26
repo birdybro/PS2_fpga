@@ -20,7 +20,9 @@ one-write array. `rtl/ee/r5900/r5900_gpr_file.sv` layers architectural
 write suppression, read forcing, debug masking, and an invariant assertion for
 all 128 bits of GPR zero above that storage.
 `rtl/ee/r5900/r5900_hilo_state.sv` holds independent 64-bit `HI`, `LO`, `HI1`,
-and `LO1` values behind four synchronous write enables. It has no reset input;
+and `LO1` values behind four synchronous write enables. The functional core
+connects primary HI/LO writes from execute; the secondary path remains
+isolated until its instruction milestones. The block has no reset input;
 verification explicitly seeds every field before observation because public
 sources do not establish hardware reset contents.
 `rtl/ee/r5900/r5900_pc.sv` holds the functional 32-bit PC and accepts an
@@ -55,7 +57,7 @@ register, shift, function, immediate, and target fields plus explicit 32-bit
 sign- and zero-extended immediates; it does not decide encoding legality.
 `rtl/ee/r5900/r5900_decode.sv` is the explicit admission boundary. Its six-bit
 operation enum admits exact word zero as NOP; canonical SPECIAL SLL, SRL, SRA,
-SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, AND, OR, XOR, NOR,
+SLLV, SRLV, SRAV, DSLLV, DSRLV, DSRAV, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, ADDU, DADDU, SUBU, DSUBU, MULT, AND, OR, XOR, NOR,
 SLT, and SLTU; and primary-opcode LUI, ORI, ANDI, XORI, ADDIU, DADDIU, SLTI, and SLTIU
 encodings. Immediate shifts and LUI require reserved `rs` to be clear; variable
 shifts and register ALU operations require reserved `sa` to be clear. Every unsupported word maps to no
@@ -97,7 +99,10 @@ extension rules to the low words of two GPR sources. DADDU instead adds both
 complete low 64-bit scalar lanes modulo 64 and preserves the old destination
 upper lane; SUBU applies word rules to nontrapping modulo-32-bit subtraction,
 while DSUBU subtracts complete low scalar lanes modulo 64 and preserves the
-destination upper lane. AND combines the full low 64-bit scalar
+destination upper lane. MULT multiplies the signed low words, independently
+sign-extends the product's high and low words into primary HI and LO, and
+optionally writes LO to nonzero `rd` while preserving `rd[127:64]`. AND
+combines the full low 64-bit scalar
 lanes and preserves the old destination's upper lane; OR uses the same lane
 rules for inclusive combination, XOR uses exclusive combination, and NOR
 complements the 64-bit inclusive result without extending that complement into
@@ -158,7 +163,7 @@ It cannot appear on the eventual synthesizable `rtl/ps2_top.sv` boundary.
 - Functional accuracy: the 22-instruction straight-line scalar foundation runs
   from loaded RAM through the composed multi-cycle core.
 - Architectural accuracy: verified for the implemented scalar results, PC,
-  GPR zero, entry point, retirement, writeback behavior, and standalone
-  dual-HI/LO state storage only.
+  GPR zero, entry point, retirement, writeback behavior, primary MULT updates,
+  and isolated dual-HI/LO state storage.
 - Timing accuracy: not yet implemented.
 - FPGA readiness: not yet assessed.

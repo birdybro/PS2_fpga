@@ -38,6 +38,7 @@ OPERATION_DSRAV = 31
 OPERATION_DADDIU = 32
 OPERATION_DADDU = 33
 OPERATION_DSUBU = 34
+OPERATION_MULT = 35
 
 
 async def check_decode(dut, word: int, legal: bool, operation: int) -> None:
@@ -404,6 +405,21 @@ async def test_r5900_decode_recognizes_every_dsubu_register_field(dut) -> None:
 
 
 @cocotb.test()
+async def test_r5900_decode_recognizes_mult_with_optional_destination(dut) -> None:
+    """Admit signed MULT with any source or optional rd while reserved sa stays zero."""
+    for rs, rt, rd in (
+        (0, 0, 0),
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
+        (31, 31, 31),
+        (17, 9, 13),
+    ):
+        word = (rs << 21) | (rt << 16) | (rd << 11) | 0x18
+        await check_decode(dut, word, True, OPERATION_MULT)
+
+
+@cocotb.test()
 async def test_r5900_decode_recognizes_every_subu_register_field(dut) -> None:
     """Admit all SUBU register fields while its reserved shift field stays zero."""
     for rs, rt, rd in (
@@ -525,7 +541,7 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         *range(5, 6),
         *range(8, 20),
         *range(21, 22),
-        *range(24, 33),
+        *range(25, 33),
         *range(34, 35),
         *range(40, 42),
         *range(44, 45),
@@ -550,6 +566,7 @@ async def test_r5900_decode_rejects_unsupported_or_reserved_special_encodings(du
         await check_decode(dut, (value << 6) | 0x14, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x16, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x17, False, OPERATION_NONE)
+        await check_decode(dut, (value << 6) | 0x18, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x21, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x23, False, OPERATION_NONE)
         await check_decode(dut, (value << 6) | 0x24, False, OPERATION_NONE)

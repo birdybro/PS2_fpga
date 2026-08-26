@@ -18,10 +18,10 @@ FPU differences.
 PS2Tek independently identifies SLL in the EE SPECIAL function table. A public
 QEMU R5900 architecture overview states that GPR bits 127:64 are used only by
 quadword transfers and selected multimedia operations. After explicit GPL-3.0
-license review, the PCSX2 interpreter was consulted only to corroborate the
-remaining SLL-specific width rule: the shifted word is sign-extended through
-the 64-bit scalar lane while the upper GPR lane is not written. No emulator
-source text or implementation structure is copied.
+license review, the PCSX2 interpreter was consulted only to corroborate scalar
+width rules, including MULT's signed low-word operands, independently
+sign-extended product halves, and optional low-64-bit destination write. No
+emulator source text or implementation structure is copied.
 
 These sources have different authority. The MIPS manual may establish the base
 semantics of a corroborated scalar instruction, but it cannot establish an
@@ -70,8 +70,9 @@ doubleword/dual-HI/LO integration gate.
 
 The roadmap does not turn uncertain behavior into a specification. The
 optional-`rd` result and destination-width rules must be corroborated during
-the corresponding multiply milestone. Signed overflow and divide-by-zero
-results must be resolved for the R5900 before either divide path is admitted.
+each corresponding multiply milestone; M097 resolves that boundary for primary
+signed MULT only. Signed overflow and divide-by-zero results must be resolved
+for the R5900 before either divide path is admitted.
 Post-reset values of the four 64-bit `HI`, `LO`, `HI1`, and `LO1` registers are
 also unproven, so M084 must not invent a reset value.
 
@@ -97,7 +98,8 @@ outputs. It intentionally has no reset input or initialization construct. The
 testbench writes all four registers before reading any of them, so deterministic
 simulation does not become an unsupported hardware-reset claim. All four writes
 may commit on the same edge, while disabled fields retain their prior value.
-The block is standalone until multiply/divide operations connect it to the core.
+Primary HI/LO writes are now connected to the functional core for MULT. HI1 and
+LO1 remain isolated until the secondary-path instruction milestones.
 
 The functional RTL separately exposes the current 32-bit instruction,
 multi-cycle control state, reserved-instruction status, and one centralized GPR
@@ -370,6 +372,15 @@ boundaries, operand ordering, every alias, identical and zero sources,
 reserved-field legality, exact events, and a 524-case differential stream make
 it the thirty-fourth complete ISA entry.
 
+MULT SPECIAL function `0x18` begins primary multiply/divide execution. It
+multiplies signed source words into a 64-bit product, then independently
+sign-extends the high product word into HI and the low product word into LO.
+The R5900 optional nonzero `rd` receives LO in bits 63:0 while retaining old
+bits 127:64; destination zero does not suppress HI/LO updates. Signed extrema,
+independent half-extension boundaries, every relevant alias, primary/secondary
+state isolation, reserved-field legality, exact events, and a 524-case
+differential stream make it the thirty-fifth complete ISA entry.
+
 Canonical LUI is the first admitted primary-opcode instruction. Opcode `0x0f`
 requires reserved `rs` to be zero. Its immediate occupies word bits 31:16 and
 the resulting word is sign-extended through bits 63:32, while old `rt` bits
@@ -515,7 +526,8 @@ borrow, and immediate-extension boundaries.
 Each instruction receives its own milestone with directed and randomized
 differential coverage. `coverage/r5900_isa.yaml` tracks decode, implementation,
 directed, randomized-differential, and exception coverage separately. All 22
-foundation entries are complete; they began pending because an encoding string
+foundation entries and 13 extension entries are complete; they began pending
+because an encoding string
 and milestone owner are a plan, not an implementation claim. A validator
 cross-checks exact inventory, roadmap ownership, reference provenance, and
 summary-state consistency. Fetch-to-RAM integration, sequential NOP execution,
@@ -527,9 +539,10 @@ and HI/LO-family behavior.
 
 The following are intentionally outside the first foundation roadmap:
 
-- 64-bit scalar operations and R5900-specific 128-bit extension details not
-  established by the initial instruction milestone;
-- multiply, divide, HI/LO-family state, and known R5900 subset differences;
+- remaining 64-bit scalar operations and R5900-specific 128-bit extension
+  details not established by completed instruction milestones;
+- remaining multiply, divide, HI/LO-family operations, and known R5900 subset
+  differences;
 - jumps, branches, link behavior, branch-likely nullification, and delay slots;
 - data loads and stores, alignment exceptions, and unaligned merge operations;
 - architectural exceptions, COP0, interrupt entry, caches, and TLB behavior;

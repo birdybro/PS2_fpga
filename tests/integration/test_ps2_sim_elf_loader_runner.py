@@ -52,6 +52,7 @@ SOURCES = [
     REPO_ROOT / "rtl/ee/r5900/r5900_writeback.sv",
     REPO_ROOT / "rtl/ee/r5900/r5900_gpr_storage.sv",
     REPO_ROOT / "rtl/ee/r5900/r5900_gpr_file.sv",
+    REPO_ROOT / "rtl/ee/r5900/r5900_hilo_state.sv",
     REPO_ROOT / "rtl/ee/r5900/r5900_core.sv",
     REPO_ROOT / "sim/models/behavioral_system_ram.sv",
     REPO_ROOT / "sim/models/sim_clock.sv",

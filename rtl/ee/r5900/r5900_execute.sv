@@ -16,6 +16,10 @@ module r5900_execute (
     output logic                                     writeback_commit_o,
     output r5900_types_pkg::r5900_gpr_index_t       writeback_destination_o,
     output r5900_types_pkg::r5900_gpr_t             writeback_value_o,
+    output logic                                     write_hi_valid_o,
+    output r5900_types_pkg::r5900_hilo_t            write_hi_value_o,
+    output logic                                     write_lo_valid_o,
+    output r5900_types_pkg::r5900_hilo_t            write_lo_value_o,
     output r5900_types_pkg::r5900_retirement_t      retirement_o
 );
 
@@ -48,6 +52,11 @@ module r5900_execute (
     logic [63:0] daddu_scalar;
     logic [31:0] subu_word;
     logic [63:0] dsubu_scalar;
+    logic signed [31:0] mult_source_rs_word;
+    logic signed [31:0] mult_source_rt_word;
+    logic signed [63:0] mult_product;
+    logic [63:0] mult_hi;
+    logic [63:0] mult_lo;
     logic signed [63:0] slt_source_rs_scalar;
     logic signed [63:0] slt_source_rt_scalar;
     logic slt_result;
@@ -83,6 +92,11 @@ module r5900_execute (
     assign daddu_scalar = source_rs_scalar_i + source_rt_scalar_i;
     assign subu_word = source_rs_scalar_i[31:0] - source_rt_scalar_i[31:0];
     assign dsubu_scalar = source_rs_scalar_i - source_rt_scalar_i;
+    assign mult_source_rs_word = $signed(source_rs_scalar_i[31:0]);
+    assign mult_source_rt_word = $signed(source_rt_scalar_i[31:0]);
+    assign mult_product = mult_source_rs_word * mult_source_rt_word;
+    assign mult_hi = {{32{mult_product[63]}}, mult_product[63:32]};
+    assign mult_lo = {{32{mult_product[31]}}, mult_product[31:0]};
     assign slt_source_rs_scalar = $signed(source_rs_scalar_i);
     assign slt_source_rt_scalar = $signed(source_rt_scalar_i);
     assign slt_result = slt_source_rs_scalar < slt_source_rt_scalar;
@@ -98,10 +112,34 @@ module r5900_execute (
         writeback_commit_o = 1'b0;
         writeback_destination_o = '0;
         writeback_value_o = '0;
+        write_hi_valid_o = 1'b0;
+        write_hi_value_o = '0;
+        write_lo_valid_o = 1'b0;
+        write_lo_value_o = '0;
         retirement_o = '0;
 
         if (execute_valid_i) begin
             unique case (operation_i)
+                R5900_OPERATION_MULT: begin
+                    if (
+                        (instruction_i[31:26] == 6'h00)
+                        && (instruction_i[10:6] == 5'h00)
+                        && (instruction_i[5:0] == 6'h18)
+                    ) begin
+                        complete_o = 1'b1;
+                        pc_advance_o = 1'b1;
+                        writeback_commit_o = instruction_i[15:11] != 5'd0;
+                        writeback_destination_o = instruction_i[15:11];
+                        writeback_value_o = {destination_upper_i, mult_lo};
+                        write_hi_valid_o = 1'b1;
+                        write_hi_value_o = mult_hi;
+                        write_lo_valid_o = 1'b1;
+                        write_lo_value_o = mult_lo;
+                        retirement_o.valid = 1'b1;
+                        retirement_o.pc = pc_i;
+                        retirement_o.instruction = instruction_i;
+                    end
+                end
                 R5900_OPERATION_NOP: begin
                     if (instruction_i == 32'd0) begin
                         complete_o = 1'b1;

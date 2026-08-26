@@ -9,7 +9,7 @@ writeback RTL into a functional single-issue core. A generated EE ELF executes
 a claim of general CPU compatibility.
 
 Bus errors are retained as functional fetch status. Exact zero-word NOP, all
-six canonical 32-bit shifts, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, LUI, ORI, ANDI, XORI, ADDIU, DADDIU, ADDU, DADDU, SUBU, DSUBU,
+six canonical 32-bit shifts, DSLL, DSRL, DSRA, DSLL32, DSRL32, DSRA32, DSLLV, DSRLV, DSRAV, LUI, ORI, ANDI, XORI, ADDIU, DADDIU, ADDU, DADDU, SUBU, DSUBU, MULT,
 AND, OR, XOR, NOR, SLT, SLTU, SLTI, and SLTIU execute with PC advance,
 retirement trace, and centralized writeback. No other instruction executes. Illegal words emit a
 functional diagnostic and are suppressed before execution, but do not enter an
@@ -19,8 +19,8 @@ GPR writeback uses a functional one-commit-per-asserted-episode protocol. It is
 not a model of EE retirement, dual issue, pipeline hazards, or precise exception
 timing.
 
-All 22 entries in the initial scalar foundation are complete. Twelve of the 32
-rows added by the doubleword and dual-HI/LO roadmap are complete; the other 20
+All 22 entries in the initial scalar foundation are complete. Thirteen of the 32
+rows added by the doubleword and dual-HI/LO roadmap are complete; the other 19
 are pending and each must pass its own
 instruction milestone before becoming complete.
 
@@ -32,11 +32,12 @@ integer-overflow exception entry exists.
 Public sources establish four 64-bit multiply/divide registers (`HI`, `LO`,
 `HI1`, and `LO1`) but not their post-reset values. The standalone RTL storage
 therefore has no reset or initialization construct, and tests seed every field
-before observation. It is not yet connected to the functional core.
+before observation. Primary HI/LO writes are connected to the functional core;
+secondary HI1/LO1 writes remain pending.
 
-R5900 optional-`rd` results for `MULT`, `MULTU`, `MADD`, `MADDU`, and their
-pipeline-1 forms require semantic and destination-width corroboration before
-M097, M098, M105, and M106 or M113 through M116 can complete. R5900
+R5900 optional-`rd` results for `MULTU`, `MADD`, `MADDU`, and their pipeline-1
+forms require semantic and destination-width corroboration before M098, M105,
+M106, or M113 through M116 can complete. R5900
 signed-overflow and divide-by-zero results require the same treatment in M099,
 M100, M107, and M108. Until those milestones resolve them, these operations
 remain unimplemented rather than approximated.

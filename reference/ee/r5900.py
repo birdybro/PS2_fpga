@@ -37,6 +37,7 @@ SLTIU_OPCODE = 11
 ADDU_FUNCTION = 33
 DADDU_FUNCTION = 45
 DSUBU_FUNCTION = 47
+MULT_FUNCTION = 24
 SUBU_FUNCTION = 35
 AND_FUNCTION = 36
 OR_FUNCTION = 37
@@ -301,6 +302,14 @@ def encode_dsubu(destination: int, minuend: int, subtrahend: int) -> int:
     rs = _require_gpr_index(minuend)
     rt = _require_gpr_index(subtrahend)
     return (rs << 21) | (rt << 16) | (rd << 11) | DSUBU_FUNCTION
+
+
+def encode_mult(result_destination: int, source_a: int, source_b: int) -> int:
+    """Encode R5900 SPECIAL MULT with its optional rd and reserved sa clear."""
+    rd = _require_gpr_index(result_destination)
+    rs = _require_gpr_index(source_a)
+    rt = _require_gpr_index(source_b)
+    return (rs << 21) | (rt << 16) | (rd << 11) | MULT_FUNCTION
 
 
 def encode_subu(destination: int, minuend: int, subtrahend: int) -> int:
@@ -652,6 +661,20 @@ class R5900State:
         result = _merge_scalar(self.read_gpr(rd), result_scalar)
         return self.write_gpr(rd, result)
 
+    def _step_mult(self, word: int) -> R5900State:
+        """Multiply signed source words into sign-extended primary HI and LO halves."""
+        rs = (word >> 21) & 0x1F
+        rt = (word >> 16) & 0x1F
+        rd = (word >> 11) & 0x1F
+        product = _as_signed_word(self.read_gpr(rs)) * _as_signed_word(self.read_gpr(rt))
+        product_bits = product & HILO_MASK
+        lo = _as_signed_word(product_bits) & SCALAR_MASK
+        hi = _as_signed_word(product_bits >> WORD_WIDTH) & SCALAR_MASK
+        updated = self.write_hi(hi).write_lo(lo)
+        if rd != 0:
+            updated = updated.write_gpr(rd, _merge_scalar(self.read_gpr(rd), lo))
+        return updated
+
     def _step_subu(self, word: int) -> R5900State:
         """Subtract source words modulo 32 bits without an overflow exception."""
         rs = (word >> 21) & 0x1F
@@ -757,6 +780,7 @@ class R5900State:
             if opcode in (ADDIU_OPCODE, DADDIU_OPCODE, SLTI_OPCODE, SLTIU_OPCODE):
                 updated = self._step_signed_immediate_group(word, opcode)
             elif variable and function in (
+                MULT_FUNCTION,
                 ADDU_FUNCTION,
                 DADDU_FUNCTION,
                 SUBU_FUNCTION,
@@ -768,7 +792,11 @@ class R5900State:
                 SLT_FUNCTION,
                 SLTU_FUNCTION,
             ):
-                updated = self._step_register_alu(word, function)
+                updated = (
+                    self._step_mult(word)
+                    if function == MULT_FUNCTION
+                    else self._step_register_alu(word, function)
+                )
             elif opcode == ANDI_OPCODE:
                 updated = self._step_andi(word)
             elif opcode == XORI_OPCODE:

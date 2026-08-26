@@ -19,6 +19,10 @@ module r5900_shift_immediate_top (
     output logic          execute_writeback_commit_o,
     output logic [4:0]    execute_writeback_destination_o,
     output logic [127:0]  execute_writeback_value_o,
+    output logic          execute_write_hi_valid_o,
+    output logic [63:0]   execute_write_hi_value_o,
+    output logic          execute_write_lo_valid_o,
+    output logic [63:0]   execute_write_lo_value_o,
     output logic          commit_accepted_o,
     output logic          writeback_valid_o,
     output logic [4:0]    writeback_destination_o,
@@ -98,6 +102,10 @@ module r5900_shift_immediate_top (
         .writeback_commit_o(execute_writeback_commit),
         .writeback_destination_o(execute_writeback_destination),
         .writeback_value_o(execute_writeback_value),
+        .write_hi_valid_o(execute_write_hi_valid_o),
+        .write_hi_value_o(execute_write_hi_value_o),
+        .write_lo_valid_o(execute_write_lo_valid_o),
+        .write_lo_value_o(execute_write_lo_value_o),
         .retirement_o(retirement)
     );
 
